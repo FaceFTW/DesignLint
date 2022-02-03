@@ -1,145 +1,39 @@
 package datasource;
 
+import java.io.IOException;
+import java.util.Map;
+
 import org.objectweb.asm.*;
+import org.objectweb.asm.tree.ClassNode;
 
 public class ASMParser {
 
-    private ClassReader reader;
-    public ASMParser( ClassReader asm){
-    this.reader = asm;
+    private Map<String, ClassNode> classMap;
+
+    public ASMParser(String[] classList) throws IOException {
+        for (String className : classList) {
+            ClassReader reader = new ClassReader(className);
+
+            ClassNode decompiled = new ClassNode();
+            reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
+        }
     }
 
-    public void readStream(){
-
-    }
-    public void calculateBufferSize(){
-
-    }
-    public void getAccess(){
-
-    }
-    public String getClassName(){
-        return null;
-    }
-    public String getSuperName(){
-        return null;
-    }
-    public String[] getInterfaces(){
-        return null;
-    }
-    public void accept(){
-
-    }
-    private void readModuleAttributes(){
-
-    }
-    private void readRecordComponent(){
-
-    }
-    private void readField(){
-
-    }
-    private void readMethod(){
-
-    }
-    private void readCode(){
-
-    }
-    protected void readLabel(){
-
-    }
-    private void createLabel(){
-
-    }
-    private void createDebugLabel(){
-
-    }
-    private void readTypeAnnotations(){
-
-    }
-    private void getTypeAnnotationsBytecodeOffset(){
-
-    }
-    private void readTypeAnnotationTarget(){
-
-    }
-    private void readParameterAnnotations(){
-
-    }
-    private void readElementValues(){
-
-    }
-    private void readElementValue(){
-
-    }
-    private void computeImplicitFrame(){
-
-    }
-    private void readStackMapFrame(){
-
-    }
-    private void readVerificationTypeInfo(){
-
-    }
-    private void getFirstAttributeOffset(){
-
-    }
-    private void readBootstrapMethodAttributes(){
-
-    }
-    private void readAttribute(){
-
-    }
-    public void getItemCount(){
-
-    }
-    public void getItem(){
-
-    }
-    public void getMaxStringLength(){
-
-    }
-    public void readByte(){
-
-    }
-    public void readUnsignedShort(){
-
-    }
-    public void readShort(){
-
-    }
-    public void readInt(){
-
-    }
-    public void readLong(){
-
-    }
-    public void readUTF8(){
-
-    }
-    public void readUTF(){
-
-    }
-    private String readStringish(){
-        return null;
-    }
-    public void readClass(){
-
-    }
-    public void readModule(){
-
-    }
-    public void readPackage(){
-
-    }
-    public void readConstantDynamic(){
-
-    }
-    public void readConst(){
-
+    public String getUserFriendlyName(String className) {
+        ClassNode decompiled = this.classMap.get(className);
+        return Type.getObjectType(decompiled.name).getClassName();
     }
 
+    public String getSuperName(String className) {
+        ClassNode decompiled = this.classMap.get(className);
+        return decompiled.superName;
+    }
 
-
+    public String[] getInterfaces(String className) {
+        ClassNode decompiled = this.classMap.get(className);
+        String[] result = null;
+        decompiled.interfaces.toArray(result);
+        return result;
+    }
 
 }
