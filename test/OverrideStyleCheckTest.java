@@ -1,36 +1,35 @@
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class OverrideStyleCheckTest {
 
-	@Test
+    @Test
     public void testOverrideUsed() {
-        
+
     }
-	
-	@Test
+
+    @Test
     public void testOverrideNotUsed() {
-        
+
     }
-	
-	@Test
+
+    @Test
     public void testNoMethodsOverridden() {
-        
+
     }
-	
-	@Test
+
+    @Test
     public void testMultipleMethodsOverriddenWithOverride() {
-        
+
     }
-	
-	@Test
+
+    @Test
     public void testMultipleMethodsOverriddenWithoutOverride() {
-        
+
     }
-	
-	@Test
+
+    @Test
     public void testMultipleMethodsOverriddenWithAndWithoutOverride() {
-        
+
     }
 }
