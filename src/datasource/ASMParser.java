@@ -21,6 +21,7 @@ public class ASMParser {
     public ASMParser(String[] classList) throws IOException {
     	this.classMap = new HashMap<String, ClassNode>();
         for (String className : classList) {
+        	className = className.replace('.', '/');
             ClassReader reader = new ClassReader(className);
 
             ClassNode decompiled = new ClassNode();
@@ -168,8 +169,11 @@ public class ASMParser {
         String[] result = null;
         List<AnnotationNode> annotations = decompMethod.invisibleAnnotations;
         Set<String> annotationStrs = new HashSet<String>();
-        for(AnnotationNode annotation : annotations) {
-        	annotationStrs.add(annotation.toString());
+        
+        if(annotations != null) {
+        	for(AnnotationNode annotation : annotations) {
+            	annotationStrs.add(annotation.toString());
+            }
         }
         
         return annotationStrs;
