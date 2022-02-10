@@ -9,10 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.objectweb.asm.*;
-import org.objectweb.asm.tree.AnnotationNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.TryCatchBlockNode;
+import org.objectweb.asm.tree.*;
 
 public class ASMParser {
 
@@ -177,6 +174,47 @@ public class ASMParser {
         }
         
         return annotationStrs;
+    }
+
+    public ArrayList<String> getClassFieldNames(String className) {
+        ArrayList<String> fieldNames = new ArrayList<>();
+        ClassNode classNode = this.classMap.get(className);
+
+        for (FieldNode field : classNode.fields) {
+            if ((field.access & Opcodes.ACC_STATIC) != 0) {
+                fieldNames.add(field.name);
+            }
+        }
+
+        return fieldNames;
+    }
+
+    public ArrayList<String> getGlobalNames(String className) {
+        ArrayList<String> globalNames = new ArrayList<>();
+        ClassNode classNode = this.classMap.get(className);
+
+        for (FieldNode field : classNode.fields) {
+            if ((field.access & Opcodes.ACC_STATIC) == 0) {
+                globalNames.add(field.name);
+            }
+        }
+
+        return globalNames;
+    }
+
+    public Map<String, ArrayList<String>> getMethodNames(String className) {
+        Map<String, ArrayList<String>> methodNames = new HashMap<>();
+        ClassNode classNode = this.classMap.get(className);
+
+        for (MethodNode method : classNode.methods) {
+            ArrayList<String> methodVar = new ArrayList<>();
+            for (LocalVariableNode local : method.localVariables) {
+                methodVar.add(local.name);
+            }
+            methodNames.put(method.name, methodVar);
+        }
+
+        return methodNames;
     }
     
 }
