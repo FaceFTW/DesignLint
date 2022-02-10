@@ -139,4 +139,23 @@ public class ASMParser {
         return result;
     }
 
+    public String[] getMethodCompilerAnnotations(String className, String methodName) {
+    	ClassNode decompiled = this.classMap.get(className);
+    	
+    	MethodNode decompMethod = null;
+        for (MethodNode node : decompiled.methods) {
+            if (node.name.equals(methodName)) {
+                decompMethod = node;
+            }
+        }
+        
+        if (decompMethod == null) {
+            throw new IllegalArgumentException("Error! Specified Method was not found in the class!");
+        }
+
+        String[] result = null;
+        // TODO Return annotations
+        return null;
+    }
+    
 }
