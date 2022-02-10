@@ -30,6 +30,9 @@ public class OverrideAnnotationAnalyzer extends DomainAnalyzer {
 				Set<String> methods = new HashSet<String>();
 				methods.addAll(Arrays.asList(parser.getMethods(className)));
 				this.classToMethods.put(className, methods);
+				for(String method : methods) {
+					this.methodToAnnotations.put(method, parser.getMethodCompilerAnnotations(className, method));
+				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -46,7 +49,8 @@ public class OverrideAnnotationAnalyzer extends DomainAnalyzer {
 			if(methods != null) {
 				for(String method : methods) {
 					if(superclassMethods.contains(method)) {
-						//if()
+						Set<String> annotations = this.methodToAnnotations.get(method);
+						System.out.println(annotations.toString());
 					}
 				}
 			}

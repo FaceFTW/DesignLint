@@ -2,10 +2,14 @@ package datasource;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TryCatchBlockNode;
@@ -15,11 +19,13 @@ public class ASMParser {
     private Map<String, ClassNode> classMap;
 
     public ASMParser(String[] classList) throws IOException {
+    	this.classMap = new HashMap<String, ClassNode>();
         for (String className : classList) {
             ClassReader reader = new ClassReader(className);
 
             ClassNode decompiled = new ClassNode();
             reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
+            classMap.put(className, decompiled);
         }
 
         // This should be all we need for the parser to function
@@ -37,8 +43,9 @@ public class ASMParser {
 
     public String[] getInterfaces(String className) {
         ClassNode decompiled = this.classMap.get(className);
-        String[] result = null;
-        decompiled.interfaces.toArray(result);
+        List<String> interfaces = decompiled.interfaces;
+        String[] result = new String[interfaces.size()];
+        interfaces.toArray(result);
         return result;
     }
 
@@ -56,13 +63,15 @@ public class ASMParser {
         }
 
         ClassNode decompiled = this.classMap.get(className);
-        String[] result = null;
+        
 
         List<String> methodList = new ArrayList<>();
 
         for (MethodNode node : decompiled.methods) {
             methodList.add(node.name);
         }
+        
+        String [] result = new String[methodList.size()];
 
         methodList.toArray(result);
         return result;
@@ -93,9 +102,12 @@ public class ASMParser {
         if (decompMethod == null) {
             throw new IllegalArgumentException("Error! Specified Method was not found in the class!");
         }
-
-        String[] result = null;
-        decompMethod.exceptions.toArray(result);
+        
+        List<String> exceptions = new ArrayList<String>();
+        exceptions = decompMethod.exceptions;
+        
+        String[] result = new String[exceptions.size()];
+        exceptions.toArray(result);
         return result;
     }
 
@@ -134,12 +146,12 @@ public class ASMParser {
             caughtExceptionTypes.add(block.type);
         }
 
-        String[] result = null;
+        String[] result = new String[caughtExceptionTypes.size()];
         caughtExceptionTypes.toArray(result);
         return result;
     }
 
-    public String[] getMethodCompilerAnnotations(String className, String methodName) {
+    public Set<String> getMethodCompilerAnnotations(String className, String methodName) {
     	ClassNode decompiled = this.classMap.get(className);
     	
     	MethodNode decompMethod = null;
@@ -154,8 +166,13 @@ public class ASMParser {
         }
 
         String[] result = null;
-        // TODO Return annotations
-        return null;
+        List<AnnotationNode> annotations = decompMethod.invisibleAnnotations;
+        Set<String> annotationStrs = new HashSet<String>();
+        for(AnnotationNode annotation : annotations) {
+        	annotationStrs.add(annotation.toString());
+        }
+        
+        return annotationStrs;
     }
     
 }
