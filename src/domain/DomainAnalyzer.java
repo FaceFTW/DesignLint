@@ -2,6 +2,7 @@ package domain;
 
 //Abstract class that all analyzers should extend.
 public abstract class DomainAnalyzer {
+
     public ReturnType getFeedback(String[] classList) {
         getRelevantData(classList);
         analyzeData();
