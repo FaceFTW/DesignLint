@@ -1,23 +1,21 @@
 package datasource;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.objectweb.asm.*;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
+
+import java.io.IOException;
+import java.util.*;
 
 public class ASMParser {
 
     private Map<String, ClassNode> classMap;
 
     public ASMParser(String[] classList) throws IOException {
-    	this.classMap = new HashMap<String, ClassNode>();
+        this.classMap = new HashMap<String, ClassNode>();
         for (String className : classList) {
+        	className = className.replace('.', '/');
             ClassReader reader = new ClassReader(className);
 
             ClassNode decompiled = new ClassNode();
@@ -60,15 +58,14 @@ public class ASMParser {
         }
 
         ClassNode decompiled = this.classMap.get(className);
-        
 
         List<String> methodList = new ArrayList<>();
 
         for (MethodNode node : decompiled.methods) {
             methodList.add(node.name);
         }
-        
-        String [] result = new String[methodList.size()];
+
+        String[] result = new String[methodList.size()];
 
         methodList.toArray(result);
         return result;
@@ -99,10 +96,10 @@ public class ASMParser {
         if (decompMethod == null) {
             throw new IllegalArgumentException("Error! Specified Method was not found in the class!");
         }
-        
+
         List<String> exceptions = new ArrayList<String>();
         exceptions = decompMethod.exceptions;
-        
+
         String[] result = new String[exceptions.size()];
         exceptions.toArray(result);
         return result;
@@ -149,15 +146,15 @@ public class ASMParser {
     }
 
     public Set<String> getMethodCompilerAnnotations(String className, String methodName) {
-    	ClassNode decompiled = this.classMap.get(className);
-    	
-    	MethodNode decompMethod = null;
+        ClassNode decompiled = this.classMap.get(className);
+
+        MethodNode decompMethod = null;
         for (MethodNode node : decompiled.methods) {
             if (node.name.equals(methodName)) {
                 decompMethod = node;
             }
         }
-        
+
         if (decompMethod == null) {
             throw new IllegalArgumentException("Error! Specified Method was not found in the class!");
         }
@@ -165,10 +162,13 @@ public class ASMParser {
         String[] result = null;
         List<AnnotationNode> annotations = decompMethod.invisibleAnnotations;
         Set<String> annotationStrs = new HashSet<String>();
-        for(AnnotationNode annotation : annotations) {
-        	annotationStrs.add(annotation.toString());
-        }
         
+        if(annotations != null) {
+        	for(AnnotationNode annotation : annotations) {
+            	annotationStrs.add(annotation.toString());
+            }
+        }
+
         return annotationStrs;
     }
 
@@ -213,5 +213,17 @@ public class ASMParser {
 
         return methodNames;
     }
-    
+
+        public void getMethod(String className){
+            ClassNode decompiled = this.classMap.get(className);
+
+
+
+            for (MethodNode node : decompiled.methods) {
+                //TableSwitchInsnNode table = node.visitJumpInsn(Opcodes.TABLESWITCH, new Label());
+            }
+
+
+    }
+
 }

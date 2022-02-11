@@ -26,6 +26,7 @@ public class OverrideAnnotationAnalyzer extends DomainAnalyzer {
 		try {
 			ASMParser parser = new ASMParser(classList);
 			for(String className : classList) {
+				className = className.replace('.', '/');
 				this.subclassToSuperclass.put(className, parser.getSuperName(className));
 				Set<String> methods = new HashSet<String>();
 				methods.addAll(Arrays.asList(parser.getMethods(className)));
@@ -48,9 +49,11 @@ public class OverrideAnnotationAnalyzer extends DomainAnalyzer {
 			Set<String> superclassMethods = this.classToMethods.get(superclass);
 			if(methods != null) {
 				for(String method : methods) {
-					if(superclassMethods.contains(method)) {
-						Set<String> annotations = this.methodToAnnotations.get(method);
-						System.out.println(annotations.toString());
+					if(superclassMethods != null) {
+						if(superclassMethods.contains(method)) {
+							Set<String> annotations = this.methodToAnnotations.get(method);
+							System.out.println(annotations.toString());
+						}
 					}
 				}
 			}
