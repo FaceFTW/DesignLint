@@ -57,6 +57,16 @@ public class ExceptionStyleExamples {
         }
     }
 
+    public static void compliantMethodThrowsAndCatchesException() throws UnsupportedOperationException {
+        try {
+            int ohno = 1 / 0;
+        } catch (ArithmeticException e) {
+            e.printStackTrace();
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
     // Non-Compliant Mehtods
 
     public static void nonCompliantMethodThrowsException() throws Exception {
@@ -116,6 +126,34 @@ public class ExceptionStyleExamples {
         }
     }
 
-        
+    public static void nonCompliantMethodThrowsCompliantAndCatchesException() throws UnsupportedOperationException {
+        try {
+            int ohno = 1 / 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
+    public static void nonCompliantMethodThrowsAndCatchesCompliantException() throws Exception {
+        try {
+            int ohno = 1 / 0;
+        } catch (ArithmeticException e) {
+            e.printStackTrace();
+        }
+
+        throw new Exception();
+    }
+
+    public static void nonCompliantMethodThrowsAndCatchesException() throws Exception{
+        try {
+            int ohno = 1 / 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        throw new UnsupportedOperationException();
+    }
 
 }
