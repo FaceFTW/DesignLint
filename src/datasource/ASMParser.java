@@ -1,15 +1,12 @@
 package datasource;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.objectweb.asm.*;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
+
+import java.io.IOException;
+import java.util.*;
 
 public class ASMParser {
 
@@ -214,6 +211,18 @@ public class ASMParser {
         }
 
         return methodNames;
+    }
+
+        public void getMethod(String className){
+            ClassNode decompiled = this.classMap.get(className);
+
+
+
+            for (MethodNode node : decompiled.methods) {
+                //TableSwitchInsnNode table = node.visitJumpInsn(Opcodes.TABLESWITCH, new Label());
+            }
+
+
     }
 
 }
