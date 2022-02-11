@@ -177,7 +177,7 @@ public class ASMParser {
         ClassNode classNode = this.classMap.get(className);
 
         for (FieldNode field : classNode.fields) {
-            if ((field.access & Opcodes.ACC_STATIC) != 0) {
+            if ((field.access & Opcodes.ACC_STATIC) == 0) {
                 fieldNames.add(field.name);
             }
         }
@@ -190,7 +190,7 @@ public class ASMParser {
         ClassNode classNode = this.classMap.get(className);
 
         for (FieldNode field : classNode.fields) {
-            if ((field.access & Opcodes.ACC_STATIC) == 0) {
+            if ((field.access & Opcodes.ACC_STATIC) != 0) {
                 globalNames.add(field.name);
             }
         }
@@ -205,7 +205,8 @@ public class ASMParser {
         for (MethodNode method : classNode.methods) {
             ArrayList<String> methodVar = new ArrayList<>();
             for (LocalVariableNode local : method.localVariables) {
-                methodVar.add(local.name);
+                if (local.name.compareTo("this") != 0)
+                    methodVar.add(local.name);
             }
             methodNames.put(method.name, methodVar);
         }

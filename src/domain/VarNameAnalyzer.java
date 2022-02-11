@@ -10,9 +10,9 @@ public class VarNameAnalyzer extends DomainAnalyzer {
 
     private ASMParser parser;
     //Parsed Values
-    Map<String, ArrayList<String>> fieldNames;
-    Map<String, ArrayList<String>> globalNames;
-    Map<String, Map<String, ArrayList<String>>> methodNames;
+    public Map<String, ArrayList<String>> fieldNames;
+    public Map<String, ArrayList<String>> globalNames;
+    public Map<String, Map<String, ArrayList<String>>> methodNames;
 
     //Erroneous Values
     ArrayList<LinterError> foundErrors;
@@ -131,5 +131,18 @@ public class VarNameAnalyzer extends DomainAnalyzer {
                 this.foundErrors.add(new LinterError(className, methodName, var + " too long (>30 characters)", ErrType.WARNING));
             }
         }
+    }
+
+    //For testing... should be protected
+    public Map<String, ArrayList<String>> getFieldNames() {
+        return this.fieldNames;
+    }
+
+    public Map<String, ArrayList<String>> getGlobalNames() {
+        return this.globalNames;
+    }
+
+    public Map<String, Map<String, ArrayList<String>>> getMethodNames() {
+        return this.methodNames;
     }
 }
