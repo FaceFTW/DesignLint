@@ -1,5 +1,5 @@
 package example.typename;
 
-public class MultipleTypesSomeIncorrectClass<T,Z,incorrect> {
+public class MultipleTypesSomeIncorrectClass<T,Z,incorrectAgain> {
 
 }

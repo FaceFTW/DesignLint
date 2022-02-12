@@ -223,5 +223,9 @@ public class ASMParser {
 		}
 
 	}
+	
+	public String getSignature(String className) {
+		return(this.classMap.get(className).signature);
+	}
 
 }
