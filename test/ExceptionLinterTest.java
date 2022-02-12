@@ -1,4 +1,5 @@
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,9 +9,11 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import datasource.ASMParser;
+import domain.ErrType;
 import domain.ExceptionThrownAnalyzer;
+import domain.LinterError;
 import domain.ReturnType;
-import domain.ExceptionThrownAnalyzer.ExceptionThrownIssue;
+import domain.ExceptionThrownAnalyzer.ExceptionLinterIssue;
 
 public class ExceptionLinterTest {
 	private ASMParser parser;
@@ -36,8 +39,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testCompliantMethodThrowsException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.NO_VIOLATION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.NO_VIOLATION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0], "compliantMethodThrowsException"));
@@ -47,8 +50,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testCompliantMethodCallThrowsException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.NO_VIOLATION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.NO_VIOLATION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -59,8 +62,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testCompliantMethodThrowsMultipleException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.NO_VIOLATION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.NO_VIOLATION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -71,8 +74,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testCompliantMethodCatchException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.NO_VIOLATION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.NO_VIOLATION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0], "compliantMethodCatchException"));
@@ -83,8 +86,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testcompliantMethodCallCatchException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.NO_VIOLATION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.NO_VIOLATION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -95,8 +98,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testCompliantMethodCatchMultipleException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.NO_VIOLATION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.NO_VIOLATION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -107,8 +110,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testCompliantMethodCallCatchMultipleException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.NO_VIOLATION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.NO_VIOLATION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -119,8 +122,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testCompliantMethodThrowsAndCatchesExceptions() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.NO_VIOLATION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.NO_VIOLATION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -132,8 +135,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testNonCompliantMethodThrowsException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.THROW_EXCEPTION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.THROW_EXCEPTION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -144,8 +147,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testNonCompliantMethodThrowsRuntimeException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.THROW_RUNTIME_EXCEPTION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.THROW_RUNTIME_EXCEPTION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -156,8 +159,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testNonCompliantMethodThrowsError() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.THROW_ERROR);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.THROW_ERROR);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0], "nonCompliantMethodThrowsError"));
@@ -167,8 +170,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testNonCompliantMethodThrowsThrowable() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.THROW_THROWABLE);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.THROW_THROWABLE);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -179,8 +182,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testNonCompliantMethodCallsCompliantButThrowsException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.THROW_EXCEPTION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.THROW_EXCEPTION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -191,8 +194,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testNonCompliantMethodCallsCompliantWithMultipleThrowsButThrowsException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.THROW_EXCEPTION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.THROW_EXCEPTION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -203,8 +206,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testNonCompliantMethodCatchesException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.CATCH_EXCEPTION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.CATCH_EXCEPTION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -215,8 +218,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testNonCompliantMethodCallsCompliantButCatchesException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.CATCH_EXCEPTION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.CATCH_EXCEPTION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -227,8 +230,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testNonCompliantMethodCallsCompliantWithMultipleThrowsButCatchesException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.CATCH_EXCEPTION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.CATCH_EXCEPTION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -239,8 +242,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testNonCompliantMethodCatchMultipleExceptions() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.CATCH_EXCEPTION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.CATCH_EXCEPTION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -252,8 +255,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testNonCompliantMethodThrowsAndCatchesCompliantException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.THROW_EXCEPTION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.THROW_EXCEPTION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -264,8 +267,8 @@ public class ExceptionLinterTest {
 	@Test
 	public void testNonCompliantMethodThrowsCompliantAndCatchesException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.CATCH_EXCEPTION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.CATCH_EXCEPTION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -276,9 +279,9 @@ public class ExceptionLinterTest {
 	@Test
 	public void testNonCompliantMethodThrowsAndCatchesException() {
 		// Expected List of Issues
-		List<ExceptionThrownIssue> expected = new ArrayList<>();
-		expected.add(ExceptionThrownIssue.THROW_EXCEPTION);
-		expected.add(ExceptionThrownIssue.CATCH_EXCEPTION);
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.THROW_EXCEPTION);
+		expected.add(ExceptionLinterIssue.CATCH_EXCEPTION);
 
 		setupAnalyzer();
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
@@ -294,39 +297,97 @@ public class ExceptionLinterTest {
 		analyzer.analyzeData();
 
 		ReturnType expectedReturnType = analyzer.composeReturnType();
+		List<String> linterErrorStrings = new ArrayList<>();
+
+		for (LinterError err : expectedReturnType.errorsCaught) {
+			linterErrorStrings.add(err.toString());
+		}
+
+		// All of the LinterErrors we expect to get returned
+		LinterError error0Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodThrowsException",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsException() throws java.lang.Exception in its method signature instead of a specific exception class",
+				ErrType.WARNING);
+
+		LinterError error1Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodThrowsRuntimeException",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsRuntimeException() throws java.lang.RuntimeException in its method signature instead of a specific exception class",
+				ErrType.WARNING);
+
+		LinterError error2Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodThrowsError",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsError() throws java.lang.Error in its method signature instead of a specific exception class",
+				ErrType.WARNING);
+
+		LinterError error3Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodThrowsThrowable",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsThrowable() throws java.lang.Throwable in its method signature instead of a specific exception class",
+				ErrType.WARNING);
+
+		LinterError error4Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodCallsCompliantButThrowsException",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodCallsCompliantButThrowsException() throws java.lang.Exception in its method signature instead of a specific exception class",
+				ErrType.WARNING);
+
+		LinterError error5Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodCallsCompliantWithMultipleThrowsButThrowsException",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodCallsCompliantWithMultipleThrowsButThrowsException() throws java.lang.Exception in its method signature instead of a specific exception class",
+				ErrType.WARNING);
+
+		LinterError error6Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodCatchesException",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodCatchesException() has at least one catch block that catches java.lang.Exception instead of a specific exception class",
+				ErrType.WARNING);
+
+		LinterError error7Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodCallsCompliantButCatchesException",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodCallsCompliantButCatchesException() has at least one catch block that catches java.lang.Exception instead of a specific exception class",
+				ErrType.WARNING);
+
+		LinterError error8Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodCallsCompliantWithMultipleThrowsButCatchesException",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodCallsCompliantWithMultipleThrowsButCatchesException() has at least one catch block that catches java.lang.Exception instead of a specific exception class",
+				ErrType.WARNING);
+
+		LinterError error9Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodCatchMultipleExceptions",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodCatchMultipleExceptions() has at least one catch block that catches java.lang.Exception instead of a specific exception class",
+				ErrType.WARNING);
+		LinterError error10Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodThrowsCompliantAndCatchesException",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsCompliantAndCatchesException() has at least one catch block that catches java.lang.Exception instead of a specific exception class",
+				ErrType.WARNING);
+		LinterError error11Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodThrowsAndCatchesCompliantException",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsAndCatchesCompliantException() throws java.lang.Exception in its method signature instead of a specific exception class",
+				ErrType.WARNING);
+		LinterError error12Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodThrowsAndCatchesException",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsAndCatchesException() throws java.lang.Exception in its method signature instead of a specific exception class",
+				ErrType.WARNING);
+		LinterError error13Expected = new LinterError("example.exceptionstyle.ExceptionStyleExamples",
+				"nonCompliantMethodThrowsAndCatchesException",
+				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsAndCatchesException() has at least one catch block that catches java.lang.Exception instead of a specific exception class",
+				ErrType.WARNING);
 
 		assertEquals(expectedReturnType.analyzerName, "Generic Exception Linter");
 		assertEquals(expectedReturnType.errorsCaught.size(), 14);
-		assertEquals(expectedReturnType.errorsCaught.get(0),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsException() throws java.lang.Exception in its method signature instead of a specific exception class");
-		assertEquals(expectedReturnType.errorsCaught.get(1),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsRuntimeException() throws java.lang.RuntimeException in its method signature instead of a specific exception class");
-		assertEquals(expectedReturnType.errorsCaught.get(2),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsError() throws java.lang.Error in its method signature instead of a specific exception class");
-		assertEquals(expectedReturnType.errorsCaught.get(3),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsThrowable() throws java.lang.Throwable in its method signature instead of a specific exception class");
-		assertEquals(expectedReturnType.errorsCaught.get(4),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodCallsCompliantButThrowsException() throws java.lang.Exception in its method signature instead of a specific exception class");
-		assertEquals(expectedReturnType.errorsCaught.get(5),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodCallsCompliantWithMultipleThrowsButThrowsException() throws java.lang.Exception in its method signature instead of a specific exception class");
-		assertEquals(expectedReturnType.errorsCaught.get(6),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodCatchesException() has at least one catch block that catches java.lang.Exception instead of a specific exception class");
-		assertEquals(expectedReturnType.errorsCaught.get(7),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodCallsCompliantButCatchesException() has at least one catch block that catches java.lang.Exception instead of a specific exception class");
-		assertEquals(expectedReturnType.errorsCaught.get(8),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodCallsCompliantWithMultipleThrowsButCatchesException() has at least one catch block that catches java.lang.Exception instead of a specific exception class");
-		assertEquals(expectedReturnType.errorsCaught.get(9),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodCatchMultipleExceptions() has at least one catch block that catches java.lang.Exception instead of a specific exception class");
+		assertTrue(linterErrorStrings.contains(error0Expected.toString()));
+		assertTrue(linterErrorStrings.contains(error1Expected.toString()));
+		assertTrue(linterErrorStrings.contains(error2Expected.toString()));
+		assertTrue(linterErrorStrings.contains(error3Expected.toString()));
+		assertTrue(linterErrorStrings.contains(error4Expected.toString()));
+		assertTrue(linterErrorStrings.contains(error5Expected.toString()));
+		assertTrue(linterErrorStrings.contains(error6Expected.toString()));
+		assertTrue(linterErrorStrings.contains(error7Expected.toString()));
+		assertTrue(linterErrorStrings.contains(error8Expected.toString()));
+		assertTrue(linterErrorStrings.contains(error9Expected.toString()));
 		// If a throw and a catch violation is detected in the same file , throw
 		// violations come first, then catch violations
-		assertEquals(expectedReturnType.errorsCaught.get(10),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsCompliantAndCatchesException() has at least one catch block that catches java.lang.Exception instead of a specific exception class");
-		assertEquals(expectedReturnType.errorsCaught.get(11),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsAndCatchesCompliantException() throws java.lang.Exception in its method signature instead of a specific exception class");
-		assertEquals(expectedReturnType.errorsCaught.get(12),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsAndCatchesException() throws java.lang.Exception in its method signature instead of a specific exception class");
-		assertEquals(expectedReturnType.errorsCaught.get(13),
-				"example.exceptionstyle.ExceptionStyleExamples.nonCompliantMethodThrowsAndCatchesException() has at least one catch block that catches java.lang.Exception instead of a specific exception class");
+		assertTrue(linterErrorStrings.contains(error10Expected.toString()));
+		assertTrue(linterErrorStrings.contains(error11Expected.toString()));
+		assertTrue(linterErrorStrings.contains(error12Expected.toString()));
+		assertTrue(linterErrorStrings.contains(error13Expected.toString()));
 	}
 
 	interface ExceptionLinterTests {
