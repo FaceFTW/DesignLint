@@ -9,13 +9,13 @@ import java.util.Set;
 
 import datasource.ASMParser;
 
-public class OverrideAnnotationAnalyzer extends DomainAnalyzer {
+public class GenericTypeNameAnalyzer extends DomainAnalyzer {
 	
 	private Map<String,String> subclassToSuperclass;
 	private Map<String, Set<String>> classToMethods;
 	private Map<String, Set<String>> methodToAnnotations;
 	
-	public OverrideAnnotationAnalyzer() {
+	public GenericTypeNameAnalyzer() {
 		this.subclassToSuperclass = new HashMap<String,String>();
 		this.classToMethods = new HashMap<String, Set<String>>();
 		this.methodToAnnotations = new HashMap<String, Set<String>>();
