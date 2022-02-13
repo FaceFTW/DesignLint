@@ -4,10 +4,31 @@
   <groupId>Insert-Linter-Name</groupId>
   <artifactId>Insert-Linter-Name</artifactId>
   <version>0.0.1-ALPHA-1-PRERELASE-1</version>
+  <repositories>
+    <repository>
+      <id>central</id>
+      <name>Maven Central</name>
+      <layout>default</layout>
+      <url>https://repo1.maven.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
   <build>
     <sourceDirectory>${basedir}/src</sourceDirectory>
     <testSourceDirectory>${basedir}/test</testSourceDirectory>
     <plugins>
+      <plugin>
+        <groupId>org.pitest</groupId>
+        <artifactId>pitest-maven</artifactId>
+        <version>1.7.4</version>
+        <configuration>
+          <targetTests>
+            <param>test*</param>
+          </targetTests>
+        </configuration>
+      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.7.0</version>

@@ -1,3 +1,5 @@
+package test;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,8 +13,8 @@ import domain.ReturnType;
 
 public class VarNameTest {
     //Combinations of our two classes, make sure we pull the right data
-    private final String[] singleClass = { "example.varname.VarNameTestClass" };
-    private final String[] multipleClasses = { "example.varname.VarNameTestClass", "example.varname.VarNameTestClass2" };
+    private final String[] singleClass = { "example/varname/VarNameTestClass" };
+    private final String[] multipleClasses = { "example/varname/VarNameTestClass", "example/varname/VarNameTestClass2" };
 
     //Analyzer Class
     private VarNameAnalyzer analyzer;
@@ -424,5 +426,43 @@ public class VarNameTest {
         assertEquals(ErrType.ERROR, foundErr.type);
 
         return true;
+    }
+
+    @Test
+    public void testThirtyCharacterFieldName() {
+        setUpSingleClass();
+        ReturnType returned = this.analyzer.getFeedback(singleClass);
+
+        assertTrue(returned.errorsCaught.size() > 0);
+        ArrayList<LinterError> errors = returned.errorsCaught;
+
+        boolean found = false;
+        LinterError foundErr = null;
+        for (LinterError err : errors) {
+            if (err.message.compareTo("thirtyCharacterVarNameForTest too long (>30 characters)") == 0) {
+                found = true;
+                foundErr = err;
+            }
+        }
+        assertFalse(found);
+    }
+
+    @Test
+    public void testThirtyCharacterLocalVarName() {
+        setUpSingleClass();
+        ReturnType returned = this.analyzer.getFeedback(singleClass);
+
+        assertTrue(returned.errorsCaught.size() > 0);
+        ArrayList<LinterError> errors = returned.errorsCaught;
+
+        boolean found = false;
+        LinterError foundErr = null;
+        for (LinterError err : errors) {
+            if (err.message.compareTo("anotherThirtyCharacterVarName1 too long (>30 characters)") == 0) {
+                found = true;
+                foundErr = err;
+            }
+        }
+        assertFalse(found);
     }
 }
