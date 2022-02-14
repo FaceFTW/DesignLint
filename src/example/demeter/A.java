@@ -31,6 +31,11 @@ public class A {
 		c.doCThing();
 	}
 	
+	public void doThingWithCParamMultipleParams(int x, D d, String y, C c) {
+		c.doCThing();
+		d.doDThing();
+	}
+	
 	public void doThingWithBParamRight(C c) {
 		c.doThingWithBRight();
 	}

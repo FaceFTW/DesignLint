@@ -27,4 +27,5 @@ public class C {
 	public void letADoThingWithC() {
 		this.a.doThingWithCParam(this);
 	}
+	
 }
