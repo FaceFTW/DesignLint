@@ -6,6 +6,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 public class ASMParser {
@@ -24,6 +25,28 @@ public class ASMParser {
 		}
 
 		// This should be all we need for the parser to function
+	}
+
+	public ASMParser(InputStream[] classStreams) throws IOException {
+		this.classMap = new HashMap<>();
+		for (InputStream stream : classStreams) {
+			ClassReader reader = new ClassReader(stream);
+
+			ClassNode decompiled = new ClassNode();
+			reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
+
+			// We still need the fully qualified class name
+			String className = decompiled.name;
+			classMap.put(className, decompiled);
+		}
+	}
+
+	// This method is for the presentation layer's functionality
+	public String[] getParsedClassNames() {
+		String[] classNames = new String[this.classMap.size()];
+		this.classMap.keySet().toArray(classNames);
+
+		return classNames;
 	}
 
 	public String getUserFriendlyName(String className) {
@@ -223,17 +246,17 @@ public class ASMParser {
 		}
 
 	}
-	
+
 	public String getSignature(String className) {
-		return(this.classMap.get(className).signature);
+		return (this.classMap.get(className).signature);
 	}
-	
+
 	private MethodNode getMethodNode(String className, String methodName) {
 		ClassNode decompiled = this.classMap.get(className);
 		List<MethodNode> methods = decompiled.methods;
 		MethodNode method = null;
-		for(MethodNode mNode : methods) {
-			if(mNode.name.equals(methodName)) {
+		for (MethodNode mNode : methods) {
+			if (mNode.name.equals(methodName)) {
 				method = mNode;
 				break;
 			}
@@ -243,10 +266,10 @@ public class ASMParser {
 		}
 		return method;
 	}
-	
-	
+
 	/**
-	 * Returns a Map of method calls made within a method to the owner of the called method
+	 * Returns a Map of method calls made within a method to the owner of the called
+	 * method
 	 * 
 	 * @throws IllegalArgumentException If the method is not found in the specified
 	 *                                  class
@@ -255,18 +278,18 @@ public class ASMParser {
 	 * @return A Map from method call to the method owner
 	 * 
 	 */
-	public Map<String,String> getMethodCalls(String className, String methodName) {
-		Map<String,String> callToOwner = new HashMap<String,String>();
+	public Map<String, String> getMethodCalls(String className, String methodName) {
+		Map<String, String> callToOwner = new HashMap<String, String>();
 		MethodNode method = this.getMethodNode(className, methodName);
-		
+
 		InsnList instructions = method.instructions;
-		for(AbstractInsnNode insn : instructions) {
-			if(insn.getType() == AbstractInsnNode.METHOD_INSN) {
+		for (AbstractInsnNode insn : instructions) {
+			if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
 				MethodInsnNode methodCall = (MethodInsnNode) insn;
 				callToOwner.put(methodCall.name, methodCall.owner);
 			}
 		}
-		
+
 		return callToOwner;
 	}
 
