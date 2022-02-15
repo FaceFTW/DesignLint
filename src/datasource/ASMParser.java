@@ -270,4 +270,16 @@ public class ASMParser {
 		return callToOwner;
 	}
 
+	public Set<String> getMethodParameters(String className, String methodName) {
+		MethodNode method = this.getMethodNode(className, methodName);
+		Set<String> parameters = new HashSet<String>();
+		List<ParameterNode> paramNodes = method.parameters;
+		if(paramNodes != null) {
+			for(ParameterNode paramNode : paramNodes) {
+				parameters.add(paramNode.name);
+			}
+		}
+		return parameters;
+	}
+
 }
