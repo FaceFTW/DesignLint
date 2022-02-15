@@ -1,6 +1,8 @@
 package presentation;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,22 +32,34 @@ public class PresentationLayer {
 	// We throw a hissyfit otherwise >:(
 	public void setupAnalyzers(String[] fileList) throws IOException {
 		// Create an ASMParser to parse all of the files initially
-		this.classList = fileList;
 
-		ASMParser parser = new ASMParser(fileList);
+		List<InputStream> fileStreams = new ArrayList<>();
+		for (String path : fileList) {
+			fileStreams.add(new FileInputStream(path));
+		}
 
-		//Create analyzers and pass them through the list.
+		InputStream[] streamList = new InputStream[fileStreams.size()];
+		fileStreams.toArray(streamList);
+
+		ASMParser parser = new ASMParser(streamList);
+		this.classList = parser.getParsedClassNames();
+
+		// Create analyzers and pass them through the list.
 		analyzers.add(new ExceptionThrownAnalyzer(parser));
-		analyzers.add(new PrincipleOfLeastKnowledgeAnalyzer());		//TODO Update constructor if it chages
-		analyzers.add(new VarNameAnalyzer(fileList));				//TODO Update constructors if it changes
-		analyzers.add(new SwitchCaseAnalyzer(fileList));			//TODO is this an analyzer we want?
-		analyzers.add(null)
+		// analyzers.add(new PrincipleOfLeastKnowledgeAnalyzer()); //TODO Update
+		// constructor if it chages
+		// analyzers.add(new VarNameAnalyzer(fileList)); //TODO Update constructors if
+		// it changes
+		// analyzers.add(new SwitchCaseAnalyzer(fileList)); //TODO is this an analyzer
+		// we want?
 	}
 
 	// Nothing too complicated, just a couple of loops
 	public void runAnalyzers() {
 		for (DomainAnalyzer domainAnalyzer : analyzers) {
-			domainAnalyzer.getRelevantData(classList);
+
+			domainAnalyzer.getRelevantData(this.classList);
+			domainAnalyzer.analyzeData();
 			this.linterReturns.add(domainAnalyzer.composeReturnType());
 		}
 	}
