@@ -4,16 +4,50 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Random;
-import java.util.Scanner;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
-//20
 @SuppressWarnings("unused")
-public class HighCouplingStaticClassTotalCount {
-	// Basically a copy of a couple of methods from the other
-	// HighCouplingStaticClass
-	// And some new ones using JRE stuff
+public class HighCouplingNightmareClass {
+	// I swear this is just an example
+	// This has mentally scarred me with the amount of random BS
+	// I had to write to generate this for testing :(
+	List<String> list1;
+	ArrayList<String> list2;
+	Stack<Double> list3;
+	Queue<Long> list4;
+	Map<String, String> map1;
+	Set<Character> list5;
+
+	public HighCouplingNightmareClass(ZeroCouplingDataStruct struct0) {
+		list1 = new LinkedList<>();
+		list2 = new ArrayList<>();
+		list3 = new Stack<>();
+		list4 = new ConcurrentLinkedDeque<>(); // sure why not?????
+		list5 = new TreeSet<>();
+		map1 = new HashMap<>();
+	}
+
+	private void nightmareCouplingMethod(LowCouplingDataStruct struct0, LowCouplingObject obj1,
+			ZeroCouplingObject[] objArr) {
+		// screw it make some static calls
+		ZeroCouplingStaticClass.emptyFunction();
+		LowCouplingStaticClass.doStuffOnZeroCoupledObject(objArr[0]);
+
+	}
+
+	// Man it'd be real funny if we ran this method
+	private int funny(Integer funnyInt) {
+		return this.funny(funnyInt.intValue() + 1);
+	}
 
 	public static void invokeStaticLowCouplingStaticMethod() {
 		LowCouplingStaticClass.doStuffOnZeroCoupledObject(new ZeroCouplingObject());
@@ -63,5 +97,4 @@ public class HighCouplingStaticClassTotalCount {
 		Long.valueOf(5l);
 		Short.parseShort("3");
 	}
-
 }

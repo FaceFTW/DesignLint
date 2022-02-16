@@ -52,10 +52,11 @@ public class HighCouplingAnalyzer extends DomainAnalyzer {
 	 * @param className The name of the class to parse
 	 * @return A list of all classes that are coupled to the specified class
 	 */
-	public List<String> countClassCoupling(String className) {
+	public String[] countClassCoupling(String className) {
 		List<String> coupledClasses = new ArrayList<>();
 
-		return coupledClasses;
+		String[] result = new String[coupledClasses.size()];
+		return result;
 	}
 
 	/**

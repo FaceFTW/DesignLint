@@ -30,7 +30,7 @@ public class HighCouplingStaticClassProjectCount {
 	public static void makeHighCouplingObjects(ZeroCouplingDataStruct struct0) {
 		if (struct0.exampleBoolean = true) {
 			HighCouplingDataStructProjectCount yikes1 = new HighCouplingDataStructProjectCount();
-			HighCouplingDataStructTotalCount yikes2 = new HighCouplingDataStructTotalCount();
+			HighCouplingObjectTotalCount yikes2 = new HighCouplingObjectTotalCount();
 		}
 	}
 

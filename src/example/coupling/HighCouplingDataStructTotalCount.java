@@ -1,52 +1,39 @@
 package example.coupling;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Scanner;
+import java.util.Set;
 import java.util.Stack;
-import java.util.Map.Entry;
+import java.util.TreeSet;
 
-//EXPECTED CLASS COUPLING: 20
-@SuppressWarnings("unused")
+
 public class HighCouplingDataStructTotalCount {
-	// THis is just an absurd datastructre that uses soooo many types
+	public HashMap<String, String> dumbstructure;
+	public Map<String, String> dumbstructure2;
+	public List<String> dumbList;
+	public ArrayList<String> dumbList2;
+	public Stack<String> dumbStack;
+	public Queue<String> dumbQueue;
+	public Set<String> dumbSet;
+	public Scanner dumbScannerThatIWillNeverActuallyUse;
+	public StringBuilder dumbStringBuilder;
+	public TreeSet<String> dumbSet2;
+	public LinkedList<String> dumbList3;
+	String dumbString;
+	Integer dumbStaticInteger;
+	public Random dumbRandom;
 
-	// This line is just an atrocity, but it is intentional
-	// I don't think there will ever be an example that uses this much generic BS
-	// BTW this counts as 6 separate classes
-	public HashMap<ArrayList<String>, Queue<Stack<PrintStream>>> dumbstructure;
+	ZeroCouplingDataStruct struct0;
+	ZeroCouplingObject obj0;
 
-	// This one is also really dumb, but not as dumb for using interface types
-	// We *are* using 6 more types
-	public Map<List<Double>, Entry<Integer, Long>> dumbstructure2;
-
-	public LowCouplingDataStruct struct1;
-	public LowCouplingDataStruct2 struct2;
-	public LowCouplingObject object1;
-	public ZeroCouplingDataStruct zero;
-	public ZeroCouplingObject one;
-
-	public static void staticCoupledMethod() {
-		double dummy = ZeroCouplingStaticClass.getDoubleNumber();
-	}
-
-	public static void parameterCoupledMethod(PrintStream stream) {
-		stream.println("At least I'm using an abstraction, not a concrete class (I think)");
-	}
-
-	// Ironically, this should not contribute to the coupling count because it
-	// depends on it self and other existing dependencies
-	public static void selfDependentMethod() {
-		HighCouplingDataStructTotalCount.staticCoupledMethod();
-	}
-
-	public static void parameterCoupledMethod2(Random rand) {
-		// Honestly, this is just a stub that also doesn't really do anything
-		rand.nextInt();
-	}
-
+	LowCouplingDataStruct struct1;
+	LowCouplingDataStruct2 struct2;
+	LowCouplingObject obj1;
+	LowCouplingStaticClass static1;
 }
