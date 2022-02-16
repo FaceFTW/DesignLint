@@ -172,8 +172,8 @@ public class ASMParser {
 		return annotationStrs;
 	}
 
-	public ArrayList<String> getClassFieldNames(String className) {
-		ArrayList<String> fieldNames = new ArrayList<>();
+	public List<String> getClassFieldNames(String className) {
+		List<String> fieldNames = new ArrayList<>();
 		ClassNode classNode = this.classMap.get(className);
 
 		for (FieldNode field : classNode.fields) {
@@ -185,8 +185,8 @@ public class ASMParser {
 		return fieldNames;
 	}
 
-	public ArrayList<String> getGlobalNames(String className) {
-		ArrayList<String> globalNames = new ArrayList<>();
+	public List<String> getGlobalNames(String className) {
+		List<String> globalNames = new ArrayList<>();
 		ClassNode classNode = this.classMap.get(className);
 
 		for (FieldNode field : classNode.fields) {
@@ -198,20 +198,76 @@ public class ASMParser {
 		return globalNames;
 	}
 
-	public Map<String, ArrayList<String>> getMethodNames(String className) {
-		Map<String, ArrayList<String>> methodNames = new HashMap<>();
+	public Map<String, List<String>> getMethodNames(String className) {
+		Map<String, List<String>> methodNames = new HashMap<>();
 		ClassNode classNode = this.classMap.get(className);
 
 		for (MethodNode method : classNode.methods) {
-			ArrayList<String> methodVar = new ArrayList<>();
-			for (LocalVariableNode local : method.localVariables) {
-				if (local.name.compareTo("this") != 0)
-					methodVar.add(local.name);
+			if (method.localVariables == null) {
+				methodNames.put(method.name, new ArrayList<String>());
 			}
-			methodNames.put(method.name, methodVar);
+			else {
+				ArrayList<String> methodVar = new ArrayList<>();
+				for (LocalVariableNode local : method.localVariables) {
+					if (local.name.compareTo("this") != 0)
+						methodVar.add(local.name);
+				}
+				methodNames.put(method.name, methodVar);
+			}
 		}
 
 		return methodNames;
+	}
+
+	public List<String> getClassFieldTypes(String className) {
+		List<String> fieldTypes = new ArrayList<>();
+		ClassNode classNode = this.classMap.get(className);
+		if (classNode == null) {
+			System.out.println("Node not found");
+			return null;
+		}
+
+		for (FieldNode field : classNode.fields) {
+				fieldTypes.add(field.desc);
+		}
+
+		return fieldTypes;
+	}
+
+	public Map<String, List<String>> getMethodVarTypes(String className) {
+		Map<String, List<String>> methodNames = new HashMap<>();
+		ClassNode classNode = this.classMap.get(className);
+
+		for (MethodNode method : classNode.methods) {
+			if (method.localVariables == null) {
+				methodNames.put(method.name, new ArrayList<String>());
+			}
+			else {
+				ArrayList<String> methodVar = new ArrayList<>();
+				for (LocalVariableNode local : method.localVariables) {
+					if (local.name.compareTo("this") != 0)
+						methodVar.add(local.desc);
+				}
+				methodNames.put(method.name, methodVar);
+			}
+		}
+
+		return methodNames;
+	}
+
+	public List<String> getInterfacesWithoutMap(String className) {
+		className = className.replace('.', '/');
+		try {
+			ClassReader reader = new ClassReader(className);
+			ClassNode decompiled = new ClassNode();
+			reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
+
+			return decompiled.interfaces;
+		}
+		catch (IOException e) {
+			System.out.println("Class Not Found: " + className);
+			return null;
+		}
 	}
 
 	public void getMethod(String className) {
@@ -221,7 +277,6 @@ public class ASMParser {
 			// TableSwitchInsnNode table = node.visitJumpInsn(Opcodes.TABLESWITCH, new
 			// Label());
 		}
-
 	}
 	
 	public String getSignature(String className) {

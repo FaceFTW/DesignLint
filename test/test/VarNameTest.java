@@ -2,6 +2,7 @@ package test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import domain.ErrType;
 import domain.LinterError;
@@ -79,7 +80,7 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
         LinterError foundErr = null;
@@ -101,7 +102,7 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
         LinterError foundErr = null;
@@ -123,7 +124,7 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
         LinterError foundErr = null;
@@ -145,7 +146,7 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
         LinterError foundErr = null;
@@ -167,7 +168,7 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
         LinterError foundErr = null;
@@ -189,7 +190,7 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
         LinterError foundErr = null;
@@ -211,7 +212,7 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
         LinterError foundErr = null;
@@ -233,7 +234,7 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
         LinterError foundErr = null;
@@ -255,7 +256,7 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
         LinterError foundErr = null;
@@ -289,7 +290,7 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
         LinterError foundErr = null;
@@ -311,7 +312,7 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
         LinterError foundErr = null;
@@ -333,7 +334,7 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
         LinterError foundErr = null;
@@ -355,7 +356,7 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
         LinterError foundErr = null;
@@ -394,7 +395,7 @@ public class VarNameTest {
         assertTrue(testFromClass2(returned.errorsCaught));
     }
 
-    public boolean testFromClass1(ArrayList<LinterError> errors) {
+    public boolean testFromClass1(List<LinterError> errors) {
         boolean found = false;
         LinterError foundErr = null;
         for (LinterError err : errors) {
@@ -411,7 +412,7 @@ public class VarNameTest {
         return true;
     }
 
-    public boolean testFromClass2(ArrayList<LinterError> errors) {
+    public boolean testFromClass2(List<LinterError> errors) {
         boolean found = false;
         LinterError foundErr = null;
         for (LinterError err : errors) {
@@ -434,14 +435,12 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
-        LinterError foundErr = null;
         for (LinterError err : errors) {
             if (err.message.compareTo("thirtyCharacterVarNameForTest too long (>30 characters)") == 0) {
                 found = true;
-                foundErr = err;
             }
         }
         assertFalse(found);
@@ -453,14 +452,12 @@ public class VarNameTest {
         ReturnType returned = this.analyzer.getFeedback(singleClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
-        ArrayList<LinterError> errors = returned.errorsCaught;
+        List<LinterError> errors = returned.errorsCaught;
 
         boolean found = false;
-        LinterError foundErr = null;
         for (LinterError err : errors) {
             if (err.message.compareTo("anotherThirtyCharacterVarName1 too long (>30 characters)") == 0) {
                 found = true;
-                foundErr = err;
             }
         }
         assertFalse(found);

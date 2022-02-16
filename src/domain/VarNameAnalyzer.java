@@ -4,25 +4,26 @@ import datasource.ASMParser;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class VarNameAnalyzer extends DomainAnalyzer {
 
     private ASMParser parser;
     //Parsed Values
-    public Map<String, ArrayList<String>> fieldNames;
-    public Map<String, ArrayList<String>> globalNames;
-    public Map<String, Map<String, ArrayList<String>>> methodNames;
+    private Map<String, List<String>> fieldNames;
+    private Map<String, List<String>> globalNames;
+    private Map<String, Map<String, List<String>>> methodNames;
 
     //Erroneous Values
-    ArrayList<LinterError> foundErrors;
+    List<LinterError> foundErrors;
 
     public VarNameAnalyzer(String[] classNames) {
         try {
             this.parser = new ASMParser(classNames);
-            this.fieldNames = new HashMap<String, ArrayList<String>>();
-            this.globalNames = new HashMap<String, ArrayList<String>>();
-            this.methodNames = new HashMap<String, Map<String, ArrayList<String>>>();
+            this.fieldNames = new HashMap<String, List<String>>();
+            this.globalNames = new HashMap<String, List<String>>();
+            this.methodNames = new HashMap<String, Map<String, List<String>>>();
             this.foundErrors = null;
         }
         catch(IOException e) {
@@ -64,7 +65,7 @@ public class VarNameAnalyzer extends DomainAnalyzer {
     }
 
     //Grabs any style errors that apply to every type of variable.
-    public void analyzeGeneralErrors(ArrayList<String> varNames, String className, String methodName) {
+    public void analyzeGeneralErrors(List<String> varNames, String className, String methodName) {
         for (String var : varNames) {
             //Begins with _ - Error
             if (var.charAt(0) == '_') {
@@ -78,7 +79,7 @@ public class VarNameAnalyzer extends DomainAnalyzer {
         }
     }
 
-    public void analyzeFieldNames(ArrayList<String> varNames, String className) {
+    public void analyzeFieldNames(List<String> varNames, String className) {
         for (String var : varNames) {
             //First character must be lowercase - Error
             if (Character.isLetter(var.charAt(0)) &&
@@ -99,7 +100,7 @@ public class VarNameAnalyzer extends DomainAnalyzer {
 
     }
 
-    public void analyzeGlobalNames(ArrayList<String> varNames, String className) {
+    public void analyzeGlobalNames(List<String> varNames, String className) {
         for (String var : varNames) {
             //Entire name must be capitalized - Error
             if (var.toUpperCase().compareTo(var) != 0) {
@@ -113,7 +114,7 @@ public class VarNameAnalyzer extends DomainAnalyzer {
         }
     }
 
-    public void analyzeMethodNames(ArrayList<String> varNames, String className, String methodName) {
+    public void analyzeMethodNames(List<String> varNames, String className, String methodName) {
         for (String var : varNames) {
             //Ignore "this"
             if (var.compareTo("this") == 0) {
@@ -134,15 +135,15 @@ public class VarNameAnalyzer extends DomainAnalyzer {
     }
 
     //For testing... should be protected
-    public Map<String, ArrayList<String>> getFieldNames() {
+    public Map<String, List<String>> getFieldNames() {
         return this.fieldNames;
     }
 
-    public Map<String, ArrayList<String>> getGlobalNames() {
+    public Map<String, List<String>> getGlobalNames() {
         return this.globalNames;
     }
 
-    public Map<String, Map<String, ArrayList<String>>> getMethodNames() {
+    public Map<String, Map<String, List<String>>> getMethodNames() {
         return this.methodNames;
     }
 }
