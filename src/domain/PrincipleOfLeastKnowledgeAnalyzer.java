@@ -1,6 +1,7 @@
 package domain;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,21 +9,27 @@ import java.util.Map;
 import java.util.Set;
 
 import datasource.ASMParser;
+import datasource.Invoker;
+import datasource.MethodCall;
 
 public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 
-	private Map<String, Set<String>> classToMethods;
-	private Map<String, Set<String>> classToFields;
-	private Map<String, Map<String, String>> methodToCalls;
-	private Map<String, Set<String>> methodToParameters;
-	private Map<String, String> fieldToType;
+	private Map<String, Set<Method>> classToMethods;
+	private List<LinterError> demeterViolations;
+	
+	private class Method {
+		String name;
+		List<MethodCall> methodCalls;
+		
+		public Method(String name, List<MethodCall> methodCalls) {
+			this.name = name;
+			this.methodCalls = methodCalls;
+		}
+	}
 	
 	public PrincipleOfLeastKnowledgeAnalyzer() {
-		this.classToMethods = new HashMap<String, Set<String>>();
-		this.classToFields = new HashMap<String, Set<String>>();
-		this.methodToCalls = new HashMap<String, Map<String,String>>();
-		this.methodToParameters = new HashMap<String, Set<String>>();
-		this.fieldToType = new HashMap<String, String>();
+		this.classToMethods = new HashMap<String, Set<Method>>();
+		this.demeterViolations = new ArrayList<LinterError>();
 	}
 	
 	@Override
@@ -31,17 +38,14 @@ public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 			ASMParser parser = new ASMParser(classList);
 			for(String className : classList) {
 				className = className.replace('.', '/');
-				Set<String> methods = new HashSet<String>();
+				Set<Method> methods = new HashSet<Method>();
 				String [] methodArr = parser.getMethods(className);
 				for(int i = 0; i < methodArr.length; i++) {
-					methods.add(methodArr[i]);
-					this.methodToCalls.put(methodArr[i], parser.getMethodCalls(className, methodArr[i]));
-					Set<String> parameters = parser.getMethodParameters(className, methodArr[i]);
-					this.methodToParameters.put(methodArr[i], parameters);
+					List<MethodCall> methodCalls = parser.getMethodCalls(className, methodArr[i]);
+					Method method = new Method(methodArr[i], methodCalls);
+					methods.add(method);
 				}
 				this.classToMethods.put(className, methods);
-				Set<String> fields = new HashSet<String>();
-				fields.addAll(parser.getClassFieldNames(className));
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -53,22 +57,26 @@ public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 	@Override
 	public void analyzeData() {
 		for(String className : this.classToMethods.keySet()) {
-			Set<String> methods = this.classToMethods.get(className);
-			for(String method : methods) {
-				Map<String,String> calls = this.methodToCalls.get(method);
-				for(String calledMethodName : calls.keySet()) {
-					String calledMethodOwner = this.methodToCalls.get(method).get(calledMethodName);
-					// Can always call your own methods
-					if(this.classToMethods.get(className).contains(calledMethodName)) {
-						continue;
+			for(Method method : this.classToMethods.get(className)) {
+				for(MethodCall methodCall : method.methodCalls) {
+					String errorMessage = "Principle of Least Knowledge Violation in Class '" + className + "', Method '" + method.name + "'\n";
+					switch(methodCall.getInvoker()) {
+						case FIELD:
+							break;
 						
-					// Can call methods of your own fields
-					} else if(this.classToFields.get(className).contains(calledMethodOwner)) {
-						continue;
+						case PARAMETER:
+							break;
+							
+						case CONSTRUCTED:
+							break;
+						
+						case RETURNED:
+							if(!methodCall.getInvokedClass().equals(className)) {
+								errorMessage += "Reached method '" + methodCall.getCalledMethodName() + "' with an illegal access.";
+								this.demeterViolations.add(new LinterError(className, method.name, errorMessage, ErrType.WARNING));
+							}
+							break;
 					}
-					// Can call methods of method parameters
-					//} else if(this.methodToParameters.get(method)
-					//			  .contains(this.methodToCalls))
 				}
 			}
 		}
@@ -76,8 +84,7 @@ public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 
 	@Override
 	public ReturnType composeReturnType() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ReturnType("PrincipleOfLeastKnowledgeAnalyzer", this.demeterViolations);
 	}
-
+	
 }

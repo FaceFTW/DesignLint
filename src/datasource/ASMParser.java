@@ -276,11 +276,20 @@ public class ASMParser {
 		List<MethodCall> methodCalls = new ArrayList<MethodCall>();
 		MethodNode method = this.getMethodNode(className, methodName);
 		Analyzer<SourceValue> analyzer = new Analyzer<SourceValue>(new SourceInterpreter());
+		Set<String> newVars = new HashSet<String>();
 		try {
 			Frame<SourceValue> [] frames = analyzer.analyze(className, method);
 			for(int i = 0; i < frames.length; i++) {
 				AbstractInsnNode insn = method.instructions.get(i);
-				if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
+				if(insn.getType() == AbstractInsnNode.METHOD_INSN) {
+					MethodInsnNode call = (MethodInsnNode) insn;
+					if(call.getOpcode() == Opcodes.INVOKESPECIAL && call.name.equals("<init>")) {
+						if(!call.owner.equals("java/lang/Object") && 
+							call.getNext().getType() == AbstractInsnNode.VAR_INSN) {
+							VarInsnNode newVar = (VarInsnNode) call.getNext();
+							newVars.add(method.localVariables.get(newVar.var).name);
+						}
+					}
 					for(int j = 0; j < frames[i].getStackSize(); j++) {
 						SourceValue value = (SourceValue) frames[i].getStack(j);
 						for(AbstractInsnNode insn2 : value.insns) {
@@ -288,25 +297,35 @@ public class ASMParser {
 								case AbstractInsnNode.FIELD_INSN:
 									methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
 										    Invoker.FIELD, 
-										    ((FieldInsnNode) insn2).name));
+										    ((FieldInsnNode) insn2).name,
+										    call.owner));
 									break;
 								case AbstractInsnNode.VAR_INSN:
 									VarInsnNode varInsn = (VarInsnNode) insn2;
+									
 									Type [] arguments = Type.getArgumentTypes(method.desc);
 									if(varInsn.var > 0 && varInsn.var < arguments.length + 1) {
 										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
 											    Invoker.PARAMETER, 
-											    method.localVariables.get(varInsn.var).name));
+											    method.localVariables.get(varInsn.var).name,
+											    call.owner));
+									} else if(newVars.contains(method.localVariables.get(varInsn.var).name)) {
+										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
+											    Invoker.CONSTRUCTED, 
+											    method.localVariables.get(varInsn.var).name,
+											    call.owner));
 									} else {
 										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
-											    Invoker.INITIALIZED, 
-											    method.localVariables.get(varInsn.var).name));
+											    Invoker.RETURNED, 
+											    method.localVariables.get(varInsn.var).name,
+											    call.owner));
 									}
 									break;
 								case AbstractInsnNode.METHOD_INSN:
 									methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
 										    Invoker.RETURNED, 
-										    ""));
+										    "",
+										    call.owner));
 									break;
 								default:
 									break;

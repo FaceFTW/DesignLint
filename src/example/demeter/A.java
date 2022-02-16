@@ -2,9 +2,11 @@ package example.demeter;
 
 public class A {
 	private B b;
+	private B b2;
 	
 	public A() {
 		this.b = new B();
+		this.b2 = new B();
 	}
 	
 	public B getB() {
@@ -17,6 +19,7 @@ public class A {
 	
 	public void doThingWithB() {
 		this.b.doBThing();
+		this.b2.doBThing();
 	}
 	
 	public void doThingWithCRight() {
@@ -25,6 +28,11 @@ public class A {
 	
 	public void doThingWithCWrong() {
 		this.b.getC().doCThing();
+	}
+	
+	public void doThingWithCWrongVar() {
+		C myC = this.b.getC();
+		myC.doCThing();
 	}
 	
 	public void doThingWithCParam(C c) {
