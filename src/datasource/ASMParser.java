@@ -276,7 +276,6 @@ public class ASMParser {
 		List<MethodCall> methodCalls = new ArrayList<MethodCall>();
 		MethodNode method = this.getMethodNode(className, methodName);
 		Analyzer<SourceValue> analyzer = new Analyzer<SourceValue>(new SourceInterpreter());
-		System.out.println(methodName);
 		try {
 			Frame<SourceValue> [] frames = analyzer.analyze(className, method);
 			for(int i = 0; i < frames.length; i++) {
@@ -308,6 +307,8 @@ public class ASMParser {
 									methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
 										    Invoker.RETURNED, 
 										    ""));
+									break;
+								default:
 									break;
 							}		
 						}
