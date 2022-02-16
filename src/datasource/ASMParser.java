@@ -271,65 +271,65 @@ public class ASMParser {
 		}
 		return method;
 	}
-	
+
 	public List<MethodCall> getMethodCalls(String className, String methodName) {
 		List<MethodCall> methodCalls = new ArrayList<MethodCall>();
 		MethodNode method = this.getMethodNode(className, methodName);
 		Analyzer<SourceValue> analyzer = new Analyzer<SourceValue>(new SourceInterpreter());
 		Set<String> newVars = new HashSet<String>();
 		try {
-			Frame<SourceValue> [] frames = analyzer.analyze(className, method);
-			for(int i = 0; i < frames.length; i++) {
+			Frame<SourceValue>[] frames = analyzer.analyze(className, method);
+			for (int i = 0; i < frames.length; i++) {
 				AbstractInsnNode insn = method.instructions.get(i);
-				if(insn.getType() == AbstractInsnNode.METHOD_INSN) {
+				if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
 					MethodInsnNode call = (MethodInsnNode) insn;
-					if(call.getOpcode() == Opcodes.INVOKESPECIAL && call.name.equals("<init>")) {
-						if(!call.owner.equals("java/lang/Object") && 
-							call.getNext().getType() == AbstractInsnNode.VAR_INSN) {
+					if (call.getOpcode() == Opcodes.INVOKESPECIAL && call.name.equals("<init>")) {
+						if (!call.owner.equals("java/lang/Object") &&
+								call.getNext().getType() == AbstractInsnNode.VAR_INSN) {
 							VarInsnNode newVar = (VarInsnNode) call.getNext();
 							newVars.add(method.localVariables.get(newVar.var).name);
 						}
 					}
-					for(int j = 0; j < frames[i].getStackSize(); j++) {
+					for (int j = 0; j < frames[i].getStackSize(); j++) {
 						SourceValue value = (SourceValue) frames[i].getStack(j);
-						for(AbstractInsnNode insn2 : value.insns) {
-							switch(insn2.getType()) {
+						for (AbstractInsnNode insn2 : value.insns) {
+							switch (insn2.getType()) {
 								case AbstractInsnNode.FIELD_INSN:
-									methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
-										    Invoker.FIELD, 
-										    ((FieldInsnNode) insn2).name,
-										    call.owner));
+									methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
+											Invoker.FIELD,
+											((FieldInsnNode) insn2).name,
+											call.owner));
 									break;
 								case AbstractInsnNode.VAR_INSN:
 									VarInsnNode varInsn = (VarInsnNode) insn2;
-									
-									Type [] arguments = Type.getArgumentTypes(method.desc);
-									if(varInsn.var > 0 && varInsn.var < arguments.length + 1) {
-										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
-											    Invoker.PARAMETER, 
-											    method.localVariables.get(varInsn.var).name,
-											    call.owner));
-									} else if(newVars.contains(method.localVariables.get(varInsn.var).name)) {
-										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
-											    Invoker.CONSTRUCTED, 
-											    method.localVariables.get(varInsn.var).name,
-											    call.owner));
+
+									Type[] arguments = Type.getArgumentTypes(method.desc);
+									if (varInsn.var > 0 && varInsn.var < arguments.length + 1) {
+										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
+												Invoker.PARAMETER,
+												method.localVariables.get(varInsn.var).name,
+												call.owner));
+									} else if (newVars.contains(method.localVariables.get(varInsn.var).name)) {
+										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
+												Invoker.CONSTRUCTED,
+												method.localVariables.get(varInsn.var).name,
+												call.owner));
 									} else {
-										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
-											    Invoker.RETURNED, 
-											    method.localVariables.get(varInsn.var).name,
-											    call.owner));
+										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
+												Invoker.RETURNED,
+												method.localVariables.get(varInsn.var).name,
+												call.owner));
 									}
 									break;
 								case AbstractInsnNode.METHOD_INSN:
-									methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
-										    Invoker.RETURNED, 
-										    "",
-										    call.owner));
+									methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
+											Invoker.RETURNED,
+											"",
+											call.owner));
 									break;
 								default:
 									break;
-							}		
+							}
 						}
 					}
 				}
@@ -338,8 +338,211 @@ public class ASMParser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+
 		return methodCalls;
 	}
 
+	/**
+	 * Determines all of the types used by fields of a specified parsed class.
+	 * This does not actually associate any information about what field has what
+	 * type, rather it just gives an unordered list of all field types.
+	 * 
+	 * @param className The name of the class to process
+	 * @return An array of unique strings containing the internal type names of
+	 *         fields
+	 */
+	public String[] getFieldTypeNames(String className) {
+		Set<String> types = new HashSet<>();
+		ClassNode decompiled = this.classMap.get(className);
+
+		// For each field, add the type if it isn't already in the list
+		for (FieldNode field : decompiled.fields) {
+			// Parse the description (Signature tends to be wonky and variable w/ generics);
+			String internalTypeName = field.desc;
+			String betterTypeName = Type.getType(internalTypeName).getInternalName();
+
+			// Each dimension of an array is indicated with a left bracket
+			// Only the type should count toward the coupling, so remove them if they exist
+			betterTypeName = betterTypeName.replace("[", "");
+
+			// Primitives in the JVM are single letter types, so we can filter them out
+			// after removing any array identifiers by checking string length
+
+			// We also can ignore duplicate detection by using a Set, instead of a list
+			if (betterTypeName.length() > 1) {
+				types.add(betterTypeName);
+			}
+		}
+
+		String[] result = new String[types.size()];
+		types.toArray(result);
+		return result;
+	}
+
+	/**
+	 * Determines all of the types used by method returns of a specified parsed
+	 * class. This does not actually associate any information about what field has
+	 * what type, rather it just gives an unordered list of all return types.
+	 * 
+	 * @param className The name of the class to process
+	 * @return An array of unique strings containing the internal type names of
+	 *         method returns
+	 */
+
+	public String[] getAllMethodReturnTypes(String className) {
+		Set<String> types = new HashSet<>();
+		ClassNode decompiled = this.classMap.get(className);
+
+		// For each field, add the type if it isn't already in the list
+		for (MethodNode method : decompiled.methods) {
+			// Get the method data
+			String betterTypeName = Type.getReturnType(method.desc).getInternalName();
+
+			// We get parameter types from the description, so do some regex matching
+
+			// Method descriptors will have parenthesis, therefore we need to remove them
+			// We parse parameter types in a different method as well
+			betterTypeName = betterTypeName.replaceAll("\\(.*\\)", "");
+
+			// Each dimension of an array is indicated with a left bracket
+			// Only the type should count toward the coupling, so remove them if they exist
+			betterTypeName = betterTypeName.replace("[", "");
+
+			// Primitives in the JVM are single letter types, so we can filter them out
+			// after removing any array identifiers by checking string length
+
+			// We also can ignore duplicate detection by using a Set, instead of a list
+			if (betterTypeName.length() > 1) {
+				types.add(betterTypeName);
+			}
+		}
+
+		String[] result = new String[types.size()];
+		types.toArray(result);
+		return result;
+	}
+
+	/**
+	 * Determines all of the types used by method parameters of a specified parsed
+	 * class. This does not actually associate any information about what parameter
+	 * has what type, rather it just gives an unordered list of all parameter types.
+	 * 
+	 * @param className The name of the class to process
+	 * @return An array of unique strings containing the internal type names of
+	 *         method parameters
+	 */
+	public String[] getAllMethodParameterTypes(String className) {
+		Set<String> types = new HashSet<>();
+		ClassNode decompiled = this.classMap.get(className);
+
+		// For each field, add the type if it isn't already in the list
+		for (MethodNode method : decompiled.methods) {
+			// Get the Parameter data
+			for (Type paramType : Type.getArgumentTypes(method.desc)) {
+				String betterTypeName = paramType.getInternalName();
+
+				// Each dimension of an array is indicated with a left bracket
+				// Only the type should count toward the coupling, so remove them if they exist
+				betterTypeName = betterTypeName.replace("[", "");
+
+				// Primitives in the JVM are single letter types, so we can filter them out
+				// after removing any array identifiers by checking string length
+
+				// We also can ignore duplicate detection by using a Set, instead of a list
+				if (betterTypeName.length() > 1) {
+					types.add(betterTypeName);
+				}
+			}
+
+		}
+
+		String[] result = new String[types.size()];
+		types.toArray(result);
+		return result;
+	}
+
+	public String[] getAllMethodBodyTypes(String className) {
+		Set<String> types = new HashSet<>();
+		ClassNode decompiled = this.classMap.get(className);
+
+		// For each field, add the type if it isn't already in the list
+		for (MethodNode method : decompiled.methods) {
+			for (AbstractInsnNode instruction : method.instructions) {
+				String betterTypeName = "";
+
+				switch (instruction.getType()) {
+					case AbstractInsnNode.METHOD_INSN:
+						betterTypeName = ((MethodInsnNode) instruction).owner;
+						break;
+					default:
+						break;
+				}
+
+				// Each dimension of an array is indicated with a left bracket
+				// Only the type should count toward the coupling, so remove them if they
+				// exist
+				betterTypeName = betterTypeName.replace("[", "");
+
+				// Primitives in the JVM are single letter types, so we can filter them out
+				// after removing any array identifiers by checking string length
+
+				// We also can ignore duplicate detection by using a Set, instead of a list
+				if (betterTypeName.length() > 1) {
+					types.add(betterTypeName);
+				}
+			}
+
+		}
+
+		String[] result = new String[types.size()];
+		types.toArray(result);
+		return result;
+	}
+
+	public String[] getAllMethodLocalTypes(String className) {
+		Set<String> types = new HashSet<>();
+		ClassNode decompiled = this.classMap.get(className);
+
+		// For each field, add the type if it isn't already in the list
+		for (MethodNode method : decompiled.methods) {
+			for (LocalVariableNode local : method.localVariables) {
+				String betterTypeName = Type.getType(local.desc).getInternalName();
+
+				// Each dimension of an array is indicated with a left bracket
+				// Only the type should count toward the coupling, so remove them if they
+				// exist
+				betterTypeName = betterTypeName.replace("[", "");
+
+				// Primitives in the JVM are single letter types, so we can filter them out
+				// after removing any array identifiers by checking string length
+
+				// We also can ignore duplicate detection by using a Set, instead of a list
+				if (betterTypeName.length() > 1) {
+					types.add(betterTypeName);
+				}
+			}
+
+		}
+
+		String[] result = new String[types.size()];
+		types.toArray(result);
+		return result;
+	}
+
+	public String[] getExtendsImplementsTypes(String className) {
+		Set<String> types = new HashSet<>();
+		ClassNode decompiled = this.classMap.get(className);
+
+		// Null check
+		if (decompiled.interfaces != null) {
+			for (String interfaceType : decompiled.interfaces) {
+				// These are explicit class names in the first place, so just add them
+				types.add(className);
+			}
+		}
+
+		String[] result = new String[types.size()];
+		types.toArray(result);
+		return result;
+	}
 }

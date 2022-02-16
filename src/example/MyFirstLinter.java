@@ -1,6 +1,7 @@
 package example;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.objectweb.asm.ClassReader;
@@ -16,32 +17,37 @@ import org.objectweb.asm.tree.VarInsnNode;
 
 // FIXME: this code has TERRIBLE DESIGN all around
 public class MyFirstLinter {
-	
+
+	double testDouble;
 	String[] fieldForAnalysisByThisProgram = new String[1];
-	
+	List<String> test = new ArrayList<>();
+
 	/**
 	 * Reads in a list of Java Classes and prints fun facts about them.
 	 * 
 	 * For more information, read: https://asm.ow2.io/asm4-guide.pdf
 	 * 
 	 * @param args
-	 *            : the names of the classes, separated by spaces. For example:
-	 *            java example.MyFirstLinter java.lang.String
+	 *             : the names of the classes, separated by spaces. For example:
+	 *             java example.MyFirstLinter java.lang.String
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
 	public static void main(String[] args) throws IOException {
 		// TODO: Learn how to create separate Run Configurations so you can run
 		// your code on different programs without changing the code each time.
+
 		for (String className : args) {
 			// The 3 steps read in a Java class:
-			// 1. ASM's ClassReader does the heavy lifting of parsing the compiled Java class.
+			// 1. ASM's ClassReader does the heavy lifting of parsing the compiled Java
+			// class.
 			ClassReader reader = new ClassReader(className);
 
 			// 2. ClassNode is just a data container for the parsed class
 			ClassNode classNode = new ClassNode();
 
-			// 3. Tell the Reader to parse the specified class and store its data in our ClassNode.
+			// 3. Tell the Reader to parse the specified class and store its data in our
+			// ClassNode.
 			// EXPAND_FRAMES means: I want my code to work. (Always pass this flag.)
 			reader.accept(classNode, ClassReader.EXPAND_FRAMES);
 
@@ -49,7 +55,7 @@ public class MyFirstLinter {
 			printClass(classNode);
 
 			printFields(classNode);
-			
+
 			printMethods(classNode);
 		}
 	}
@@ -67,7 +73,8 @@ public class MyFirstLinter {
 	}
 
 	private static void printFields(ClassNode classNode) {
-		// Print all fields (note the cast; ASM doesn't store generic data with its Lists)
+		// Print all fields (note the cast; ASM doesn't store generic data with its
+		// Lists)
 		List<FieldNode> fields = (List<FieldNode>) classNode.fields;
 		for (FieldNode field : fields) {
 			System.out.println("	Field: " + field.name);
@@ -78,10 +85,11 @@ public class MyFirstLinter {
 
 			System.out.println("	public? "
 					+ ((field.access & Opcodes.ACC_PUBLIC) != 0));
-			// TODO: how do you tell if something has package-private access? (ie no access modifiers?)
-			
+			// TODO: how do you tell if something has package-private access? (ie no access
+			// modifiers?)
+
 			// TODO: how do I write a lint check to tell if this field has a bad name?
-			
+
 			System.out.println();
 		}
 	}
@@ -139,8 +147,12 @@ public class MyFirstLinter {
 			// There are others...
 			// This list of direct known subclasses may be useful:
 			// http://asm.ow2.org/asm50/javadoc/user/org/objectweb/asm/tree/AbstractInsnNode.html
-			
+
 			// TODO: how do I write a lint check to tell if this method has a bad name?
 		}
+	}
+
+	public static int test() {
+		return 1;
 	}
 }

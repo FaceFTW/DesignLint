@@ -14,7 +14,26 @@ import domain.HighCouplingAnalyzer;
 public class HighCouplingTest {
 
 	private ASMParser parser;
-	private final String[] exampleClasses = { "example.exceptionstyle.ExceptionStyleExamples" };
+	private final String[] exampleClasses = {
+			"example/coupling/ZeroCouplingDataStruct",
+			"example/coupling/ZeroCouplingObject",
+			"example/coupling/ZeroCouplingStaticClass",
+			"example/coupling/LowCouplingDataStruct",
+			"example/coupling/LowCouplingDataStruct2",
+			"example/coupling/LowCouplingObject",
+			"example/coupling/LowCouplingStaticClass",
+			"example/coupling/HighCouplingDataStructProjectCount",
+			"example/coupling/HighCouplingDataStructTotalCount",
+			"example/coupling/HighCouplingObjectProjectCount",
+			"example/coupling/HighCouplingObjectTotalCount",
+			"example/coupling/HighCouplingStaticClassProjectCount",
+			"example/coupling/HighCouplingStaticClassTotalCount",
+			"example/coupling/HighCouplingNightmareClass",
+			"example/coupling/CouplingInterfaceExample",
+			"example/coupling/CoupledToInterfaceExample",
+			"example/coupling/CouplingAbstractClassExample",
+			"example/coupling/CoupledToAbstractClassExample",
+	};
 
 	// We use an explicit instance to test the protected method checkViolation()
 	private HighCouplingAnalyzer analyzer;
@@ -488,6 +507,12 @@ public class HighCouplingTest {
 
 		// Now we check the JRE counts
 		assertEquals(expectedJRECount, jreCount);
+	}
+
+	@Category(HighCouplingTest.class)
+	@Test
+	public void testInterfaceCouplingCount() {
+
 	}
 
 	// ====================Output Testing============================ //
