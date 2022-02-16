@@ -4,6 +4,11 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.analysis.Analyzer;
+import org.objectweb.asm.tree.analysis.AnalyzerException;
+import org.objectweb.asm.tree.analysis.Frame;
+import org.objectweb.asm.tree.analysis.SourceInterpreter;
+import org.objectweb.asm.tree.analysis.SourceValue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -266,43 +271,55 @@ public class ASMParser {
 		}
 		return method;
 	}
-
-	/**
-	 * Returns a Map of method calls made within a method to the owner of the called
-	 * method
-	 * 
-	 * @throws IllegalArgumentException If the method is not found in the specified
-	 *                                  class
-	 * @param className  The name of the class where the method should reside in
-	 * @param methodName The name of the method to find method calls in
-	 * @return A Map from method call to the method owner
-	 * 
-	 */
-	public Map<String, String> getMethodCalls(String className, String methodName) {
-		Map<String, String> callToOwner = new HashMap<String, String>();
+	
+	public List<MethodCall> getMethodCalls(String className, String methodName) {
+		List<MethodCall> methodCalls = new ArrayList<MethodCall>();
 		MethodNode method = this.getMethodNode(className, methodName);
-
-		InsnList instructions = method.instructions;
-		for (AbstractInsnNode insn : instructions) {
-			if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
-				MethodInsnNode methodCall = (MethodInsnNode) insn;
-				callToOwner.put(methodCall.name, methodCall.owner);
+		Analyzer<SourceValue> analyzer = new Analyzer<SourceValue>(new SourceInterpreter());
+		System.out.println(methodName);
+		try {
+			Frame<SourceValue> [] frames = analyzer.analyze(className, method);
+			for(int i = 0; i < frames.length; i++) {
+				AbstractInsnNode insn = method.instructions.get(i);
+				if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
+					for(int j = 0; j < frames[i].getStackSize(); j++) {
+						SourceValue value = (SourceValue) frames[i].getStack(j);
+						for(AbstractInsnNode insn2 : value.insns) {
+							switch(insn2.getType()) {
+								case AbstractInsnNode.FIELD_INSN:
+									methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
+										    Invoker.FIELD, 
+										    ((FieldInsnNode) insn2).name));
+									break;
+								case AbstractInsnNode.VAR_INSN:
+									VarInsnNode varInsn = (VarInsnNode) insn2;
+									Type [] arguments = Type.getArgumentTypes(method.desc);
+									if(varInsn.var > 0 && varInsn.var < arguments.length + 1) {
+										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
+											    Invoker.PARAMETER, 
+											    method.localVariables.get(varInsn.var).name));
+									} else {
+										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
+											    Invoker.INITIALIZED, 
+											    method.localVariables.get(varInsn.var).name));
+									}
+									break;
+								case AbstractInsnNode.METHOD_INSN:
+									methodCalls.add(new MethodCall(((MethodInsnNode) insn).name, 
+										    Invoker.RETURNED, 
+										    ""));
+									break;
+							}		
+						}
+					}
+				}
 			}
+		} catch (AnalyzerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		return callToOwner;
-	}
-
-	public Set<String> getMethodParameters(String className, String methodName) {
-		MethodNode method = this.getMethodNode(className, methodName);
-		Set<String> parameters = new HashSet<String>();
-		List<ParameterNode> paramNodes = method.parameters;
-		if(paramNodes != null) {
-			for(ParameterNode paramNode : paramNodes) {
-				parameters.add(paramNode.name);
-			}
-		}
-		return parameters;
+	
+		return methodCalls;
 	}
 
 }
