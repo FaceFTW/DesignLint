@@ -13,7 +13,7 @@ import domain.ExceptionThrownAnalyzer;
 import domain.LinterError;
 import domain.PrincipleOfLeastKnowledgeAnalyzer;
 import domain.ReturnType;
-import domain.SwitchCaseAnalyzer;
+import domain.EqualsAndHashcodeAnalyzer;
 import domain.VarNameAnalyzer;
 
 public class PresentationLayer {
@@ -46,6 +46,7 @@ public class PresentationLayer {
 
 		// Create analyzers and pass them through the list.
 		analyzers.add(new ExceptionThrownAnalyzer(parser));
+		analyzers.add(new EqualsAndHashcodeAnalyzer(classList));
 		// analyzers.add(new PrincipleOfLeastKnowledgeAnalyzer()); //TODO Update
 		// constructor if it chages
 		// analyzers.add(new VarNameAnalyzer(fileList)); //TODO Update constructors if
