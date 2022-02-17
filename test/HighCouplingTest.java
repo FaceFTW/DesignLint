@@ -31,8 +31,6 @@ public class HighCouplingTest {
 			"example/coupling/HighCouplingNightmareClass",
 			"example/coupling/CouplingInterfaceExample",
 			"example/coupling/CoupledToInterfaceExample",
-			"example/coupling/CouplingAbstractClassExample",
-			"example/coupling/CoupledToAbstractClassExample",
 	};
 
 	// We use an explicit instance to test the protected method checkViolation()
@@ -126,9 +124,10 @@ public class HighCouplingTest {
 		String[] expected = {
 				"java/lang/String",
 				"java/lang/System",
+				"java/io/PrintStream",
 				"example/coupling/ZeroCouplingObject"
 		};
-		int expectedJRECount = 2;
+		int expectedJRECount = 3;
 		String[] actual = analyzer.countClassCoupling("example/coupling/LowCouplingObject");
 		int jreCount = analyzer.determineJavaCoupling(actual);
 
@@ -320,9 +319,10 @@ public class HighCouplingTest {
 				"java/lang/Integer",
 				"java/util/Random",
 				"java/lang/StringBuilder",
-				"java/lang/PrintStream",
+				"java/io/PrintStream",
 				"example/coupling/ZeroCouplingDataStruct",
 				"example/coupling/ZeroCouplingObject",
+				"example/coupling/ZeroCouplingStaticClass",
 				"example/coupling/LowCouplingDataStruct",
 				"example/coupling/LowCouplingDataStruct2",
 				"example/coupling/LowCouplingObject",
@@ -357,7 +357,6 @@ public class HighCouplingTest {
 				"example/coupling/LowCouplingDataStruct",
 				"example/coupling/LowCouplingDataStruct2",
 				"example/coupling/HighCouplingObjectTotalCount",
-				"example/coupling/HighCouplingObjectProjectCount",
 				"example/coupling/HighCouplingNightmareClass",
 				"example/coupling/HighCouplingDataStructTotalCount"
 		};
@@ -386,7 +385,6 @@ public class HighCouplingTest {
 				"java/util/List",
 				"java/util/ArrayList",
 				"java/lang/String",
-				"java/lang/Integer",
 				"java/util/Random",
 				"java/io/InputStream",
 				"java/io/ByteArrayInputStream",
@@ -406,9 +404,13 @@ public class HighCouplingTest {
 				"example/coupling/ZeroCouplingStaticClass",
 
 		};
-		int expectedJRECount = 23;
+		int expectedJRECount = 13;
 		String[] actual = analyzer.countClassCoupling("example/coupling/HighCouplingStaticClassTotalCount");
 		int jreCount = analyzer.determineJavaCoupling(actual);
+
+		// For debugging to determine if I missed a class by accident
+		Arrays.sort(expected);
+		Arrays.sort(actual);
 
 		assertEquals(expected.length, actual.length);
 
@@ -492,7 +494,7 @@ public class HighCouplingTest {
 				"example/coupling/LowCouplingStaticClass",
 				"example/coupling/ZeroCouplingStaticClass",
 		};
-		int expectedJRECount = 19;
+		int expectedJRECount = 21;
 		String[] actual = analyzer.countClassCoupling("example/coupling/HighCouplingNightmareClass");
 		int jreCount = analyzer.determineJavaCoupling(actual);
 
@@ -512,7 +514,59 @@ public class HighCouplingTest {
 	@Category(HighCouplingTest.class)
 	@Test
 	public void testInterfaceCouplingCount() {
+		setupAnalyzer();
+		String[] expected = {
+				"example/coupling/ZeroCouplingDataStruct",
+				"java/lang/String"
+		};
+		int expectedJRECount = 1;
+		String[] actual = analyzer.countClassCoupling("example/coupling/CouplingInterfaceExample");
+		int jreCount = analyzer.determineJavaCoupling(actual);
 
+		assertEquals(expected.length, actual.length);
+
+		// Convert to Lists so we can use containsAll
+		List<String> expectedList = Arrays.asList(expected);
+		List<String> actualList = Arrays.asList(actual);
+
+		assertTrue(expectedList.containsAll(actualList));
+		assertTrue(actualList.containsAll(expectedList));
+
+		// Now we check the JRE counts
+		assertEquals(expectedJRECount, jreCount);
+	}
+
+	@Category(HighCouplingTest.class)
+	@Test
+	public void testCoupledToInterfaceCount() {
+		setupAnalyzer();
+		String[] expected = {
+				"example/coupling/CouplingInterfaceExample",
+				"example/coupling/ZeroCouplingDataStruct",
+				"java/lang/Integer",
+				"java/lang/String",
+				"java/io/PrintStream",
+				"java/lang/System"
+		};
+		int expectedJRECount = 4;
+		String[] actual = analyzer.countClassCoupling("example/coupling/CoupledToInterfaceExample");
+		int jreCount = analyzer.determineJavaCoupling(actual);
+
+		// For debugging to determine if I missed a class by accident
+		Arrays.sort(expected);
+		Arrays.sort(actual);
+
+		assertEquals(expected.length, actual.length);
+
+		// Convert to Lists so we can use containsAll
+		List<String> expectedList = Arrays.asList(expected);
+		List<String> actualList = Arrays.asList(actual);
+
+		assertTrue(expectedList.containsAll(actualList));
+		assertTrue(actualList.containsAll(expectedList));
+
+		// Now we check the JRE counts
+		assertEquals(expectedJRECount, jreCount);
 	}
 
 	// ====================Output Testing============================ //

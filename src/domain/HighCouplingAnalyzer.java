@@ -14,8 +14,8 @@ public class HighCouplingAnalyzer extends DomainAnalyzer {
 	// For all intensive purposes - Java Extensions (JavaX) and JDK will be excluded
 	// JavaX is actually not included with the JRE by default since Java 11
 	// JDK is for developer tool classes (such as compiler, etc.)
-	public static final String JAVA_RUNTIME_CLASS_QUALIFIER_REGEX = "^java\\.";
-	public static final String JAVA_RUNTIME_SUN_CLASS_QUALIFIER_REGEX = "^((com\\.)?sun\\.)";
+	public static final String JAVA_RUNTIME_CLASS_QUALIFIER_REGEX = "^java\\/.*";
+	public static final String JAVA_RUNTIME_SUN_CLASS_QUALIFIER_REGEX = "^((com\\/)?sun\\/).*";
 
 	private ASMParser parser;
 
@@ -83,12 +83,20 @@ public class HighCouplingAnalyzer extends DomainAnalyzer {
 			coupledClasses.add(methodBodyType);
 		}
 
+		String[] typesFromInterfaceDeclaration = parser.getExtendsImplementsTypes(className);
+		for (String interfaceType : typesFromInterfaceDeclaration) {
+			coupledClasses.add(interfaceType);
+		}
+
 		// Remove any self instances (Classes can't really depend on themselves)
 		if (coupledClasses.contains(className)) {
 			coupledClasses.remove(className);
 		}
 
 		// Remove java/lang/Ojbect as all non-primitives are of type java/lang/Object
+		if (coupledClasses.contains("java/lang/Object")) {
+			coupledClasses.remove("java/lang/Object");
+		}
 
 		String[] result = new String[coupledClasses.size()];
 		coupledClasses.toArray(result);
