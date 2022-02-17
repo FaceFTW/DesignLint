@@ -283,8 +283,9 @@ public class ASMParser {
 		return methodNames;
 	}
 
+
 	public List<String> getInterfacesWithoutMap(String className) {
-		className = className.replace('.', '/');
+		//className = className.replace('.', '/');
 		try {
 			ClassReader reader = new ClassReader(className);
 			ClassNode decompiled = new ClassNode();
@@ -295,6 +296,91 @@ public class ASMParser {
 		catch (IOException e) {
 			System.out.println("Class Not Found: " + className);
 			return null;
+		}
+	}
+
+	public boolean compareMethodFromInterface(String className, String methodName, String interfaceName) {
+		try {
+			if (!this.classMap.keySet().contains(className)) {
+				//System.out.println(className + " not found");
+				ClassReader reader = new ClassReader(className);
+				ClassNode decompiled = new ClassNode();
+				reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
+				this.classMap.put(className, decompiled);
+			}
+
+			if (!this.classMap.keySet().contains(interfaceName)) {
+				//System.out.println(interfaceName + " not found");
+				ClassReader reader1 = new ClassReader(interfaceName);
+				ClassNode decompiled1 = new ClassNode();
+				reader1.accept(decompiled1, ClassReader.EXPAND_FRAMES);
+				this.classMap.put(interfaceName, decompiled1);
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		MethodNode original;
+		MethodNode compare;
+		try {
+			original = getMethodNode(className, methodName);
+		}
+		catch (IllegalArgumentException e) {
+			original = null;
+			//System.out.println("Func not found in " + className + ", " + methodName );
+		}
+
+		try {
+			compare = getMethodNode(interfaceName, methodName);
+		}
+		catch (IllegalArgumentException e) {
+			compare = null;
+			//System.out.println("Func not found in " + interfaceName + ", " + methodName);
+		}
+
+		if (original != null && compare != null) {
+			if (original.desc.compareTo(compare.desc) == 0) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		return false;
+	}
+
+	public List<MethodCall> removeThis(List<MethodCall> list, List<String> names) {
+		ArrayList<MethodCall> arrList = (ArrayList<MethodCall>) list;
+		if (arrList.get(0).getInvokerName().compareTo("this") != 0) {
+			return list;
+		} else {
+			List<MethodCall> newList = new ArrayList<>();
+			for (int i = 0; i < arrList.size() - 1; i++) {
+				newList.add(new MethodCall(
+						arrList.get(i).getCalledMethodName(),
+						arrList.get(i).getInvoker(),
+						arrList.get(i + 1).getInvokerName(),
+						arrList.get(i).getInvokedClass()));
+			}
+			if (names.size() > 0) {
+				newList.add(new MethodCall(
+						arrList.get(arrList.size() - 1).getCalledMethodName(),
+						arrList.get(arrList.size() - 1).getInvoker(),
+						names.get(names.size() - 1),
+						arrList.get(arrList.size() - 1).getInvokedClass()));
+
+			}
+			return newList;
+		}
+	}
+
+	public void getMethod(String className) {
+		ClassNode decompiled = this.classMap.get(className);
+
+		for (MethodNode node : decompiled.methods) {
+			//TableSwitchInsnNode table = node.visitJumpInsn(Opcodes.TABLESWITCH, new
+		 	//Label());
 		}
 	}
 

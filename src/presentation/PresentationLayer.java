@@ -9,6 +9,7 @@ import java.util.List;
 
 import datasource.ASMParser;
 import domain.DomainAnalyzer;
+import domain.EqualsAndHashcodeAnalyzer;
 import domain.LinterError;
 import domain.ReturnType;
 import domain.analyzer.ExceptionThrownAnalyzer;
@@ -45,6 +46,7 @@ public class PresentationLayer {
 		// Create analyzers and pass them through the list.
 		analyzers.add(new ExceptionThrownAnalyzer(parser));
 		analyzers.add(new HighCouplingAnalyzer(parser));
+		analyzers.add(new EqualsAndHashcodeAnalyzer(classList));
 	}
 
 	// Nothing too complicated, just a couple of loops

@@ -6,6 +6,13 @@
 	"configurations": [
 		{
 			"type": "java",
+			"name": "Launch LinterMain",
+			"request": "launch",
+			"mainClass": "main.LinterMain",
+			"projectName": "Insert-Linter-Name"
+		},
+		{
+			"type": "java",
 			"name": "Launch Current File",
 			"request": "launch",
 			"mainClass": "${file}"
