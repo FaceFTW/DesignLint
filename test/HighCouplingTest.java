@@ -2,6 +2,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,7 +10,10 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import datasource.ASMParser;
+import domain.ErrType;
 import domain.HighCouplingAnalyzer;
+import domain.LinterError;
+import domain.ReturnType;
 
 public class HighCouplingTest {
 
@@ -31,8 +35,6 @@ public class HighCouplingTest {
 			"example/coupling/HighCouplingNightmareClass",
 			"example/coupling/CouplingInterfaceExample",
 			"example/coupling/CoupledToInterfaceExample",
-			"example/coupling/CouplingAbstractClassExample",
-			"example/coupling/CoupledToAbstractClassExample",
 	};
 
 	// We use an explicit instance to test the protected method checkViolation()
@@ -126,9 +128,10 @@ public class HighCouplingTest {
 		String[] expected = {
 				"java/lang/String",
 				"java/lang/System",
+				"java/io/PrintStream",
 				"example/coupling/ZeroCouplingObject"
 		};
-		int expectedJRECount = 2;
+		int expectedJRECount = 3;
 		String[] actual = analyzer.countClassCoupling("example/coupling/LowCouplingObject");
 		int jreCount = analyzer.determineJavaCoupling(actual);
 
@@ -320,9 +323,10 @@ public class HighCouplingTest {
 				"java/lang/Integer",
 				"java/util/Random",
 				"java/lang/StringBuilder",
-				"java/lang/PrintStream",
+				"java/io/PrintStream",
 				"example/coupling/ZeroCouplingDataStruct",
 				"example/coupling/ZeroCouplingObject",
+				"example/coupling/ZeroCouplingStaticClass",
 				"example/coupling/LowCouplingDataStruct",
 				"example/coupling/LowCouplingDataStruct2",
 				"example/coupling/LowCouplingObject",
@@ -356,8 +360,8 @@ public class HighCouplingTest {
 				"example/coupling/ZeroCouplingStaticClass",
 				"example/coupling/LowCouplingDataStruct",
 				"example/coupling/LowCouplingDataStruct2",
+				"example/coupling/LowCouplingObject",
 				"example/coupling/HighCouplingObjectTotalCount",
-				"example/coupling/HighCouplingObjectProjectCount",
 				"example/coupling/HighCouplingNightmareClass",
 				"example/coupling/HighCouplingDataStructTotalCount"
 		};
@@ -386,7 +390,6 @@ public class HighCouplingTest {
 				"java/util/List",
 				"java/util/ArrayList",
 				"java/lang/String",
-				"java/lang/Integer",
 				"java/util/Random",
 				"java/io/InputStream",
 				"java/io/ByteArrayInputStream",
@@ -404,11 +407,14 @@ public class HighCouplingTest {
 				"example/coupling/LowCouplingObject",
 				"example/coupling/LowCouplingStaticClass",
 				"example/coupling/ZeroCouplingStaticClass",
-
 		};
-		int expectedJRECount = 23;
+		int expectedJRECount = 13;
 		String[] actual = analyzer.countClassCoupling("example/coupling/HighCouplingStaticClassTotalCount");
 		int jreCount = analyzer.determineJavaCoupling(actual);
+
+		// For debugging to determine if I missed a class by accident
+		Arrays.sort(expected);
+		Arrays.sort(actual);
 
 		assertEquals(expected.length, actual.length);
 
@@ -492,7 +498,7 @@ public class HighCouplingTest {
 				"example/coupling/LowCouplingStaticClass",
 				"example/coupling/ZeroCouplingStaticClass",
 		};
-		int expectedJRECount = 19;
+		int expectedJRECount = 21;
 		String[] actual = analyzer.countClassCoupling("example/coupling/HighCouplingNightmareClass");
 		int jreCount = analyzer.determineJavaCoupling(actual);
 
@@ -512,7 +518,59 @@ public class HighCouplingTest {
 	@Category(HighCouplingTest.class)
 	@Test
 	public void testInterfaceCouplingCount() {
+		setupAnalyzer();
+		String[] expected = {
+				"example/coupling/ZeroCouplingDataStruct",
+				"java/lang/String"
+		};
+		int expectedJRECount = 1;
+		String[] actual = analyzer.countClassCoupling("example/coupling/CouplingInterfaceExample");
+		int jreCount = analyzer.determineJavaCoupling(actual);
 
+		assertEquals(expected.length, actual.length);
+
+		// Convert to Lists so we can use containsAll
+		List<String> expectedList = Arrays.asList(expected);
+		List<String> actualList = Arrays.asList(actual);
+
+		assertTrue(expectedList.containsAll(actualList));
+		assertTrue(actualList.containsAll(expectedList));
+
+		// Now we check the JRE counts
+		assertEquals(expectedJRECount, jreCount);
+	}
+
+	@Category(HighCouplingTest.class)
+	@Test
+	public void testCoupledToInterfaceCount() {
+		setupAnalyzer();
+		String[] expected = {
+				"example/coupling/CouplingInterfaceExample",
+				"example/coupling/ZeroCouplingDataStruct",
+				"java/lang/Integer",
+				"java/lang/String",
+				"java/io/PrintStream",
+				"java/lang/System"
+		};
+		int expectedJRECount = 4;
+		String[] actual = analyzer.countClassCoupling("example/coupling/CoupledToInterfaceExample");
+		int jreCount = analyzer.determineJavaCoupling(actual);
+
+		// For debugging to determine if I missed a class by accident
+		Arrays.sort(expected);
+		Arrays.sort(actual);
+
+		assertEquals(expected.length, actual.length);
+
+		// Convert to Lists so we can use containsAll
+		List<String> expectedList = Arrays.asList(expected);
+		List<String> actualList = Arrays.asList(actual);
+
+		assertTrue(expectedList.containsAll(actualList));
+		assertTrue(actualList.containsAll(expectedList));
+
+		// Now we check the JRE counts
+		assertEquals(expectedJRECount, jreCount);
 	}
 
 	// ====================Output Testing============================ //
@@ -520,6 +578,48 @@ public class HighCouplingTest {
 	@Category({ HighCouplingTest.class })
 	@Test
 	public void testReturnType() {
+		setupAnalyzer();
+
+		analyzer.analyzeData();
+
+		ReturnType expectedReturnType = analyzer.composeReturnType();
+		List<String> linterErrorStrings = new ArrayList<>();
+
+		for (LinterError err : expectedReturnType.errorsCaught) {
+			linterErrorStrings.add(err.toString());
+		}
+
+		assertEquals(expectedReturnType.analyzerName, "High Coupling Linter");
+		assertEquals(expectedReturnType.errorsCaught.size(), 7);
+		LinterError linterError0 = new LinterError("example.coupling.HighCouplingStaticClassProjectCount",
+				"Class has excessive coupling to project classes! (Total Coupling - 12, JRE Coupling - 3)",
+				ErrType.WARNING);
+		LinterError linterError1 = new LinterError("example.coupling.HighCouplingStaticClassTotalCount",
+				"Class has excessive coupling to classes overall! (Total Coupling - 20, JRE Coupling - 13)",
+				ErrType.WARNING);
+		LinterError linterError2 = new LinterError("example.coupling.HighCouplingObjectProjectCount",
+				"Class has excessive coupling to project classes! (Total Coupling - 9, JRE Coupling - 0)",
+				ErrType.WARNING);
+		LinterError linterError3 = new LinterError("example.coupling.HighCouplingObjectTotalCount",
+				"Class has excessive coupling to classes overall! (Total Coupling - 22, JRE Coupling - 15)",
+				ErrType.WARNING);
+		LinterError linterError4 = new LinterError("example.coupling.HighCouplingDataStructProjectCount",
+				"Class has excessive coupling to project classes! (Total Coupling - 9, JRE Coupling - 0)",
+				ErrType.WARNING);
+		LinterError linterError5 = new LinterError("example.coupling.HighCouplingDataStructTotalCount",
+				"Class has excessive coupling to classes overall! (Total Coupling - 20, JRE Coupling - 14)",
+				ErrType.WARNING);
+		LinterError linterError6 = new LinterError("example.coupling.HighCouplingNightmareClass",
+				"Class has excessive coupling to classes overall! (Total Coupling - 28, JRE Coupling - 21)",
+				ErrType.WARNING);
+
+		assertTrue(linterErrorStrings.contains(linterError0.toString()));
+		assertTrue(linterErrorStrings.contains(linterError1.toString()));
+		assertTrue(linterErrorStrings.contains(linterError2.toString()));
+		assertTrue(linterErrorStrings.contains(linterError3.toString()));
+		assertTrue(linterErrorStrings.contains(linterError4.toString()));
+		assertTrue(linterErrorStrings.contains(linterError5.toString()));
+		assertTrue(linterErrorStrings.contains(linterError6.toString()));
 
 	}
 

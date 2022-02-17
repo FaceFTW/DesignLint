@@ -6,8 +6,9 @@ import java.io.PrintStream;
 public class CoupledToInterfaceExample implements CouplingInterfaceExample {
 
 	@Override
-	public void exampleMethodToImplement() {
+	public ZeroCouplingDataStruct exampleMethodToImplement() {
 		Integer nonPrimitiveInt = new Integer("nuts");
+		return new ZeroCouplingDataStruct();
 	}
 
 	@Override

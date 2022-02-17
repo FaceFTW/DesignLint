@@ -7,6 +7,7 @@ public class HighCouplingObjectProjectCount {
 
 	LowCouplingDataStruct struct1;
 	LowCouplingDataStruct2 struct2;
+	LowCouplingObject obj1;
 
 	public HighCouplingObjectProjectCount() {
 		ZeroCouplingStaticClass.emptyFunction();
@@ -27,4 +28,5 @@ public class HighCouplingObjectProjectCount {
 	public HighCouplingObjectTotalCount makeHighCouplingObjectTotalCount() {
 		return new HighCouplingObjectTotalCount();
 	}
+
 }

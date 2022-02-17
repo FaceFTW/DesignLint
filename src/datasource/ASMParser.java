@@ -571,11 +571,20 @@ public class ASMParser {
 		for (MethodNode method : decompiled.methods) {
 			// Get the Parameter data
 			for (Type paramType : Type.getArgumentTypes(method.desc)) {
-				String betterTypeName = paramType.getInternalName();
-
+				String betterTypeName = "";
+				if (paramType.getSort() == Type.ARRAY) {
+					betterTypeName = paramType.getClassName();
+					betterTypeName = betterTypeName.replace("[]", "");
+					betterTypeName = betterTypeName.replace(".", "/");
+				} else {
+					betterTypeName = paramType.getInternalName();
+					betterTypeName = betterTypeName.replace("[", "");
+				}
 				// Each dimension of an array is indicated with a left bracket
 				// Only the type should count toward the coupling, so remove them if they exist
-				betterTypeName = betterTypeName.replace("[", "");
+
+				// Just in case parse the type again (apparently arrays can screw this up)
+				// betterTypeName = Type.getType(betterTypeName).getInternalName();
 
 				// Primitives in the JVM are single letter types, so we can filter them out
 				// after removing any array identifiers by checking string length
@@ -606,6 +615,15 @@ public class ASMParser {
 					case AbstractInsnNode.METHOD_INSN:
 						betterTypeName = ((MethodInsnNode) instruction).owner;
 						break;
+					case AbstractInsnNode.FIELD_INSN:
+						betterTypeName = Type.getType(((FieldInsnNode) instruction).desc).getInternalName();
+						String ownerTypeName = ((FieldInsnNode) instruction).owner;
+						ownerTypeName = ownerTypeName.replace("[", "");
+						if (ownerTypeName.length() > 1) {
+							types.add(ownerTypeName);
+						}
+						break;
+
 					default:
 						break;
 				}
@@ -637,20 +655,33 @@ public class ASMParser {
 
 		// For each field, add the type if it isn't already in the list
 		for (MethodNode method : decompiled.methods) {
-			for (LocalVariableNode local : method.localVariables) {
-				String betterTypeName = Type.getType(local.desc).getInternalName();
+			if (method.localVariables != null) {
+				for (LocalVariableNode local : method.localVariables) {
 
-				// Each dimension of an array is indicated with a left bracket
-				// Only the type should count toward the coupling, so remove them if they
-				// exist
-				betterTypeName = betterTypeName.replace("[", "");
+					String betterTypeName = "";
+					if (Type.getType(local.desc).getSort() == Type.ARRAY) {
+						betterTypeName = Type.getType(local.desc).getClassName();
+						betterTypeName = betterTypeName.replace("[]", "");
+						betterTypeName = betterTypeName.replace(".", "/");
+					} else {
+						betterTypeName = Type.getType(local.desc).getInternalName();
+						betterTypeName = betterTypeName.replace("[", "");
+					}
 
-				// Primitives in the JVM are single letter types, so we can filter them out
-				// after removing any array identifiers by checking string length
+					Type.getType(local.desc).getInternalName();
 
-				// We also can ignore duplicate detection by using a Set, instead of a list
-				if (betterTypeName.length() > 1) {
-					types.add(betterTypeName);
+					// Each dimension of an array is indicated with a left bracket
+					// Only the type should count toward the coupling, so remove them if they
+					// exist
+					betterTypeName = betterTypeName.replace("[", "");
+
+					// Primitives in the JVM are single letter types, so we can filter them out
+					// after removing any array identifiers by checking string length
+
+					// We also can ignore duplicate detection by using a Set, instead of a list
+					if (betterTypeName.length() > 1) {
+						types.add(betterTypeName);
+					}
 				}
 			}
 
@@ -669,7 +700,7 @@ public class ASMParser {
 		if (decompiled.interfaces != null) {
 			for (String interfaceType : decompiled.interfaces) {
 				// These are explicit class names in the first place, so just add them
-				types.add(className);
+				types.add(interfaceType);
 			}
 		}
 

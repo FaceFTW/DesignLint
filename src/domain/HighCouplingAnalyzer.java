@@ -14,37 +14,57 @@ public class HighCouplingAnalyzer extends DomainAnalyzer {
 	// For all intensive purposes - Java Extensions (JavaX) and JDK will be excluded
 	// JavaX is actually not included with the JRE by default since Java 11
 	// JDK is for developer tool classes (such as compiler, etc.)
-	public static final String JAVA_RUNTIME_CLASS_QUALIFIER_REGEX = "^java\\.";
-	public static final String JAVA_RUNTIME_SUN_CLASS_QUALIFIER_REGEX = "^((com\\.)?sun\\.)";
+	public static final String JAVA_RUNTIME_CLASS_QUALIFIER_REGEX = "^java\\/.*";
+	public static final String JAVA_RUNTIME_SUN_CLASS_QUALIFIER_REGEX = "^((com\\/)?sun\\/).*";
+
+	public static final String LINTER_ERROR_PROJECT_FORMAT_STRING = "Class has excessive coupling to project classes! (Total Coupling - %d, JRE Coupling - %d)";
+	public static final String LINTER_ERROR_TOTAL_FORMAT_STRING = "Class has excessive coupling to classes overall! (Total Coupling - %d, JRE Coupling - %d)";
 
 	private ASMParser parser;
 
-	private Map<String, List<String>> classCouplingMap;
+	private Map<String, String[]> classCouplingMap;
+
+	private List<LinterError> foundErrors;
 
 	public HighCouplingAnalyzer(ASMParser parser) {
 		super();
 
 		this.parser = parser;
 		this.classCouplingMap = new HashMap<>();
+		this.foundErrors = new ArrayList<>();
 	}
 
 	@Override
 	public void getRelevantData(String[] classList) {
-		// This method will generally prepare the list of classes that will be parsed in
-		// the map.
+		// Call the coupling counter for all desired classes
+		for (String className : classList) {
+			this.classCouplingMap.put(className, this.countClassCoupling(className));
+		}
 
 	}
 
 	@Override
 	public void analyzeData() {
-		// TODO Auto-generated method stub
+		for (String className : this.classCouplingMap.keySet()) {
+			String[] coupled = this.countClassCoupling(className);
+			int jreDepCount = this.determineJavaCoupling(coupled);
 
+			String errString = "";
+			if (coupled.length > 19) {
+				errString = String.format(LINTER_ERROR_TOTAL_FORMAT_STRING, coupled.length, jreDepCount);
+			} else if ((coupled.length - jreDepCount) > 8) {
+				errString = String.format(LINTER_ERROR_PROJECT_FORMAT_STRING, coupled.length, jreDepCount);
+			}
+
+			if (errString.length() > 0) {
+				foundErrors.add(new LinterError(className.replace("/", "."), errString, ErrType.WARNING));
+			}
+		}
 	}
 
 	@Override
 	public ReturnType composeReturnType() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ReturnType("High Coupling Linter", foundErrors);
 	}
 
 	/**
@@ -83,12 +103,20 @@ public class HighCouplingAnalyzer extends DomainAnalyzer {
 			coupledClasses.add(methodBodyType);
 		}
 
+		String[] typesFromInterfaceDeclaration = parser.getExtendsImplementsTypes(className);
+		for (String interfaceType : typesFromInterfaceDeclaration) {
+			coupledClasses.add(interfaceType);
+		}
+
 		// Remove any self instances (Classes can't really depend on themselves)
 		if (coupledClasses.contains(className)) {
 			coupledClasses.remove(className);
 		}
 
 		// Remove java/lang/Ojbect as all non-primitives are of type java/lang/Object
+		if (coupledClasses.contains("java/lang/Object")) {
+			coupledClasses.remove("java/lang/Object");
+		}
 
 		String[] result = new String[coupledClasses.size()];
 		coupledClasses.toArray(result);
