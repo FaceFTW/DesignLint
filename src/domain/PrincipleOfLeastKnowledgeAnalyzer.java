@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import datasource.ASMParser;
-import datasource.Invoker;
 import datasource.MethodCall;
 
 public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
@@ -48,7 +47,6 @@ public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 				this.classToMethods.put(className, methods);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

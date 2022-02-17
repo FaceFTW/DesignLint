@@ -1,12 +1,6 @@
 
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import domain.ErrType;
 import domain.LinterError;
 import domain.PrincipleOfLeastKnowledgeAnalyzer;
 import domain.ReturnType;

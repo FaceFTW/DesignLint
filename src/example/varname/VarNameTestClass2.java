@@ -1,5 +1,7 @@
 package example.varname;
 
+@SuppressWarnings("unused")
+
 public class VarNameTestClass2 {
     private String $BadVariable;
     private static final int GLOBAL_VARIABLE = 0;

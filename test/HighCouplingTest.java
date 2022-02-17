@@ -11,9 +11,9 @@ import org.junit.experimental.categories.Category;
 
 import datasource.ASMParser;
 import domain.ErrType;
-import domain.HighCouplingAnalyzer;
 import domain.LinterError;
 import domain.ReturnType;
+import domain.analyzer.HighCouplingAnalyzer;
 
 public class HighCouplingTest {
 

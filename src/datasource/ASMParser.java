@@ -298,15 +298,6 @@ public class ASMParser {
 		}
 	}
 
-	public void getMethod(String className) {
-		ClassNode decompiled = this.classMap.get(className);
-
-		for (MethodNode node : decompiled.methods) {
-			// TableSwitchInsnNode table = node.visitJumpInsn(Opcodes.TABLESWITCH, new
-			// Label());
-		}
-	}
-
 	public String getSignature(String className) {
 		return (this.classMap.get(className).signature);
 	}
@@ -390,7 +381,6 @@ public class ASMParser {
 				}
 			}
 		} catch (AnalyzerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

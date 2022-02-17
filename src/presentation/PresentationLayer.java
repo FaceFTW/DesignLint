@@ -9,13 +9,10 @@ import java.util.List;
 
 import datasource.ASMParser;
 import domain.DomainAnalyzer;
-import domain.ExceptionThrownAnalyzer;
-import domain.HighCouplingAnalyzer;
 import domain.LinterError;
-import domain.PrincipleOfLeastKnowledgeAnalyzer;
 import domain.ReturnType;
-import domain.SwitchCaseAnalyzer;
-import domain.VarNameAnalyzer;
+import domain.analyzer.ExceptionThrownAnalyzer;
+import domain.analyzer.HighCouplingAnalyzer;
 
 public class PresentationLayer {
 	private List<DomainAnalyzer> analyzers;
@@ -48,12 +45,6 @@ public class PresentationLayer {
 		// Create analyzers and pass them through the list.
 		analyzers.add(new ExceptionThrownAnalyzer(parser));
 		analyzers.add(new HighCouplingAnalyzer(parser));
-		// analyzers.add(new PrincipleOfLeastKnowledgeAnalyzer()); //TODO Update
-		// constructor if it chages
-		// analyzers.add(new VarNameAnalyzer(fileList)); //TODO Update constructors if
-		// it changes
-		// analyzers.add(new SwitchCaseAnalyzer(fileList)); //TODO is this an analyzer
-		// we want?
 	}
 
 	// Nothing too complicated, just a couple of loops

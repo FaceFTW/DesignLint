@@ -10,10 +10,10 @@ import org.junit.experimental.categories.Category;
 
 import datasource.ASMParser;
 import domain.ErrType;
-import domain.ExceptionThrownAnalyzer;
 import domain.LinterError;
 import domain.ReturnType;
-import domain.ExceptionThrownAnalyzer.ExceptionLinterIssue;
+import domain.analyzer.ExceptionThrownAnalyzer;
+import domain.analyzer.ExceptionThrownAnalyzer.ExceptionLinterIssue;
 
 public class ExceptionLinterTest {
 	private ASMParser parser;
