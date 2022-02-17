@@ -3,9 +3,11 @@ package example.code2interface;
 import java.util.*;
 
 public class Code2InterfaceTest {
+    public ArrayList<String> fieldListTest;
+    public HashMap<String, String> fieldMapTest;
     public HashSet<Double> fieldSetTest;
     public Triangle triangleTest;
-    public Shape shapeTest;
+    public Triangle shapeTest;
 
     public void testFunc() {
         Triangle tri1 = new Triangle(1.0, 1.0);

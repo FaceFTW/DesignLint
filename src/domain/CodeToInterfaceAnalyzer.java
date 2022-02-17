@@ -1,6 +1,7 @@
 package domain;
 
 import datasource.ASMParser;
+import datasource.Invoker;
 import datasource.MethodCall;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
     public Map<String, Map<String, Map<String, Map<String, List<String>>>>> possibleInterfaces;
 
     //Erroneous Values
-    List<LinterError> foundErrors = null;
+    List<LinterError> foundErrors;
 
     public CodeToInterfaceAnalyzer(String[] classNames) {
         try {
@@ -28,7 +29,7 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
             this.methodVarNames = new HashMap<>();
             this.methodVarTypes = new HashMap<>();
             this.possibleInterfaces = new HashMap<>();
-            this.foundErrors = new ArrayList<LinterError>();
+            this.foundErrors = new ArrayList<>();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,6 +51,7 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
     }
 
     public void analyzeData() {
+        this.foundErrors = new ArrayList<>();
         findFieldShortCut();
         for (String className : this.possibleInterfaces.keySet()) {
             for (String methodName : this.possibleInterfaces.get(className).keySet()) {
@@ -67,7 +69,7 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
     }
 
     public ReturnType composeReturnType() {
-        return new ReturnType("CodeToInterfaceAnalyzer", null);
+        return new ReturnType("CodeToInterfaceAnalyzer", this.foundErrors);
     }
 
     public void findFieldShortCut() {
@@ -90,11 +92,12 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
     public void analyzePotentialInterfaces(String className, String methodName, String varName) {
         if (!findShortCut(className, methodName, varName)) {
             Map<String, List<String>> interfaces = this.possibleInterfaces.get(className).get(methodName).get(varName);
-            System.out.println(varName + " " + interfaces);
+            //System.out.println(varName + " " + interfaces);
             List<String> union = new ArrayList<>();
             boolean x = false;
             union.add("Init List");
             for (String methodKey : interfaces.keySet()) {
+                //System.out.println(methodKey + " " + union);
                 if (union.get(0).compareTo("Init List") == 0) {
                     union = interfaces.get(methodKey);
                 }
@@ -112,7 +115,14 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
                 for (int i = 0; i < union.size(); i++) {
                     //Finally, if the types in the union match the type of the variable, do not throw an error.
                     int index = this.methodVarNames.get(className).get(methodName).indexOf(varName);
-                    if (this.methodVarTypes.get(className).get(methodName).get(index).compareTo("L" + union.get(i) + ";") != 0) {
+                    if (index == -1) {
+                        index = this.fieldNames.get(className).indexOf(varName);
+                        if (this.fieldTypes.get(className).get(index).compareTo("L" + union.get(i) + ";") != 0) {
+                            this.foundErrors.add(new LinterError(className, methodName,
+                                    "Potential Interface for " + varName + ": " + union.get(i), ErrType.WARNING));
+                        }
+                    }
+                    else if (this.methodVarTypes.get(className).get(methodName).get(index).compareTo("L" + union.get(i) + ";") != 0) {
                         this.foundErrors.add(new LinterError(className, methodName,
                                 "Potential Interface for " + varName + ": " + union.get(i), ErrType.WARNING));
                     }
@@ -130,7 +140,13 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
             }
         }
 
-        return list;
+        List<String> nonDupedList = new ArrayList<>();
+        for (String s : list) {
+            if (!nonDupedList.contains(s)) {
+                nonDupedList.add(s);
+            }
+        }
+        return nonDupedList;
     }
 
     public boolean findShortCut(String className, String methodName, String varName) {
@@ -160,10 +176,16 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
         //System.out.println(className + ": " + methodName);
         List<MethodCall> methodCalls = this.parser.removeThis(this.parser.getMethodCalls(className, methodName),
                 this.methodVarNames.get(className).get(methodName));
-        for (MethodCall m : methodCalls) {
-            //System.out.println(m);
-        }
+//        for (MethodCall m : methodCalls) {
+//            System.out.println(m);
+//        }
         for (MethodCall method : methodCalls) {
+            if (method.getInvoker() == Invoker.FIELD) {
+                continue;
+            }
+            else if (method.getInvoker() == Invoker.CONSTRUCTED) {
+                System.out.println(method.getInvokerName());
+            }
             List<String> interfaces = parser.getInterfacesWithoutMap(method.getInvokedClass());
             if (interfaces.size() > 0) {
                 //System.out.println(interfaces);
@@ -209,10 +231,31 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
                     this.possibleInterfaces.get(className).get(methodName).get(method.getInvokerName()).
                             get(method.getCalledMethodName()).add("X");
                 }
-            } else {
-                //System.out.println("No interfaces found");
             }
+//            else {
+//                //System.out.println("No interfaces found");
+//            }
         }
+    }
+
+    public Map<String, List<String>> getFieldNames() {
+        return this.fieldNames;
+    }
+
+    public Map<String, List<String>> getFieldTypes() {
+        return this.fieldTypes;
+    }
+
+    public Map<String, Map<String, List<String>>> getMethodVarNames() {
+        return this.methodVarNames;
+    }
+
+    public Map<String, Map<String, List<String>>> getMethodVarTypes() {
+        return this.methodVarTypes;
+    }
+
+    public Map<String, Map<String, Map<String, Map<String, List<String>>>>> getPossibleInterfaces() {
+        return this.possibleInterfaces;
     }
 }
 
