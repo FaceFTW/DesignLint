@@ -40,20 +40,48 @@ public class EqualsAndHashcodeAnalyzer extends DomainAnalyzer {
 			// classMethodsAndAnnotations.put(className, methodsAndAnnotations);
 		classAndMethodNames.put(className, methodNames);
 		}
+		List<String> methodList = new ArrayList<>();
+		methodList.add("equals");
+		methodList.add("hashCode");
+		methodList.add("writeToFile");
+		
+		String[] result = new String[methodList.size()];
+
+		methodList.toArray(result);
+		classAndMethodNames.put("testClass", result);
+
 
 	}
 
 	public void analyzeData() {
-		LinterError er = new LinterError("test error class name", "test error method name", "this is a test to verify what methods are in the class", ErrType.INFO);
-				this.errorList.add(er);
 		for (String className : classAndMethodNames.keySet()){
 			String[] methodNames = classAndMethodNames.get(className);
+			boolean seenEquals = false;
+			boolean seenHashcode = false;
 			for(String methodName : methodNames){
-				System.out.println("A method in " + className + " is " + methodName);
-				LinterError err = new LinterError(className, methodName, "this is a test to verify what methods are in the class", ErrType.INFO);
-				this.errorList.add(err);
+				if(methodName.equals("equals")){
+					seenEquals = true;
+				}
+				if(methodName.equals("hashCode")){
+					seenHashcode = true;
+				}
 			}
+			if(seenEquals){
+				if(!seenHashcode){
+					LinterError err = new LinterError(className, "if overriding the equals method, you should also override the hashCode method ", ErrType.INFO);
+				this.errorList.add(err);
+				}
+			}
+			if(seenHashcode){
+				if(!seenEquals){
+					LinterError err = new LinterError(className, "if overriding the hashCode method, you should also override the equals method ", ErrType.INFO);
+				this.errorList.add(err);
+				}
+			}
+
 		}
+
+
 	}
 
 	@Override
