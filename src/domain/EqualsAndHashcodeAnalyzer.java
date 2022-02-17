@@ -14,9 +14,7 @@ public class EqualsAndHashcodeAnalyzer extends DomainAnalyzer {
 	ASMParser parser;
 	public Map<String, String[]> classAndMethodNames;
 	List<LinterError> errorList = new ArrayList<>();
-	// public Map<String, Set<String>> methodAndAnnotations;
-	// public Map<String, Map<String, Set<String>>> classMethodsAndAnnotations;
-
+	
 	public EqualsAndHashcodeAnalyzer(String[] classNames) {
 		try {
 			this.parser = new ASMParser(classNames);
@@ -32,25 +30,8 @@ public class EqualsAndHashcodeAnalyzer extends DomainAnalyzer {
 		for (String className : classList) {
 			System.out.println(className);
 			String[] methodNames = parser.getMethods(className);
-			// Map<String, Set<String>> methodsAndAnnotations = new HashMap<>();
-			// for (String methodName : methodNames) {
-			// 	Set<String> methodAnnotations = parser.getMethodCompilerAnnotations(className, methodName);
-			// 	methodsAndAnnotations.put(methodName, methodAnnotations);
-			// }
-			// classMethodsAndAnnotations.put(className, methodsAndAnnotations);
-		classAndMethodNames.put(className, methodNames);
+			classAndMethodNames.put(className, methodNames);
 		}
-		List<String> methodList = new ArrayList<>();
-		methodList.add("equals");
-		methodList.add("hashCode");
-		methodList.add("writeToFile");
-		
-		String[] result = new String[methodList.size()];
-
-		methodList.toArray(result);
-		classAndMethodNames.put("testClass", result);
-
-
 	}
 
 	public void analyzeData() {
@@ -78,10 +59,7 @@ public class EqualsAndHashcodeAnalyzer extends DomainAnalyzer {
 				this.errorList.add(err);
 				}
 			}
-
 		}
-
-
 	}
 
 	@Override
@@ -89,5 +67,4 @@ public class EqualsAndHashcodeAnalyzer extends DomainAnalyzer {
 		ReturnType type = new ReturnType("Equals And Hashcode Override Check", this.errorList);
 		return type;
 	}
-
 }
