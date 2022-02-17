@@ -10,6 +10,7 @@ import java.util.List;
 import datasource.ASMParser;
 import domain.DomainAnalyzer;
 import domain.ExceptionThrownAnalyzer;
+import domain.HighCouplingAnalyzer;
 import domain.LinterError;
 import domain.PrincipleOfLeastKnowledgeAnalyzer;
 import domain.ReturnType;

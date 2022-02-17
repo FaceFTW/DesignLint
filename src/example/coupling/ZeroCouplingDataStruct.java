@@ -2,7 +2,8 @@ package example.coupling;
 
 //EXPECTED CLASS COUPLING COUNT: 0
 public class ZeroCouplingDataStruct {
-	//This class is a data structure with purely primitive data types (including Arrays)
+	// This class is a data structure with purely primitive data types (including
+	// Arrays)
 	public int exampleInt;
 	public boolean exampleBoolean;
 	public double exampleDouble;
@@ -13,7 +14,8 @@ public class ZeroCouplingDataStruct {
 	public short exampleShort;
 	public long exampleLong;
 	public char exampleChar;
-	public char[] exampleString;	//This is how we used to make strings :)
+	public char[] exampleString; // This is how we used to make strings :)
 
-	//No ctor really needed, implicit is fine
+	public int[][] exampleMultiDimensional; // Mainly to ensure multi-dimensional arrays don't cause duplicates
+	// No ctor really needed, implicit is fine
 }

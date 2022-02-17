@@ -54,6 +54,19 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 	}
 	
 	@Test
+	public void testCommunicateWithStrangerUsingFriendVariable() {
+		String [] classes = {"example.demeter.A"};
+		ReturnType results = new PrincipleOfLeastKnowledgeAnalyzer().getFeedback(classes);
+		for(LinterError error : results.errorsCaught) {
+			if(error.methodName.equals("doThingWithCWrongVar")) {
+				assertTrue(true);
+				return;
+			}
+		}
+		assertTrue(false);
+	}
+	
+	@Test
 	public void testCommunicateWithSingleMethodParameter() {
 		String [] classes = {"example.demeter.A"};
 		ReturnType results = new PrincipleOfLeastKnowledgeAnalyzer().getFeedback(classes);

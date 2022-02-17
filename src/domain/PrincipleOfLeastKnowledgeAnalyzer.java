@@ -1,6 +1,7 @@
 package domain;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,15 +9,27 @@ import java.util.Map;
 import java.util.Set;
 
 import datasource.ASMParser;
+import datasource.Invoker;
+import datasource.MethodCall;
 
 public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 
-	private Map<String,Set<String>> classToMethods;
-	private Map<String,Map<String,String>> methodToCalls;
+	private Map<String, Set<Method>> classToMethods;
+	private List<LinterError> demeterViolations;
+	
+	private class Method {
+		String name;
+		List<MethodCall> methodCalls;
+		
+		public Method(String name, List<MethodCall> methodCalls) {
+			this.name = name;
+			this.methodCalls = methodCalls;
+		}
+	}
 	
 	public PrincipleOfLeastKnowledgeAnalyzer() {
-		this.classToMethods = new HashMap<String,Set<String>>();
-		this.methodToCalls = new HashMap<String, Map<String,String>>();
+		this.classToMethods = new HashMap<String, Set<Method>>();
+		this.demeterViolations = new ArrayList<LinterError>();
 	}
 	
 	@Override
@@ -25,11 +38,12 @@ public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 			ASMParser parser = new ASMParser(classList);
 			for(String className : classList) {
 				className = className.replace('.', '/');
-				Set<String> methods = new HashSet<String>();
+				Set<Method> methods = new HashSet<Method>();
 				String [] methodArr = parser.getMethods(className);
 				for(int i = 0; i < methodArr.length; i++) {
-					methods.add(methodArr[i]);
-					this.methodToCalls.put(methodArr[i], parser.getMethodCalls(className, methodArr[i]));
+					List<MethodCall> methodCalls = parser.getMethodCalls(className, methodArr[i]);
+					Method method = new Method(methodArr[i], methodCalls);
+					methods.add(method);
 				}
 				this.classToMethods.put(className, methods);
 			}
@@ -42,13 +56,35 @@ public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 
 	@Override
 	public void analyzeData() {
-		System.out.println("");
+		for(String className : this.classToMethods.keySet()) {
+			for(Method method : this.classToMethods.get(className)) {
+				for(MethodCall methodCall : method.methodCalls) {
+					String errorMessage = "Principle of Least Knowledge Violation in Class '" + className + "', Method '" + method.name + "'\n";
+					switch(methodCall.getInvoker()) {
+						case FIELD:
+							break;
+						
+						case PARAMETER:
+							break;
+							
+						case CONSTRUCTED:
+							break;
+						
+						case RETURNED:
+							if(!methodCall.getInvokedClass().equals(className)) {
+								errorMessage += "Reached method '" + methodCall.getCalledMethodName() + "' with an illegal access.";
+								this.demeterViolations.add(new LinterError(className, method.name, errorMessage, ErrType.WARNING));
+							}
+							break;
+					}
+				}
+			}
+		}
 	}
 
 	@Override
 	public ReturnType composeReturnType() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ReturnType("PrincipleOfLeastKnowledgeAnalyzer", this.demeterViolations);
 	}
-
+	
 }
