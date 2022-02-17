@@ -20,5 +20,9 @@ public class Triangle implements Shape, Printable{
 
     public void printObject() { System.out.println("I'm a triangle!"); }
 
-    public void uniqueTriangleFunc() { System.out.println("Unique Triangle!"); }
+    public void uniqueTriangleFunc(int length) { System.out.println("Unique Triangle!" + length); }
+
+    public boolean compareShape(Shape shape) { return true; }
+
+    public boolean compareTriangle(Shape shape) { return true; }
 }

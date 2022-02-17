@@ -29,4 +29,11 @@ public class MethodCall {
 	public String getInvokedClass() {
 		return this.invokedClass;
 	}
+
+	public String toString() {
+		return "Called Method Name: " + this.calledMethodName + "\n" +
+				"Invoker: " + this.invokerStatus + "\n" +
+				"InvokerName: " + this.invokerName + "\n" +
+				"InvokerClass: " + this.invokedClass;
+	}
 }
