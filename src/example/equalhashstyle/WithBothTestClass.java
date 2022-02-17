@@ -1,0 +1,30 @@
+package example.equalhashstyle;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class WithBothTestClass {
+    List<String> cats;
+
+    public WithBothTestClass(){
+        this.cats = new ArrayList<>();
+    }
+    public String getFirstCat(){
+        return cats.get(0);
+    }
+    public List<String> getAllCats(){
+        return cats;
+    }
+    @Override
+    public boolean equals(Object o){
+        if (cats == o){
+            return true;
+        }
+        return false;
+    }
+    @Override
+    public int hashCode(){
+        return cats.size();
+    }
+
+}
