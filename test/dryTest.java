@@ -32,6 +32,18 @@ public class DryTest {
     @Test
     public void oneClassWithDuplicationTest(){
         //dog - should give two errors, one error for walk and one for run methods
+        String[] classList = { "example/dry/Dog" };
+        this.analyzer = new DryAnalyzer(classList);
+        ReturnType returned = this.analyzer.getFeedback(classList);
+
+        assertEquals("DryAnalyzer", returned.analyzerName);
+        assertEquals(2, returned.errorsCaught.size());
+        assertEquals("example/dry/Dog" , returned.errorsCaught.get(0).className);
+        assertEquals("example/dry/Dog" , returned.errorsCaught.get(1).className);
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(0).type);
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(1).type);
+        
+        
     }
     @Test
     public void twoClassWithDuplicationTest(){
