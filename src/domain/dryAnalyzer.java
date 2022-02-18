@@ -8,14 +8,14 @@ import java.util.Map;
 import datasource.ASMParser;
 import datasource.MethodCall;
 
-public class dryAnalyzer extends DomainAnalyzer{
+public class DryAnalyzer extends DomainAnalyzer{
 
     private ASMParser parser;
 	private List<LinterError> errors;
     private String[] classList;
     private Map<String, List<Method>> classToMethods;
 
-    public dryAnalyzer(String[] classList){
+    public DryAnalyzer(String[] classList){
         try {
 			this.parser = new ASMParser(classList);
 		} catch (IOException e) {
