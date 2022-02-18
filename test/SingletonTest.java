@@ -11,13 +11,29 @@ public class SingletonTest {
         //this test shouldn't detect a singleton
     }
     @Test
+    public void hasPublicConstructorStaticFieldNoStaticMethodTest(){
+        //This test shouldn't detect a singleton
+    }
+    @Test
     public void hasPublicConstructorNoFieldNoStaticMethodTest(){
         //this test shouldn't detect a singleton
 
     }
     @Test
-    public void hasPublicConstructorTest(){
-
+    public void hasPrivateConstructorNoStaticFieldStaticMethodTest(){
+        //This test shouldn't detect a singleton
+    }
+    @Test
+    public void hasPrivateConstructorNoStaticFieldNoStaticMethodTest(){
+        //This test shouldn't detect a singleton
+    }
+    @Test
+    public void hasPrivateConstructorStaticFieldNoStaticMethodTest(){
+        //This test shouldn't detect a singleton
+    }
+    @Test
+    public void hasPrivateConstructorStaticFieldStaticMethodTest(){
+        //This test SHOULD detect a singleton
     }
 
     
