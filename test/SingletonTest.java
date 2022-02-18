@@ -86,6 +86,16 @@ public class SingletonTest {
         assertEquals("SingletonAnalyzer", returned.analyzerName);
         assertEquals(0, returned.errorsCaught.size());
     }
+    @Test 
+    public void hasPriConStaticFieldNoMethodWithOtherStaticMethodsTest(){
+        // This test shouldn't detect a singleton
+        String[] classList = { "example/singleton/PriConStaticFieldNoMethodOtherStaticMethods" };
+        this.analyzer = new SingletonAnalyzer(classList);
+        ReturnType returned = this.analyzer.getFeedback(classList);
+
+        assertEquals("SingletonAnalyzer", returned.analyzerName);
+        assertEquals(0, returned.errorsCaught.size());
+    }
 
     @Test
     public void hasPrivateConstructorStaticFieldStaticMethodTest() {
@@ -96,7 +106,7 @@ public class SingletonTest {
 
         assertEquals("SingletonAnalyzer", returned.analyzerName);
         assertEquals(1, returned.errorsCaught.size());
-        assertEquals("PriConStaticFieldStaticMethod", returned.errorsCaught.get(0).className);
+        assertEquals("example/singleton/PriConStaticFieldStaticMethod", returned.errorsCaught.get(0).className);
         assertEquals("Singleton Pattern detected!", returned.errorsCaught.get(0).message);
         assertEquals(ErrType.PATTERN, returned.errorsCaught.get(0).type);
     }
@@ -113,7 +123,7 @@ public class SingletonTest {
 
         assertEquals("SingletonAnalyzer", returned.analyzerName);
         assertEquals(1, returned.errorsCaught.size());
-        assertEquals("PriConStaticFieldStaticMethod", returned.errorsCaught.get(0).className);
+        assertEquals("example/singleton/PriConStaticFieldStaticMethod", returned.errorsCaught.get(0).className);
         assertEquals("Singleton Pattern detected!", returned.errorsCaught.get(0).message);
         assertEquals(ErrType.PATTERN, returned.errorsCaught.get(0).type);
     }

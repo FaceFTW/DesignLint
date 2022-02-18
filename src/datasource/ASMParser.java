@@ -201,6 +201,39 @@ public class ASMParser {
 		return annotationStrs;
 	}
 
+	public List<String> getStaticMethods(String className) {
+		if (!this.classMap.containsKey(className)) {
+			throw new IllegalArgumentException("Error! The specified class was not found in the parsed class map.");
+		}
+
+		ClassNode decompiled = this.classMap.get(className);
+
+		List<String> methodList = new ArrayList<>();
+
+		for (MethodNode node : decompiled.methods) {
+			if(node.access == Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC){
+				methodList.add(node.name);
+			}
+		}
+
+		return methodList;
+	}
+
+
+	public boolean isClassConstructorPrivate(String className){
+		ClassNode classNode = this.classMap.get(className);
+
+		for (MethodNode method : classNode.methods){
+			if(method.name.equals("<init>")){
+				if(method.access == Opcodes.ACC_PRIVATE){
+					return true;
+				} 
+			}
+		}
+		return false;
+	}
+
+
 	public List<String> getClassStaticPrivateFieldNames(String className) {
 		List<String> fieldNames = new ArrayList<>();
 		ClassNode classNode = this.classMap.get(className);

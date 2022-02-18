@@ -11,4 +11,5 @@ public class PriConStaticFieldNoMethod {
     public String getCat(){
         return instt.getCat();
     }
+
 }
