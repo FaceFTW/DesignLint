@@ -12,6 +12,7 @@ import domain.DomainAnalyzer;
 import domain.EqualsAndHashcodeAnalyzer;
 import domain.LinterError;
 import domain.ReturnType;
+import domain.SingletonAnalyzer;
 import domain.analyzer.ExceptionThrownAnalyzer;
 import domain.analyzer.HighCouplingAnalyzer;
 
@@ -47,6 +48,7 @@ public class PresentationLayer {
 		analyzers.add(new ExceptionThrownAnalyzer(parser));
 		analyzers.add(new HighCouplingAnalyzer(parser));
 		analyzers.add(new EqualsAndHashcodeAnalyzer(classList));
+		analyzers.add(new SingletonAnalyzer(classList));
 	}
 
 	// Nothing too complicated, just a couple of loops
