@@ -2,6 +2,7 @@ package domain;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public class DryAnalyzer extends DomainAnalyzer{
 			e.printStackTrace();
 		}
 		this.errors = new ArrayList<>();
+        this.classToMethods = new HashMap<>();
     }
 
     @Override
@@ -54,25 +56,27 @@ public class DryAnalyzer extends DomainAnalyzer{
     public void checkForDuplication(String classNameToCheck, Method methodToCheck, MethodCall methodCallToCheck){
 
         for(String className: this.classToMethods.keySet()) {
+            
             for(Method method : this.classToMethods.get(className)) {
-                if(className.equals(classNameToCheck) && method.equals(methodToCheck)){
-                    break;
-                }
-                for(MethodCall methodCall : method.getMethodCalls()) {
+                if(className.equals(classNameToCheck) && methodToCheck.equals(method)){
+                    continue;
+                } else{
+                for(MethodCall methodCall : method.getMethodCalls()) {  
+               
                     if(methodCall.equals(methodCallToCheck)){
                         LinterError e = new LinterError(classNameToCheck, methodToCheck.getName(), 
-                        "Possible duplication in method " + method.getName() + "from class " + className, ErrType.WARNING);
+                        "Duplication in method " + method.getName() + "from class " + className, ErrType.WARNING);
                         errors.add(e);
                     }
-                
                 }
             }
         }
-
+        }
     }
+
     @Override
     public ReturnType composeReturnType() {
-        return new ReturnType("dryAnalyzer", this.errors);
+        return new ReturnType("DryAnalyzer", this.errors);
     }
     
 }

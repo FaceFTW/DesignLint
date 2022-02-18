@@ -3,12 +3,12 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import domain.ErrType;
+import domain.LinterError;
 import domain.ReturnType;
 import domain.DryAnalyzer;
 
 public class DryTest {
     private DryAnalyzer analyzer;
-
     @Test
     public void oneClassNoDuplicationTest(){
         //cat - shouldnt give an error
@@ -18,6 +18,9 @@ public class DryTest {
 
         assertEquals("DryAnalyzer", returned.analyzerName);
         assertEquals(0, returned.errorsCaught.size());
+        for(LinterError l : returned.errorsCaught){
+            System.out.println(l);
+        }
     }
     @Test
     public void twoClassNoDuplicationTest(){
@@ -63,7 +66,6 @@ public class DryTest {
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(1).type);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(2).type);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(3).type);
-
     }
     @Test 
     public void allClassesTest(){
@@ -73,6 +75,9 @@ public class DryTest {
         ReturnType returned = this.analyzer.getFeedback(classList);
 
         assertEquals("DryAnalyzer", returned.analyzerName);
+        for(LinterError e : returned.errorsCaught){
+            System.out.println(e.toString());
+        }
         assertEquals(4, returned.errorsCaught.size());
         assertEquals("example/dry/Cat" , returned.errorsCaught.get(0).className);
         assertEquals("example/dry/Dog" , returned.errorsCaught.get(1).className);
