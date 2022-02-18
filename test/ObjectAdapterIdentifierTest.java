@@ -30,7 +30,12 @@ public class ObjectAdapterIdentifierTest {
 			"example.objectadapter.AdapterInterfaceCorrect",
 			"example.objectadapter.AdapterInterfaceCorrectAbstractClassIncorrect",
 			"example.objectadapter.AdapterInterfaceIncorrect",
-			"example.objectadapter.AdapterInterfaceIncorrectAbstractClassCorrect"
+			"example.objectadapter.AdapterInterfaceIncorrectAbstractClassCorrect",
+			"example.objectadapter.InterfaceAdaptee",
+			"example.objectadapter.AbstractAdaptee",
+			"example.objectadapter.AdapterAdaptsInterface",
+			"example.objectadapter.InterfaceAdapteeConcrete",
+			"example.objectadapter.AbstractAdapteeConcrete"
 	};
 	
 	public void setupAnalyzer() {
@@ -231,4 +236,47 @@ public class ObjectAdapterIdentifierTest {
 		expectedResult += "Adapter: example.objectadapter.AdapterInterfaceIncorrectAbstractClassCorrect\n";
 		assertTrue(patternCatches.contains(expectedResult));
 	}
+	
+	@Test
+	public void testInterfaceAdaptee() {
+		this.setupAnalyzer();
+		String [] classes = {"example.objectadapter.TargetInterface",
+							 "example.objectadapter.InterfaceAdaptee",
+							 "example.objectadapter.AdapterAdaptsInterface",
+							 "example.objectadapter.InterfaceAdapteeConcrete"};
+		ReturnType results = this.analyzer.getFeedback(classes);
+		assertTrue(results.errorsCaught.size() == 0);
+	}
+	
+	@Test
+	public void testInterfaceAdapteeNoConcrete() {
+		this.setupAnalyzer();
+		String [] classes = {"example.objectadapter.TargetInterface",
+							 "example.objectadapter.InterfaceAdaptee",
+							 "example.objectadapter.AdapterAdaptsInterface"};
+		ReturnType results = this.analyzer.getFeedback(classes);
+		assertTrue(results.errorsCaught.size() == 0);
+	}
+	
+	@Test
+	public void testAbstractClassAdaptee() {
+		this.setupAnalyzer();
+		String [] classes = {"example.objectadapter.TargetAbstractClass",
+							 "example.objectadapter.AbstractAdaptee",
+							 "example.objectadapter.AdapterAdaptsAbstractClass",
+							 "example.objectadapter.AbstractAdapteeConcrete"};
+		ReturnType results = this.analyzer.getFeedback(classes);
+		assertTrue(results.errorsCaught.size() == 0);
+	}
+	
+	@Test
+	public void testAbstractClassAdapteeNoConcrete() {
+		this.setupAnalyzer();
+		String [] classes = {"example.objectadapter.TargetAbstractClass",
+							 "example.objectadapter.AbstractAdaptee",
+							 "example.objectadapter.AdapterAdaptsAbstractClass"};
+		ReturnType results = this.analyzer.getFeedback(classes);
+		assertTrue(results.errorsCaught.size() == 0);
+	}
+	
 }
