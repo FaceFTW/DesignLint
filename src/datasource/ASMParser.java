@@ -284,7 +284,7 @@ public class ASMParser {
 		return globalNames;
 	}
 
-	public Map<String, List<String>> getMethodNames(String className) {
+	public Map<String, List<String>> getMethodNamesAndVariables(String className) {
 		Map<String, List<String>> methodNames = new HashMap<>();
 		ClassNode classNode = this.classMap.get(className);
 
