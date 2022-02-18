@@ -22,6 +22,12 @@ public class DryTest {
     @Test
     public void twoClassNoDuplicationTest(){
         //cat and dog with interfaces - shouldn't give an error
+        String[] classList = { "example/dry/CatExtendsAnimal", "example/dry/DogExtendsAnimal"};
+        this.analyzer = new DryAnalyzer(classList);
+        ReturnType returned = this.analyzer.getFeedback(classList);
+
+        assertEquals("DryAnalyzer", returned.analyzerName);
+        assertEquals(0, returned.errorsCaught.size());
     }
     @Test
     public void oneClassWithDuplicationTest(){
