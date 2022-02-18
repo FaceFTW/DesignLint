@@ -137,4 +137,30 @@ public class GenericTypeStyleCheckTest {
 		assertTrue(errorMessages.contains("Generic Type: 'incorrectAgain' should be capitalized."));
 		
     }
+    
+    @Test
+    public void testInterfaceCorrect() {
+    	String [] classes = {"example.typename.InterfaceCorrect"};
+    	this.setupAnalyzer(classes);
+    	ReturnType results = this.analyzer.getFeedback(classes);
+    	assertTrue(results.errorsCaught.size() == 0);
+    }
+    
+    @Test
+    public void testInterfaceIncorrect() {
+    	String [] classes = {"example.typename.InterfaceIncorrect"};
+    	this.setupAnalyzer(classes);
+    	ReturnType results = this.analyzer.getFeedback(classes);
+    	assertTrue(results.errorsCaught.size() == 1);
+    	assertEquals(results.errorsCaught.get(0).message, 
+    				 "Generic Type: 'coolT' should be capitalized.");
+    }
+    
+    @Test
+    public void testAbstractClassCorrect() {
+    	String [] classes = {"example.typename.AbstractCorrect"};
+    	this.setupAnalyzer(classes);
+    	ReturnType results = this.analyzer.getFeedback(classes);
+    	assertTrue(results.errorsCaught.size() == 0);
+    }
 }

@@ -12,7 +12,6 @@ import org.objectweb.asm.tree.analysis.SourceValue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.invoke.VarHandle.AccessMode;
 import java.util.*;
 
 public class ASMParser {
@@ -430,7 +429,7 @@ public class ASMParser {
 	}
 
 	public String getSignatureNonEnum(String className) {
-		return (this.classMap.get(className).access - 0x4000) < 0 ? this.getSignature(className) :null ;
+		return (this.classMap.get(className).access - 0x4000) < 0 ? this.getSignature(className) : null;
 	}
 
 	private MethodNode getMethodNode(String className, String methodName) {
@@ -449,6 +448,16 @@ public class ASMParser {
 		return method;
 	}
 
+	/**
+	 * Provides a list of MethodCall Objects corresponding to method calls within the specified method
+	 * 
+	 * @throws IllegalArgumentException If the method is not found in the specified
+	 *                                  class
+	 * @param className  The name of the class where the method should reside in
+	 * @param methodName The name of the method to retrieve method call information from
+	 * @return List of MethodCall Objects
+	 * 
+	 */
 	public List<MethodCall> getMethodCalls(String className, String methodName) {
 		List<MethodCall> methodCalls = new ArrayList<MethodCall>();
 		MethodNode method = this.getMethodNode(className, methodName);
@@ -759,5 +768,9 @@ public class ASMParser {
 
 	public boolean isAbstractClass(String className) {
 		return (this.classMap.get(className).access == Opcodes.ACC_ABSTRACT);
+	}
+
+	public boolean isEnum(String className) {
+		return (this.classMap.get(className).access == Opcodes.ACC_ENUM);
 	}
 }
