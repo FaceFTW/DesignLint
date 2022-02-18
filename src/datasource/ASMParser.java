@@ -12,6 +12,7 @@ import org.objectweb.asm.tree.analysis.SourceValue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.VarHandle.AccessMode;
 import java.util.*;
 
 public class ASMParser {
@@ -200,6 +201,20 @@ public class ASMParser {
 		return annotationStrs;
 	}
 
+	public List<String> getClassStaticPrivateFieldNames(String className) {
+		List<String> fieldNames = new ArrayList<>();
+		ClassNode classNode = this.classMap.get(className);
+
+		for (FieldNode field : classNode.fields) {
+			
+			if(field.access == Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC){
+				fieldNames.add(field.name);
+			}
+		}
+
+		return fieldNames;
+	}
+
 	public List<String> getClassFieldNames(String className) {
 		List<String> fieldNames = new ArrayList<>();
 		ClassNode classNode = this.classMap.get(className);
@@ -372,15 +387,6 @@ public class ASMParser {
 
 			}
 			return newList;
-		}
-	}
-
-	public void getMethod(String className) {
-		ClassNode decompiled = this.classMap.get(className);
-
-		for (MethodNode node : decompiled.methods) {
-			//TableSwitchInsnNode table = node.visitJumpInsn(Opcodes.TABLESWITCH, new
-		 	//Label());
 		}
 	}
 

@@ -96,7 +96,7 @@ public class SingletonTest {
 
         assertEquals("SingletonAnalyzer", returned.analyzerName);
         assertEquals(1, returned.errorsCaught.size());
-        assertEquals("SingletonAnalyzer", returned.errorsCaught.get(0).className);
+        assertEquals("PriConStaticFieldStaticMethod", returned.errorsCaught.get(0).className);
         assertEquals("Singleton Pattern detected!", returned.errorsCaught.get(0).message);
         assertEquals(ErrType.PATTERN, returned.errorsCaught.get(0).type);
     }
@@ -113,7 +113,7 @@ public class SingletonTest {
 
         assertEquals("SingletonAnalyzer", returned.analyzerName);
         assertEquals(1, returned.errorsCaught.size());
-        assertEquals("SingletonAnalyzer", returned.errorsCaught.get(0).className);
+        assertEquals("PriConStaticFieldStaticMethod", returned.errorsCaught.get(0).className);
         assertEquals("Singleton Pattern detected!", returned.errorsCaught.get(0).message);
         assertEquals(ErrType.PATTERN, returned.errorsCaught.get(0).type);
     }
