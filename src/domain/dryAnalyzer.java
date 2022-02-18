@@ -42,8 +42,6 @@ public class DryAnalyzer extends DomainAnalyzer{
 
     @Override
     public void analyzeData() {
-        // TODO: Need to check methods for duplication and 
-        // trigger an error if two methods have duplication
         for(String className : this.classToMethods.keySet()) {
 			for(Method method : this.classToMethods.get(className)) {
 				for(MethodCall methodCall : method.getMethodCalls()) {
