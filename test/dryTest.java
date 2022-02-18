@@ -4,14 +4,20 @@ import org.junit.Test;
 
 import domain.ErrType;
 import domain.ReturnType;
-import domain.dryAnalyzer;
+import domain.DryAnalyzer;
 
 public class dryTest {
-    private dryAnalyzer analyzer;
+    private DryAnalyzer analyzer;
 
     @Test
     public void oneClassNoDuplicationTest(){
         //cat - shouldnt give an error
+        String[] classList = { "example/dry/Cat" };
+        this.analyzer = new DryAnalyzer(classList);
+        ReturnType returned = this.analyzer.getFeedback(classList);
+
+        assertEquals("dryAnalyzer", returned.analyzerName);
+        assertEquals(0, returned.errorsCaught.size());
     }
     @Test
     public void twoClassNoDuplicationTest(){
@@ -24,7 +30,7 @@ public class dryTest {
     @Test
     public void twoClassWithDuplicationTest(){
         // cat and dog -  should give 4 errors, one error for walk and one for run methods, one for each eat methods
-        
+
     }
     @Test 
     public void allClassesTest(){
