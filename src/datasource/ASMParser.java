@@ -448,6 +448,16 @@ public class ASMParser {
 		return method;
 	}
 
+	/**
+	 * Provides a list of MethodCall Objects corresponding to method calls within the specified method
+	 * 
+	 * @throws IllegalArgumentException If the method is not found in the specified
+	 *                                  class
+	 * @param className  The name of the class where the method should reside in
+	 * @param methodName The name of the method to retrieve method call information from
+	 * @return List of MethodCall Objects
+	 * 
+	 */
 	public List<MethodCall> getMethodCalls(String className, String methodName) {
 		List<MethodCall> methodCalls = new ArrayList<MethodCall>();
 		MethodNode method = this.getMethodNode(className, methodName);
