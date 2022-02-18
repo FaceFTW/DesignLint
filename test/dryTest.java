@@ -6,7 +6,7 @@ import domain.ErrType;
 import domain.ReturnType;
 import domain.DryAnalyzer;
 
-public class dryTest {
+public class DryTest {
     private DryAnalyzer analyzer;
 
     @Test
@@ -16,7 +16,7 @@ public class dryTest {
         this.analyzer = new DryAnalyzer(classList);
         ReturnType returned = this.analyzer.getFeedback(classList);
 
-        assertEquals("dryAnalyzer", returned.analyzerName);
+        assertEquals("DryAnalyzer", returned.analyzerName);
         assertEquals(0, returned.errorsCaught.size());
     }
     @Test
