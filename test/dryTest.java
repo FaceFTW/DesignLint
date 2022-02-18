@@ -78,7 +78,6 @@ public class DryTest {
         assertEquals("example/dry/Dog" , returned.errorsCaught.get(1).className);
         assertEquals("example/dry/Dog" , returned.errorsCaught.get(2).className);
         assertEquals("example/dry/Dog" , returned.errorsCaught.get(3).className);
-        
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(0).type);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(1).type);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(2).type);
