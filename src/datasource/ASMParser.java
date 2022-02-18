@@ -21,13 +21,19 @@ public class ASMParser {
 
 	public ASMParser(String[] classList) throws IOException {
 		this.classMap = new HashMap<String, ClassNode>();
-		for (String className : classList) {
-			className = className.replace('.', '/');
-			ClassReader reader = new ClassReader(className);
+		try {
+			for (String className : classList) {
+				className = className.replace('.', '/');
+				ClassReader reader = new ClassReader(className);
 
-			ClassNode decompiled = new ClassNode();
-			reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
-			classMap.put(className, decompiled);
+				ClassNode decompiled = new ClassNode();
+				reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
+				classMap.put(className, decompiled);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Error reading class definitions!");
+			System.exit(1);
 		}
 
 		// This should be all we need for the parser to function
@@ -35,15 +41,21 @@ public class ASMParser {
 
 	public ASMParser(InputStream[] classStreams) throws IOException {
 		this.classMap = new HashMap<>();
-		for (InputStream stream : classStreams) {
-			ClassReader reader = new ClassReader(stream);
+		try {
+			for (InputStream stream : classStreams) {
+				ClassReader reader = new ClassReader(stream);
 
-			ClassNode decompiled = new ClassNode();
-			reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
+				ClassNode decompiled = new ClassNode();
+				reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
 
-			// We still need the fully qualified class name
-			String className = decompiled.name;
-			classMap.put(className, decompiled);
+				// We still need the fully qualified class name
+				String className = decompiled.name;
+				classMap.put(className, decompiled);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Error reading class definitions!");
+			System.exit(1);
 		}
 	}
 
@@ -211,7 +223,7 @@ public class ASMParser {
 		List<String> methodList = new ArrayList<>();
 
 		for (MethodNode node : decompiled.methods) {
-			if(node.access == Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC){
+			if (node.access == Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC) {
 				methodList.add(node.name);
 			}
 		}
@@ -219,28 +231,26 @@ public class ASMParser {
 		return methodList;
 	}
 
-
-	public boolean isClassConstructorPrivate(String className){
+	public boolean isClassConstructorPrivate(String className) {
 		ClassNode classNode = this.classMap.get(className);
 
-		for (MethodNode method : classNode.methods){
-			if(method.name.equals("<init>")){
-				if(method.access == Opcodes.ACC_PRIVATE){
+		for (MethodNode method : classNode.methods) {
+			if (method.name.equals("<init>")) {
+				if (method.access == Opcodes.ACC_PRIVATE) {
 					return true;
-				} 
+				}
 			}
 		}
 		return false;
 	}
-
 
 	public List<String> getClassStaticPrivateFieldNames(String className) {
 		List<String> fieldNames = new ArrayList<>();
 		ClassNode classNode = this.classMap.get(className);
 
 		for (FieldNode field : classNode.fields) {
-			
-			if(field.access == Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC){
+
+			if (field.access == Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC) {
 				fieldNames.add(field.name);
 			}
 		}
@@ -281,8 +291,7 @@ public class ASMParser {
 		for (MethodNode method : classNode.methods) {
 			if (method.localVariables == null) {
 				methodNames.put(method.name, new ArrayList<String>());
-			}
-			else {
+			} else {
 				ArrayList<String> methodVar = new ArrayList<>();
 				for (LocalVariableNode local : method.localVariables) {
 					if (local.name.compareTo("this") != 0)
@@ -304,7 +313,7 @@ public class ASMParser {
 		}
 
 		for (FieldNode field : classNode.fields) {
-				fieldTypes.add(field.desc);
+			fieldTypes.add(field.desc);
 		}
 
 		return fieldTypes;
@@ -317,8 +326,7 @@ public class ASMParser {
 		for (MethodNode method : classNode.methods) {
 			if (method.localVariables == null) {
 				methodNames.put(method.name, new ArrayList<String>());
-			}
-			else {
+			} else {
 				ArrayList<String> methodVar = new ArrayList<>();
 				for (LocalVariableNode local : method.localVariables) {
 					if (local.name.compareTo("this") != 0)
@@ -331,17 +339,15 @@ public class ASMParser {
 		return methodNames;
 	}
 
-
 	public List<String> getInterfacesWithoutMap(String className) {
-		//className = className.replace('.', '/');
+		// className = className.replace('.', '/');
 		try {
 			ClassReader reader = new ClassReader(className);
 			ClassNode decompiled = new ClassNode();
 			reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
 
 			return decompiled.interfaces;
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			System.out.println("Class Not Found: " + className);
 			return null;
 		}
@@ -350,7 +356,7 @@ public class ASMParser {
 	public boolean compareMethodFromInterface(String className, String methodName, String interfaceName) {
 		try {
 			if (!this.classMap.keySet().contains(className)) {
-				//System.out.println(className + " not found");
+				// System.out.println(className + " not found");
 				ClassReader reader = new ClassReader(className);
 				ClassNode decompiled = new ClassNode();
 				reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
@@ -358,14 +364,13 @@ public class ASMParser {
 			}
 
 			if (!this.classMap.keySet().contains(interfaceName)) {
-				//System.out.println(interfaceName + " not found");
+				// System.out.println(interfaceName + " not found");
 				ClassReader reader1 = new ClassReader(interfaceName);
 				ClassNode decompiled1 = new ClassNode();
 				reader1.accept(decompiled1, ClassReader.EXPAND_FRAMES);
 				this.classMap.put(interfaceName, decompiled1);
 			}
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
@@ -373,25 +378,22 @@ public class ASMParser {
 		MethodNode compare;
 		try {
 			original = getMethodNode(className, methodName);
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			original = null;
-			//System.out.println("Func not found in " + className + ", " + methodName );
+			// System.out.println("Func not found in " + className + ", " + methodName );
 		}
 
 		try {
 			compare = getMethodNode(interfaceName, methodName);
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			compare = null;
-			//System.out.println("Func not found in " + interfaceName + ", " + methodName);
+			// System.out.println("Func not found in " + interfaceName + ", " + methodName);
 		}
 
 		if (original != null && compare != null) {
 			if (original.desc.compareTo(compare.desc) == 0) {
 				return true;
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
@@ -425,6 +427,10 @@ public class ASMParser {
 
 	public String getSignature(String className) {
 		return (this.classMap.get(className).signature);
+	}
+
+	public String getSignatureNonEnum(String className) {
+		return (this.classMap.get(className).access - 0x4000) < 0 ? this.getSignature(className) :null ;
 	}
 
 	private MethodNode getMethodNode(String className, String methodName) {
@@ -746,11 +752,11 @@ public class ASMParser {
 		types.toArray(result);
 		return result;
 	}
-	
+
 	public boolean isInterface(String className) {
 		return (this.classMap.get(className).access == Opcodes.ACC_INTERFACE);
 	}
-	
+
 	public boolean isAbstractClass(String className) {
 		return (this.classMap.get(className).access == Opcodes.ACC_ABSTRACT);
 	}

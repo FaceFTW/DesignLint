@@ -24,7 +24,7 @@ public class GenericTypeNameAnalyzer extends DomainAnalyzer {
 	public void getRelevantData(String[] classList) {
 		for(String className : classList) {
 			className = className.replace('.', '/');
-			String signature = parser.getSignature(className);
+			String signature = parser.getSignatureNonEnum(className);
 			if(signature != null) {
 				this.classToSignature.put(className, signature);
 			}

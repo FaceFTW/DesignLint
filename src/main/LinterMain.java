@@ -1,7 +1,6 @@
 package main;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,18 +31,15 @@ public class LinterMain {
 		classFilesToAnalyze.toArray(classList);
 
 		// For now just test if we recurse properly
-		for (String path : classList) {
-			System.out.println(path);
-		}
+		// for (String path : classList) {
+		// 	System.out.println(path);
+		// }
 
 		PresentationLayer frontend = new PresentationLayer();
-		try {
-			frontend.setupAnalyzers(classList);
-			frontend.runAnalyzers();
-			frontend.vomitOutput(System.out);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		frontend.setupAnalyzers(classList);
+		frontend.runAnalyzers();
+		frontend.vomitOutput(System.out);
+
 	}
 
 	// Presentation layer will not determine what files to parse, only to parse
