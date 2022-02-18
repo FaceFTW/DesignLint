@@ -429,7 +429,7 @@ public class ASMParser {
 	}
 
 	public String getSignatureNonEnum(String className) {
-		return (this.classMap.get(className).access - 0x4000) < 0 ? this.getSignature(className) :null ;
+		return (this.classMap.get(className).access - 0x4000) < 0 ? this.getSignature(className) : null;
 	}
 
 	private MethodNode getMethodNode(String className, String methodName) {
@@ -758,5 +758,9 @@ public class ASMParser {
 
 	public boolean isAbstractClass(String className) {
 		return (this.classMap.get(className).access == Opcodes.ACC_ABSTRACT);
+	}
+
+	public boolean isEnum(String className) {
+		return (this.classMap.get(className).access == Opcodes.ACC_ENUM);
 	}
 }
