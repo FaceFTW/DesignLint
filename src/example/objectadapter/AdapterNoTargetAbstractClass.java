@@ -1,22 +1,22 @@
 package example.objectadapter;
 
-public class AdapterAbstractClassIncorrect extends TargetAbstractClass {
+public class AdapterNoTargetAbstractClass {
 	
-	// Missing composition of Adaptee
+	private Adaptee adaptee;
 	
-	@Override
+	public AdapterNoTargetAbstractClass() {
+		this.adaptee = new Adaptee();
+	}
+	
 	public void doInterestingThing() {
-		System.out.println("Nope");
+		this.adaptee.doSomething();
 	}
 
-	@Override
 	public String doReallyBoringThing(char[] numberCharacters) {
 		String numberString = numberCharacters.toString();
-		numberString.concat("nope");
-		return numberString;
+		return this.adaptee.doSomethingElse(Integer.parseInt(numberString));
 	}
 
-	@Override
 	public double doHardThing(int number) {
 		throw new UnsupportedOperationException();
 	}

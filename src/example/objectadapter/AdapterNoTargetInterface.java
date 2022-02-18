@@ -1,29 +1,23 @@
 package example.objectadapter;
 
-public class AdapterInterfaceIncorrect implements TargetInterface {
+public class AdapterNoTargetInterface {
 	
-	// Never calls the Adaptee - Supports no functionality
 	private Adaptee adaptee;
 	
-	public AdapterInterfaceIncorrect() {
+	public AdapterNoTargetInterface() {
 		this.adaptee = new Adaptee();
 	}
-	
-	@Override
+
 	public boolean doReallyCoolThing() {
-		System.out.println("Do nothing...");
+		this.adaptee.doSomething();
 		return false;
 	}
 
-	@Override
 	public String doQuestionableThing(String numberString) {
-		throw new UnsupportedOperationException();
+		return this.adaptee.doSomethingElse(Integer.parseInt(numberString));
 	}
 
-	@Override
 	public void doImpossibleThing() {
 		throw new UnsupportedOperationException();
 	}
-	
-	
 }
