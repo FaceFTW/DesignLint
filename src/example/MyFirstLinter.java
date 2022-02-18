@@ -60,6 +60,7 @@ public class MyFirstLinter {
 	}
 
 	private static void printClass(ClassNode classNode) {
+
 		System.out.println(classNode.signature);
 		System.out.println("Class's Internal JVM name: " + classNode.name);
 		System.out.println("User-friendly name: "

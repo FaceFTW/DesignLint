@@ -707,4 +707,12 @@ public class ASMParser {
 		types.toArray(result);
 		return result;
 	}
+	
+	public boolean isInterface(String className) {
+		return (this.classMap.get(className).access == Opcodes.ACC_INTERFACE);
+	}
+	
+	public boolean isAbstractClass(String className) {
+		return (this.classMap.get(className).access == Opcodes.ACC_ABSTRACT);
+	}
 }

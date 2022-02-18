@@ -1,6 +1,5 @@
 package domain;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,16 +15,6 @@ public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 	private Map<String, Set<Method>> classToMethods;
 	private List<LinterError> demeterViolations;
 	private ASMParser parser;
-	
-	private class Method {
-		String name;
-		List<MethodCall> methodCalls;
-		
-		public Method(String name, List<MethodCall> methodCalls) {
-			this.name = name;
-			this.methodCalls = methodCalls;
-		}
-	}
 	
 	public PrincipleOfLeastKnowledgeAnalyzer(ASMParser parser) {
 		this.classToMethods = new HashMap<String, Set<Method>>();
@@ -53,8 +42,8 @@ public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 	public void analyzeData() {
 		for(String className : this.classToMethods.keySet()) {
 			for(Method method : this.classToMethods.get(className)) {
-				for(MethodCall methodCall : method.methodCalls) {
-					String errorMessage = "Principle of Least Knowledge Violation in Class '" + className + "', Method '" + method.name + "'\n";
+				for(MethodCall methodCall : method.getMethodCalls()) {
+					String errorMessage = "Principle of Least Knowledge Violation in Class '" + className + "', Method '" + method.getName() + "'\n";
 					switch(methodCall.getInvoker()) {
 						case FIELD:
 							break;
@@ -68,7 +57,7 @@ public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 						case RETURNED:
 							if(!methodCall.getInvokedClass().equals(className)) {
 								errorMessage += "Reached method '" + methodCall.getCalledMethodName() + "' with an illegal access.";
-								this.demeterViolations.add(new LinterError(className, method.name, errorMessage, ErrType.WARNING));
+								this.demeterViolations.add(new LinterError(className, method.getName(), errorMessage, ErrType.WARNING));
 							}
 							break;
 					}
