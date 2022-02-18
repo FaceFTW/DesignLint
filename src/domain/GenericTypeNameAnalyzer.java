@@ -36,7 +36,7 @@ public class GenericTypeNameAnalyzer extends DomainAnalyzer {
 		for(String className : classToSignature.keySet()) {
 			String classSignature = this.classToSignature.get(className);
 			classSignature = classSignature.substring(1, classSignature.indexOf('>'));
-			while(classSignature.indexOf(';') > 0) {
+			while(classSignature.indexOf(';') != -1) {
 				String typeName = classSignature.substring(0, classSignature.indexOf(':'));
 				classSignature = classSignature.substring(classSignature.indexOf(';') + 1);
 				String errorMessage = "Generic Type: '" + typeName + "' ";

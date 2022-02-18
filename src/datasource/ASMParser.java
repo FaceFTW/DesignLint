@@ -12,7 +12,6 @@ import org.objectweb.asm.tree.analysis.SourceValue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.invoke.VarHandle.AccessMode;
 import java.util.*;
 
 public class ASMParser {
