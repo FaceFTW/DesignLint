@@ -1,6 +1,5 @@
 package domain;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,25 +12,22 @@ public class GenericTypeNameAnalyzer extends DomainAnalyzer {
 	
 	private Map<String,String> classToSignature;
 	private List<LinterError> namingViolations;
+	private ASMParser parser;
 	
-	public GenericTypeNameAnalyzer() {
+	public GenericTypeNameAnalyzer(ASMParser parser) {
 		this.classToSignature = new HashMap<String,String>();
 		this.namingViolations = new ArrayList<LinterError>();
+		this.parser = parser;
 	}
 	
 	@Override
 	public void getRelevantData(String[] classList) {
-		try {
-			ASMParser parser = new ASMParser(classList);
-			for(String className : classList) {
-				className = className.replace('.', '/');
-				String signature = parser.getSignature(className);
-				if(signature != null) {
-					this.classToSignature.put(className, signature);
-				}
+		for(String className : classList) {
+			className = className.replace('.', '/');
+			String signature = parser.getSignature(className);
+			if(signature != null) {
+				this.classToSignature.put(className, signature);
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 

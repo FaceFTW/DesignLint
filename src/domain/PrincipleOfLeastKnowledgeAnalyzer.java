@@ -15,6 +15,7 @@ public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 
 	private Map<String, Set<Method>> classToMethods;
 	private List<LinterError> demeterViolations;
+	private ASMParser parser;
 	
 	private class Method {
 		String name;
@@ -26,28 +27,24 @@ public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 		}
 	}
 	
-	public PrincipleOfLeastKnowledgeAnalyzer() {
+	public PrincipleOfLeastKnowledgeAnalyzer(ASMParser parser) {
 		this.classToMethods = new HashMap<String, Set<Method>>();
 		this.demeterViolations = new ArrayList<LinterError>();
+		this.parser = parser;
 	}
 	
 	@Override
 	public void getRelevantData(String[] classList) {
-		try {
-			ASMParser parser = new ASMParser(classList);
-			for(String className : classList) {
-				className = className.replace('.', '/');
-				Set<Method> methods = new HashSet<Method>();
-				String [] methodArr = parser.getMethods(className);
-				for(int i = 0; i < methodArr.length; i++) {
-					List<MethodCall> methodCalls = parser.getMethodCalls(className, methodArr[i]);
-					Method method = new Method(methodArr[i], methodCalls);
-					methods.add(method);
-				}
-				this.classToMethods.put(className, methods);
+		for(String className : classList) {
+			className = className.replace('.', '/');
+			Set<Method> methods = new HashSet<Method>();
+			String [] methodArr = parser.getMethods(className);
+			for(int i = 0; i < methodArr.length; i++) {
+				List<MethodCall> methodCalls = parser.getMethodCalls(className, methodArr[i]);
+				Method method = new Method(methodArr[i], methodCalls);
+				methods.add(method);
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			this.classToMethods.put(className, methods);
 		}
 		
 	}
