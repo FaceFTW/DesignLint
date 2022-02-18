@@ -1,5 +1,6 @@
 package domain;
 
+import java.io.IOException;
 import java.util.List;
 
 import datasource.ASMParser;
@@ -8,8 +9,13 @@ public class SingletonAnalyzer extends DomainAnalyzer {
 
     private ASMParser parser;
     private List<LinterError> errors;
-    public SingletonAnalyzer(ASMParser parser){
-        this.parser = parser;
+    public SingletonAnalyzer(String[] classNames){
+        
+        try {
+			this.parser = new ASMParser(classNames);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
         //TODO: create the errorList for the returnType
     }
     @Override
