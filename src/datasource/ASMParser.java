@@ -60,6 +60,7 @@ public class ASMParser {
 
 	/**
 	 * This method is for the presentation layer's functionality.
+	 * 
 	 * @return String[] classNames
 	 */
 	public String[] getParsedClassNames() {
@@ -190,9 +191,12 @@ public class ASMParser {
 
 	/**
 	 * Returns a list of compiler annotations for a method.
+	 * 
 	 * @param className  The name of the class where the method should reside in
-	 * @param methodName THe name of the method to retrieve compiler annotations from
-	 * @return A Set<String> of all of the annotations from the compiler for the specified method
+	 * @param methodName THe name of the method to retrieve compiler annotations
+	 *                   from
+	 * @return A Set<String> of all of the annotations from the compiler for the
+	 *         specified method
 	 * 
 	 */
 	public Set<String> getMethodCompilerAnnotations(String className, String methodName) {
@@ -221,7 +225,9 @@ public class ASMParser {
 	}
 
 	/**
-	 * Searches through the methods of a class, and finds the onces that are public facing, static access.
+	 * Searches through the methods of a class, and finds the onces that are public
+	 * facing, static access.
+	 * 
 	 * @param className the class to be searched for static methods
 	 * @return List<String> of methods in the class with the static access modifier
 	 */
@@ -243,11 +249,12 @@ public class ASMParser {
 		return methodList;
 	}
 
-
 	/**
 	 * Determines if this class has a public facing constructor
+	 * 
 	 * @param className
-	 * @return boolean. if the classes constructor is private - true. Otherwise false
+	 * @return boolean. if the classes constructor is private - true. Otherwise
+	 *         false
 	 */
 	public boolean isClassConstructorPrivate(String className) {
 		ClassNode classNode = this.classMap.get(className);
@@ -264,6 +271,7 @@ public class ASMParser {
 
 	/**
 	 * searches the given class for fields that have private static access modifiers
+	 * 
 	 * @param className
 	 * @return List<String> of fieldNames that are private static
 	 */
@@ -473,12 +481,14 @@ public class ASMParser {
 	}
 
 	/**
-	 * Provides a list of MethodCall Objects corresponding to method calls within the specified method
+	 * Provides a list of MethodCall Objects corresponding to method calls within
+	 * the specified method
 	 * 
 	 * @throws IllegalArgumentException If the method is not found in the specified
 	 *                                  class
 	 * @param className  The name of the class where the method should reside in
-	 * @param methodName The name of the method to retrieve method call information from
+	 * @param methodName The name of the method to retrieve method call information
+	 *                   from
 	 * @return List of MethodCall Objects
 	 * 
 	 */
@@ -490,8 +500,7 @@ public class ASMParser {
 		Set<String> fieldStructVars = new HashSet<String>();
 		try {
 			Frame<SourceValue>[] frames = analyzer.analyze(className, method);
-			instructions:
-			for (int i = 0; i < frames.length; i++) {
+			instructions: for (int i = 0; i < frames.length; i++) {
 				AbstractInsnNode insn = method.instructions.get(i);
 				if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
 					MethodInsnNode call = (MethodInsnNode) insn;
@@ -501,7 +510,7 @@ public class ASMParser {
 							VarInsnNode newVar = (VarInsnNode) call.getNext();
 							newVars.add(method.localVariables.get(newVar.var).name);
 						}
-					} 
+					}
 					for (int j = 0; j < frames[i].getStackSize(); j++) {
 						SourceValue value = (SourceValue) frames[i].getStack(j);
 						for (AbstractInsnNode insn2 : value.insns) {
@@ -511,9 +520,9 @@ public class ASMParser {
 											Invoker.FIELD,
 											((FieldInsnNode) insn2).name,
 											call.owner));
-									if(call.owner.length() >= 9 && call.owner.substring(0,9).equals("java/util")
-									   && call.getNext().getType() == AbstractInsnNode.TYPE_INSN) {
-										if(call.getNext().getNext().getType() == AbstractInsnNode.VAR_INSN) {
+									if (call.owner.length() >= 9 && call.owner.substring(0, 9).equals("java/util")
+											&& call.getNext().getType() == AbstractInsnNode.TYPE_INSN) {
+										if (call.getNext().getNext().getType() == AbstractInsnNode.VAR_INSN) {
 											VarInsnNode fieldVar = (VarInsnNode) call.getNext().getNext();
 											fieldStructVars.add(method.localVariables.get(fieldVar.var).name);
 										}
@@ -590,6 +599,9 @@ public class ASMParser {
 			// Only the type should count toward the coupling, so remove them if they exist
 			betterTypeName = betterTypeName.replace("[", "");
 
+			if (betterTypeName.charAt(0) == 'L' && betterTypeName.charAt(betterTypeName.length() - 1) == ';') {
+				betterTypeName = betterTypeName.substring(1, betterTypeName.length() - 1);
+			}
 			// Primitives in the JVM are single letter types, so we can filter them out
 			// after removing any array identifiers by checking string length
 
@@ -803,14 +815,28 @@ public class ASMParser {
 	}
 
 	public boolean isInterface(String className) {
-		return (this.classMap.get(className).access == Opcodes.ACC_INTERFACE);
+		return ((this.classMap.get(className).access & Opcodes.ACC_INTERFACE) == Opcodes.ACC_INTERFACE);
 	}
 
 	public boolean isAbstractClass(String className) {
-		return (this.classMap.get(className).access == Opcodes.ACC_ABSTRACT);
+		return (this.classMap.get(className).access & Opcodes.ACC_ABSTRACT) == Opcodes.ACC_ABSTRACT;
 	}
 
 	public boolean isEnum(String className) {
-		return (this.classMap.get(className).access == Opcodes.ACC_ENUM);
+		return ((this.classMap.get(className).access & Opcodes.ACC_ENUM) == Opcodes.ACC_ENUM);
+	}
+
+	public boolean isFinal(String className) {
+		return (this.classMap.get(className).access & Opcodes.ACC_FINAL) == Opcodes.ACC_FINAL;
+	}
+
+	public boolean allMethodsStatic(String className) {
+		for (MethodNode method : this.classMap.get(className).methods) {
+			if ((!method.name.equals("<init>") &&
+					(method.access & Opcodes.ACC_STATIC) != Opcodes.ACC_STATIC)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

@@ -3,11 +3,11 @@ package example.strategy;
 import example.strategy.strategytype.typea.CompliantStrategyTypeA;
 import example.strategy.strategytype.typeb.CompliantStrategyTypeB;
 
-public class CompliantStrategyUsingDifferentSingleStrategy {
+public class CompliantClassUsingDifferentSingleStrategy {
 	CompliantStrategyTypeA stratA;
 	CompliantStrategyTypeB stratB;
 
-	public CompliantStrategyUsingDifferentSingleStrategy(CompliantStrategyTypeA a, CompliantStrategyTypeB b) {
+	public CompliantClassUsingDifferentSingleStrategy(CompliantStrategyTypeA a, CompliantStrategyTypeB b) {
 		this.stratA = a;
 		this.stratB = b;
 	}
