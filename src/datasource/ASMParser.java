@@ -463,6 +463,7 @@ public class ASMParser {
 		MethodNode method = this.getMethodNode(className, methodName);
 		Analyzer<SourceValue> analyzer = new Analyzer<SourceValue>(new SourceInterpreter());
 		Set<String> newVars = new HashSet<String>();
+		Set<String> fieldStructVars = new HashSet<String>();
 		try {
 			Frame<SourceValue>[] frames = analyzer.analyze(className, method);
 			for (int i = 0; i < frames.length; i++) {
@@ -475,7 +476,7 @@ public class ASMParser {
 							VarInsnNode newVar = (VarInsnNode) call.getNext();
 							newVars.add(method.localVariables.get(newVar.var).name);
 						}
-					}
+					} 
 					for (int j = 0; j < frames[i].getStackSize(); j++) {
 						SourceValue value = (SourceValue) frames[i].getStack(j);
 						for (AbstractInsnNode insn2 : value.insns) {
@@ -485,6 +486,13 @@ public class ASMParser {
 											Invoker.FIELD,
 											((FieldInsnNode) insn2).name,
 											call.owner));
+									if(call.owner.length() >= 9 && call.owner.substring(0,9).equals("java/util")
+									   && call.getNext().getType() == AbstractInsnNode.TYPE_INSN) {
+										if(call.getNext().getNext().getType() == AbstractInsnNode.VAR_INSN) {
+											VarInsnNode fieldVar = (VarInsnNode) call.getNext().getNext();
+											fieldStructVars.add(method.localVariables.get(fieldVar.var).name);
+										}
+									}
 									break;
 								case AbstractInsnNode.VAR_INSN:
 									VarInsnNode varInsn = (VarInsnNode) insn2;
@@ -501,15 +509,20 @@ public class ASMParser {
 												method.localVariables.get(varInsn.var).name,
 												call.owner));
 									} else {
+										Invoker type = Invoker.RETURNED;
+										if (fieldStructVars.contains(method.localVariables.get(varInsn.var).name)) {
+											type = Invoker.FIELD;
+										}
 										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
-												Invoker.RETURNED,
+												type,
 												method.localVariables.get(varInsn.var).name,
 												call.owner));
 									}
 									break;
 								case AbstractInsnNode.METHOD_INSN:
+									Invoker type = Invoker.RETURNED;
 									methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
-											Invoker.RETURNED,
+											type,
 											"",
 											call.owner));
 									break;

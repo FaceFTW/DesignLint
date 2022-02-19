@@ -34,8 +34,7 @@ public class ObjectAdapterIdentifierAnalyzer extends DomainAnalyzer {
 			this.consideredClasses.add(className.replace('.', '/'));
 		}
 
-		for (String className : classList) {
-			className = className.replace('.', '/');
+		for (String className : this.consideredClasses) {
 
 			Set<Method> methods = new HashSet<Method>();
 			String[] methodArr = this.parser.getMethods(className);

@@ -12,7 +12,8 @@ import domain.DomainAnalyzer;
 import domain.EqualsAndHashcodeAnalyzer;
 import domain.GenericTypeNameAnalyzer;
 import domain.LinterError;
-
+import domain.ObjectAdapterIdentifierAnalyzer;
+import domain.PrincipleOfLeastKnowledgeAnalyzer;
 import domain.ReturnType;
 import domain.SingletonAnalyzer;
 import domain.VarNameAnalyzer;
@@ -57,8 +58,10 @@ public class PresentationLayer {
 			analyzers.add(new EqualsAndHashcodeAnalyzer(parser));
 			// Principle Violations
 			analyzers.add(new HighCouplingAnalyzer(parser));
+			analyzers.add(new PrincipleOfLeastKnowledgeAnalyzer(parser));
 			// Pattern Detection
 			analyzers.add(new SingletonAnalyzer(parser));
+			analyzers.add(new ObjectAdapterIdentifierAnalyzer(parser));
 
 		} catch (IOException e) {
 			e.printStackTrace();
