@@ -9,6 +9,12 @@ import java.util.Map;
 import datasource.ASMParser;
 import datasource.MethodCall;
 
+/**
+ *  This class uses the given ASMParser (or creates one from the given classList) to check for possible violations
+ * of the DRY Principle. 
+ * 
+ * @author Emily Hart (rhit-boatmaee)
+ */
 public class DryAnalyzer extends DomainAnalyzer{
 
     private ASMParser parser;
@@ -31,6 +37,9 @@ public class DryAnalyzer extends DomainAnalyzer{
         this.classToMethods = new HashMap<>();
     }
 
+    /**
+     * This method gets the relevant data from the classes ASMParser, and stores it to be used later for analysis.
+     */
     @Override
     public void getRelevantData(String[] classList) {
         for(String className : classList) {
@@ -46,6 +55,9 @@ public class DryAnalyzer extends DomainAnalyzer{
 		}
     }
 
+    /**
+     * This method analyzes the given classes, and checks all of them against each other. A helper method is used.
+     */
     @Override
     public void analyzeData() {
         for(String className : this.classToMethods.keySet()) {
@@ -57,6 +69,14 @@ public class DryAnalyzer extends DomainAnalyzer{
         }
     }
 
+    /**
+     * This method is a helper method for the analyzeData() method. If a duplicate method call is found, then 
+     * a LinterError is added to the list to be returned.
+     * @param classNameToCheck 
+     * @param methodToCheck
+     * @param methodCallToCheck
+     * 
+     */
     public void checkForDuplication(String classNameToCheck, Method methodToCheck, MethodCall methodCallToCheck){
 
         for(String className: this.classToMethods.keySet()) {
@@ -95,8 +115,6 @@ public class DryAnalyzer extends DomainAnalyzer{
 
     @Override
     public ReturnType composeReturnType() {
-
-        
         return new ReturnType("DryAnalyzer", this.errors);
     }
     

@@ -54,7 +54,7 @@ public class EqualsAndHashcodeAnalyzer extends DomainAnalyzer {
 			if (seenEquals) {
 				if (!seenHashcode) {
 					LinterError err = new LinterError(className,
-							"if overriding the equals method, you should also override the hashCode method ",
+							"When overriding the equals method, you should also override the hashCode method ",
 							ErrType.INFO);
 					this.errorList.add(err);
 				}
@@ -62,7 +62,7 @@ public class EqualsAndHashcodeAnalyzer extends DomainAnalyzer {
 			if (seenHashcode) {
 				if (!seenEquals) {
 					LinterError err = new LinterError(className,
-							"if overriding the hashCode method, you should also override the equals method ",
+							"When overriding the hashCode method, you should also override the equals method ",
 							ErrType.INFO);
 					this.errorList.add(err);
 				}
