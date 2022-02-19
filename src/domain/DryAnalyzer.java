@@ -86,7 +86,7 @@ public class DryAnalyzer extends DomainAnalyzer{
         }
         int duplicateCount = 0;
         boolean addE = true;
-        String message = "Possible Duplication with methods in the classes " ;
+        String message = "duplication found between this class and the following classes " ;
         
         for(String className: this.classToMethods.keySet()) {
         
@@ -102,7 +102,7 @@ public class DryAnalyzer extends DomainAnalyzer{
                             duplicateCount++;
                             for(LinterError err : this.errors){
 
-                                if(err.className.equals(classNameToCheck) && err.methodName.equals(methodToCheck.getName())){
+                                if(err.className.equals(classNameToCheck)){
                                     addE = false;
                                 }
                             }
@@ -112,9 +112,8 @@ public class DryAnalyzer extends DomainAnalyzer{
             
             String classNameToAddToMessage = "[" + className + "] ";
             message += classNameToAddToMessage;
-        }{
-            
         }
+
     }
 
     if(addE && duplicateCount >= 1){
