@@ -9,13 +9,18 @@ import java.util.List;
 
 import datasource.ASMParser;
 import domain.DomainAnalyzer;
-import domain.ExceptionThrownAnalyzer;
-import domain.HighCouplingAnalyzer;
+import domain.DryAnalyzer;
+import domain.EqualsAndHashcodeAnalyzer;
+import domain.GenericTypeNameAnalyzer;
 import domain.LinterError;
+import domain.ObjectAdapterIdentifierAnalyzer;
 import domain.PrincipleOfLeastKnowledgeAnalyzer;
 import domain.ReturnType;
-import domain.EqualsAndHashcodeAnalyzer;
+import domain.SingletonAnalyzer;
 import domain.VarNameAnalyzer;
+import domain.analyzer.ExceptionThrownAnalyzer;
+import domain.analyzer.HighCouplingAnalyzer;
+import domain.analyzer.StrategyAnalyzer;
 
 public class PresentationLayer {
 	private List<DomainAnalyzer> analyzers;
@@ -31,35 +36,48 @@ public class PresentationLayer {
 
 	// caller *MUST* ensure that all strings point to valid files
 	// We throw a hissyfit otherwise >:(
-	public void setupAnalyzers(String[] fileList) throws IOException {
+	public void setupAnalyzers(String[] fileList) {
 		// Create an ASMParser to parse all of the files initially
 
 		List<InputStream> fileStreams = new ArrayList<>();
-		for (String path : fileList) {
-			fileStreams.add(new FileInputStream(path));
+		ASMParser parser = null;
+		try {
+			for (String path : fileList) {
+				fileStreams.add(new FileInputStream(path));
+			}
+
+			InputStream[] streamList = new InputStream[fileStreams.size()];
+			fileStreams.toArray(streamList);
+
+			parser = new ASMParser(streamList);
+			this.classList = parser.getParsedClassNames();
+
+			// Add Analyzers to the list
+			// Style Checks
+			analyzers.add(new GenericTypeNameAnalyzer(parser));
+			analyzers.add(new VarNameAnalyzer(parser));
+			analyzers.add(new ExceptionThrownAnalyzer(parser));
+			analyzers.add(new EqualsAndHashcodeAnalyzer(parser));
+			// Principle Violations
+			analyzers.add(new HighCouplingAnalyzer(parser));
+			analyzers.add(new PrincipleOfLeastKnowledgeAnalyzer(parser));
+			analyzers.add(new DryAnalyzer(parser));
+			// Pattern Detection
+			analyzers.add(new SingletonAnalyzer(parser));
+			analyzers.add(new ObjectAdapterIdentifierAnalyzer(parser));
+			analyzers.add(new StrategyAnalyzer(parser));
+
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Error reading from class files specified in arguments!");
+			System.exit(1);
 		}
-
-		InputStream[] streamList = new InputStream[fileStreams.size()];
-		fileStreams.toArray(streamList);
-
-		ASMParser parser = new ASMParser(streamList);
-		this.classList = parser.getParsedClassNames();
-
-		// Create analyzers and pass them through the list.
-		analyzers.add(new ExceptionThrownAnalyzer(parser));
-		analyzers.add(new EqualsAndHashcodeAnalyzer(classList));
-		// analyzers.add(new PrincipleOfLeastKnowledgeAnalyzer()); //TODO Update
-		// constructor if it chages
-		// analyzers.add(new VarNameAnalyzer(fileList)); //TODO Update constructors if
-		// it changes
-		// analyzers.add(new SwitchCaseAnalyzer(fileList)); //TODO is this an analyzer
-		// we want?
 	}
 
 	// Nothing too complicated, just a couple of loops
 	public void runAnalyzers() {
 		for (DomainAnalyzer domainAnalyzer : analyzers) {
-
 			domainAnalyzer.getRelevantData(this.classList);
 			domainAnalyzer.analyzeData();
 			this.linterReturns.add(domainAnalyzer.composeReturnType());

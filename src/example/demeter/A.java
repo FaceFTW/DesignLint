@@ -1,5 +1,6 @@
 package example.demeter;
 
+@SuppressWarnings("unused")
 public class A {
 	private B b;
 	private B b2;

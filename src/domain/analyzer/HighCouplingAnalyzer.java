@@ -1,4 +1,4 @@
-package domain;
+package domain.analyzer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import datasource.ASMParser;
+import domain.DomainAnalyzer;
+import domain.ErrType;
+import domain.LinterError;
+import domain.ReturnType;
 
 public class HighCouplingAnalyzer extends DomainAnalyzer {
 
@@ -50,9 +54,9 @@ public class HighCouplingAnalyzer extends DomainAnalyzer {
 			int jreDepCount = this.determineJavaCoupling(coupled);
 
 			String errString = "";
-			if (coupled.length > 19) {
+			if (coupled.length >= 20) {
 				errString = String.format(LINTER_ERROR_TOTAL_FORMAT_STRING, coupled.length, jreDepCount);
-			} else if ((coupled.length - jreDepCount) > 8) {
+			} else if ((coupled.length - jreDepCount) >= 9) {
 				errString = String.format(LINTER_ERROR_PROJECT_FORMAT_STRING, coupled.length, jreDepCount);
 			}
 

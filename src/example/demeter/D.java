@@ -1,8 +1,10 @@
 package example.demeter;
 
-public class D {
+public class D extends A {
 	
 	public void doDThing() {
-		System.out.println("D doing something...");
+		super.doAThing();
 	}
+	
+	
 }

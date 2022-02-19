@@ -1,4 +1,4 @@
-package domain;
+package domain.analyzer;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -8,6 +8,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import datasource.ASMParser;
+import domain.DomainAnalyzer;
+import domain.ErrType;
+import domain.LinterError;
+import domain.ReturnType;
 
 public class ExceptionThrownAnalyzer extends DomainAnalyzer {
 	public static final String JAVA_EXCEPTION_INTERNAL_CLASS = "java/lang/Exception";

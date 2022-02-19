@@ -20,13 +20,19 @@ public class ASMParser {
 
 	public ASMParser(String[] classList) throws IOException {
 		this.classMap = new HashMap<String, ClassNode>();
-		for (String className : classList) {
-			className = className.replace('.', '/');
-			ClassReader reader = new ClassReader(className);
+		try {
+			for (String className : classList) {
+				className = className.replace('.', '/');
+				ClassReader reader = new ClassReader(className);
 
-			ClassNode decompiled = new ClassNode();
-			reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
-			classMap.put(className, decompiled);
+				ClassNode decompiled = new ClassNode();
+				reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
+				classMap.put(className, decompiled);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Error reading class definitions!");
+			System.exit(1);
 		}
 
 		// This should be all we need for the parser to function
@@ -34,19 +40,29 @@ public class ASMParser {
 
 	public ASMParser(InputStream[] classStreams) throws IOException {
 		this.classMap = new HashMap<>();
-		for (InputStream stream : classStreams) {
-			ClassReader reader = new ClassReader(stream);
+		try {
+			for (InputStream stream : classStreams) {
+				ClassReader reader = new ClassReader(stream);
 
-			ClassNode decompiled = new ClassNode();
-			reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
+				ClassNode decompiled = new ClassNode();
+				reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
 
-			// We still need the fully qualified class name
-			String className = decompiled.name;
-			classMap.put(className, decompiled);
+				// We still need the fully qualified class name
+				String className = decompiled.name;
+				classMap.put(className, decompiled);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Error reading class definitions!");
+			System.exit(1);
 		}
 	}
 
-	// This method is for the presentation layer's functionality
+	/**
+	 * This method is for the presentation layer's functionality.
+	 * 
+	 * @return String[] classNames
+	 */
 	public String[] getParsedClassNames() {
 		String[] classNames = new String[this.classMap.size()];
 		this.classMap.keySet().toArray(classNames);
@@ -173,6 +189,16 @@ public class ASMParser {
 		return result;
 	}
 
+	/**
+	 * Returns a list of compiler annotations for a method.
+	 * 
+	 * @param className  The name of the class where the method should reside in
+	 * @param methodName THe name of the method to retrieve compiler annotations
+	 *                   from
+	 * @return A Set<String> of all of the annotations from the compiler for the
+	 *         specified method
+	 * 
+	 */
 	public Set<String> getMethodCompilerAnnotations(String className, String methodName) {
 		ClassNode decompiled = this.classMap.get(className);
 
@@ -186,8 +212,6 @@ public class ASMParser {
 		if (decompMethod == null) {
 			throw new IllegalArgumentException("Error! Specified Method was not found in the class!");
 		}
-
-		String[] result = null;
 		List<AnnotationNode> annotations = decompMethod.invisibleAnnotations;
 		Set<String> annotationStrs = new HashSet<String>();
 
@@ -198,6 +222,71 @@ public class ASMParser {
 		}
 
 		return annotationStrs;
+	}
+
+	/**
+	 * Searches through the methods of a class, and finds the onces that are public
+	 * facing, static access.
+	 * 
+	 * @param className the class to be searched for static methods
+	 * @return List<String> of methods in the class with the static access modifier
+	 */
+	public List<String> getStaticMethods(String className) {
+		if (!this.classMap.containsKey(className)) {
+			throw new IllegalArgumentException("Error! The specified class was not found in the parsed class map.");
+		}
+
+		ClassNode decompiled = this.classMap.get(className);
+
+		List<String> methodList = new ArrayList<>();
+
+		for (MethodNode node : decompiled.methods) {
+			if (node.access == Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC) {
+				methodList.add(node.name);
+			}
+		}
+
+		return methodList;
+	}
+
+	/**
+	 * Determines if this class has a public facing constructor
+	 * 
+	 * @param className
+	 * @return boolean. if the classes constructor is private - true. Otherwise
+	 *         false
+	 */
+	public boolean isClassConstructorPrivate(String className) {
+		ClassNode classNode = this.classMap.get(className);
+
+		for (MethodNode method : classNode.methods) {
+			if (method.name.equals("<init>")) {
+				if (method.access == Opcodes.ACC_PRIVATE) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * searches the given class for fields that have private static access modifiers
+	 * 
+	 * @param className
+	 * @return List<String> of fieldNames that are private static
+	 */
+	public List<String> getClassStaticPrivateFieldNames(String className) {
+		List<String> fieldNames = new ArrayList<>();
+		ClassNode classNode = this.classMap.get(className);
+
+		for (FieldNode field : classNode.fields) {
+
+			if (field.access == Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC) {
+				fieldNames.add(field.name);
+			}
+		}
+
+		return fieldNames;
 	}
 
 	public List<String> getClassFieldNames(String className) {
@@ -226,15 +315,14 @@ public class ASMParser {
 		return globalNames;
 	}
 
-	public Map<String, List<String>> getMethodNames(String className) {
+	public Map<String, List<String>> getMethodNamesAndVariables(String className) {
 		Map<String, List<String>> methodNames = new HashMap<>();
 		ClassNode classNode = this.classMap.get(className);
 
 		for (MethodNode method : classNode.methods) {
 			if (method.localVariables == null) {
 				methodNames.put(method.name, new ArrayList<String>());
-			}
-			else {
+			} else {
 				ArrayList<String> methodVar = new ArrayList<>();
 				for (LocalVariableNode local : method.localVariables) {
 					if (local.name.compareTo("this") != 0)
@@ -256,7 +344,7 @@ public class ASMParser {
 		}
 
 		for (FieldNode field : classNode.fields) {
-				fieldTypes.add(field.desc);
+			fieldTypes.add(field.desc);
 		}
 
 		return fieldTypes;
@@ -269,8 +357,7 @@ public class ASMParser {
 		for (MethodNode method : classNode.methods) {
 			if (method.localVariables == null) {
 				methodNames.put(method.name, new ArrayList<String>());
-			}
-			else {
+			} else {
 				ArrayList<String> methodVar = new ArrayList<>();
 				for (LocalVariableNode local : method.localVariables) {
 					if (local.name.compareTo("this") != 0)
@@ -283,17 +370,15 @@ public class ASMParser {
 		return methodNames;
 	}
 
-
 	public List<String> getInterfacesWithoutMap(String className) {
-		//className = className.replace('.', '/');
+		// className = className.replace('.', '/');
 		try {
 			ClassReader reader = new ClassReader(className);
 			ClassNode decompiled = new ClassNode();
 			reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
 
 			return decompiled.interfaces;
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			System.out.println("Class Not Found: " + className);
 			return null;
 		}
@@ -302,7 +387,7 @@ public class ASMParser {
 	public boolean compareMethodFromInterface(String className, String methodName, String interfaceName) {
 		try {
 			if (!this.classMap.keySet().contains(className)) {
-				//System.out.println(className + " not found");
+				// System.out.println(className + " not found");
 				ClassReader reader = new ClassReader(className);
 				ClassNode decompiled = new ClassNode();
 				reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
@@ -310,14 +395,13 @@ public class ASMParser {
 			}
 
 			if (!this.classMap.keySet().contains(interfaceName)) {
-				//System.out.println(interfaceName + " not found");
+				// System.out.println(interfaceName + " not found");
 				ClassReader reader1 = new ClassReader(interfaceName);
 				ClassNode decompiled1 = new ClassNode();
 				reader1.accept(decompiled1, ClassReader.EXPAND_FRAMES);
 				this.classMap.put(interfaceName, decompiled1);
 			}
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
@@ -325,25 +409,22 @@ public class ASMParser {
 		MethodNode compare;
 		try {
 			original = getMethodNode(className, methodName);
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			original = null;
-			//System.out.println("Func not found in " + className + ", " + methodName );
+			// System.out.println("Func not found in " + className + ", " + methodName );
 		}
 
 		try {
 			compare = getMethodNode(interfaceName, methodName);
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			compare = null;
-			//System.out.println("Func not found in " + interfaceName + ", " + methodName);
+			// System.out.println("Func not found in " + interfaceName + ", " + methodName);
 		}
 
 		if (original != null && compare != null) {
 			if (original.desc.compareTo(compare.desc) == 0) {
 				return true;
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
@@ -375,17 +456,12 @@ public class ASMParser {
 		}
 	}
 
-	public void getMethod(String className) {
-		ClassNode decompiled = this.classMap.get(className);
-
-		for (MethodNode node : decompiled.methods) {
-			//TableSwitchInsnNode table = node.visitJumpInsn(Opcodes.TABLESWITCH, new
-		 	//Label());
-		}
-	}
-
 	public String getSignature(String className) {
 		return (this.classMap.get(className).signature);
+	}
+
+	public String getSignatureNonEnum(String className) {
+		return (this.classMap.get(className).access - 0x4000) < 0 ? this.getSignature(className) : null;
 	}
 
 	private MethodNode getMethodNode(String className, String methodName) {
@@ -404,22 +480,38 @@ public class ASMParser {
 		return method;
 	}
 
+	/**
+	 * Provides a list of MethodCall Objects corresponding to method calls within
+	 * the specified method
+	 * 
+	 * @throws IllegalArgumentException If the method is not found in the specified
+	 *                                  class
+	 * @param className  The name of the class where the method should reside in
+	 * @param methodName The name of the method to retrieve method call information
+	 *                   from
+	 * @return List of MethodCall Objects
+	 * 
+	 */
 	public List<MethodCall> getMethodCalls(String className, String methodName) {
 		List<MethodCall> methodCalls = new ArrayList<MethodCall>();
 		MethodNode method = this.getMethodNode(className, methodName);
 		Analyzer<SourceValue> analyzer = new Analyzer<SourceValue>(new SourceInterpreter());
 		Set<String> newVars = new HashSet<String>();
+		Set<String> fieldStructVars = new HashSet<String>();
 		try {
 			Frame<SourceValue>[] frames = analyzer.analyze(className, method);
-			for (int i = 0; i < frames.length; i++) {
+			instructions: for (int i = 0; i < frames.length; i++) {
 				AbstractInsnNode insn = method.instructions.get(i);
 				if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
 					MethodInsnNode call = (MethodInsnNode) insn;
 					if (call.getOpcode() == Opcodes.INVOKESPECIAL && call.name.equals("<init>")) {
 						if (!call.owner.equals("java/lang/Object") &&
 								call.getNext().getType() == AbstractInsnNode.VAR_INSN) {
+
 							VarInsnNode newVar = (VarInsnNode) call.getNext();
-							newVars.add(method.localVariables.get(newVar.var).name);
+							if (newVar.var < method.localVariables.size()) {
+								newVars.add(method.localVariables.get(newVar.var).name);
+							}
 						}
 					}
 					for (int j = 0; j < frames[i].getStackSize(); j++) {
@@ -431,7 +523,16 @@ public class ASMParser {
 											Invoker.FIELD,
 											((FieldInsnNode) insn2).name,
 											call.owner));
-									break;
+									if (call.owner.length() > 9 && call.owner.substring(0, 9).equals("java/util")
+											&& call.getNext().getType() == AbstractInsnNode.TYPE_INSN) {
+										if (call.getNext().getNext().getType() == AbstractInsnNode.VAR_INSN) {
+											VarInsnNode fieldVar = (VarInsnNode) call.getNext().getNext();
+											if (fieldVar.var < method.localVariables.size()) {
+												fieldStructVars.add(method.localVariables.get(fieldVar.var).name);
+											}
+										}
+									}
+									continue instructions;
 								case AbstractInsnNode.VAR_INSN:
 									VarInsnNode varInsn = (VarInsnNode) insn2;
 
@@ -441,24 +542,31 @@ public class ASMParser {
 												Invoker.PARAMETER,
 												method.localVariables.get(varInsn.var).name,
 												call.owner));
+									} else if (varInsn.var >= method.localVariables.size()) {
+										continue instructions;
 									} else if (newVars.contains(method.localVariables.get(varInsn.var).name)) {
 										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
 												Invoker.CONSTRUCTED,
 												method.localVariables.get(varInsn.var).name,
 												call.owner));
 									} else {
+										Invoker type = Invoker.RETURNED;
+										if (fieldStructVars.contains(method.localVariables.get(varInsn.var).name)) {
+											type = Invoker.FIELD;
+										}
 										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
-												Invoker.RETURNED,
+												type,
 												method.localVariables.get(varInsn.var).name,
 												call.owner));
 									}
-									break;
+									continue instructions;
 								case AbstractInsnNode.METHOD_INSN:
+									Invoker type = Invoker.RETURNED;
 									methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
-											Invoker.RETURNED,
+											type,
 											"",
 											call.owner));
-									break;
+									continue instructions;
 								default:
 									break;
 							}
@@ -467,7 +575,6 @@ public class ASMParser {
 				}
 			}
 		} catch (AnalyzerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -497,6 +604,9 @@ public class ASMParser {
 			// Only the type should count toward the coupling, so remove them if they exist
 			betterTypeName = betterTypeName.replace("[", "");
 
+			if (betterTypeName.charAt(0) == 'L' && betterTypeName.charAt(betterTypeName.length() - 1) == ';') {
+				betterTypeName = betterTypeName.substring(1, betterTypeName.length() - 1);
+			}
 			// Primitives in the JVM are single letter types, so we can filter them out
 			// after removing any array identifiers by checking string length
 
@@ -707,5 +817,31 @@ public class ASMParser {
 		String[] result = new String[types.size()];
 		types.toArray(result);
 		return result;
+	}
+
+	public boolean isInterface(String className) {
+		return ((this.classMap.get(className).access & Opcodes.ACC_INTERFACE) == Opcodes.ACC_INTERFACE);
+	}
+
+	public boolean isAbstractClass(String className) {
+		return (this.classMap.get(className).access & Opcodes.ACC_ABSTRACT) == Opcodes.ACC_ABSTRACT;
+	}
+
+	public boolean isEnum(String className) {
+		return ((this.classMap.get(className).access & Opcodes.ACC_ENUM) == Opcodes.ACC_ENUM);
+	}
+
+	public boolean isFinal(String className) {
+		return (this.classMap.get(className).access & Opcodes.ACC_FINAL) == Opcodes.ACC_FINAL;
+	}
+
+	public boolean allMethodsStatic(String className) {
+		for (MethodNode method : this.classMap.get(className).methods) {
+			if ((!method.name.equals("<init>") &&
+					(method.access & Opcodes.ACC_STATIC) != Opcodes.ACC_STATIC)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

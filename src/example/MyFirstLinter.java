@@ -15,7 +15,7 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-// FIXME: this code has TERRIBLE DESIGN all around
+@SuppressWarnings("unused")
 public class MyFirstLinter {
 
 	double testDouble;
@@ -34,7 +34,6 @@ public class MyFirstLinter {
 	 * @throws ClassNotFoundException
 	 */
 	public static void main(String[] args) throws IOException {
-		// TODO: Learn how to create separate Run Configurations so you can run
 		// your code on different programs without changing the code each time.
 
 		for (String className : args) {
@@ -61,6 +60,7 @@ public class MyFirstLinter {
 	}
 
 	private static void printClass(ClassNode classNode) {
+
 		System.out.println(classNode.signature);
 		System.out.println("Class's Internal JVM name: " + classNode.name);
 		System.out.println("User-friendly name: "
@@ -69,7 +69,6 @@ public class MyFirstLinter {
 				+ ((classNode.access & Opcodes.ACC_PUBLIC) != 0));
 		System.out.println("Extends: " + classNode.superName);
 		System.out.println("Implements: " + classNode.interfaces);
-		// TODO: how do I write a lint check to tell if this class has a bad name?
 	}
 
 	private static void printFields(ClassNode classNode) {
@@ -85,10 +84,6 @@ public class MyFirstLinter {
 
 			System.out.println("	public? "
 					+ ((field.access & Opcodes.ACC_PUBLIC) != 0));
-			// TODO: how do you tell if something has package-private access? (ie no access
-			// modifiers?)
-
-			// TODO: how do I write a lint check to tell if this field has a bad name?
 
 			System.out.println();
 		}
@@ -107,7 +102,6 @@ public class MyFirstLinter {
 			System.out.println("	Args: ");
 			for (Type argType : Type.getArgumentTypes(method.desc)) {
 				System.out.println("		" + argType.getClassName());
-				// FIXME: what is the argument's *variable* name?
 			}
 
 			System.out.println("	public? "
@@ -130,7 +124,6 @@ public class MyFirstLinter {
 			// We don't know immediately what kind of instruction we have.
 			AbstractInsnNode insn = instructions.get(i);
 
-			// FIXME: Is instanceof the best way to deal with the instruction's type?
 			if (insn instanceof MethodInsnNode) {
 				// A method call of some sort; what other useful fields does this object have?
 				MethodInsnNode methodCall = (MethodInsnNode) insn;
@@ -147,8 +140,6 @@ public class MyFirstLinter {
 			// There are others...
 			// This list of direct known subclasses may be useful:
 			// http://asm.ow2.org/asm50/javadoc/user/org/objectweb/asm/tree/AbstractInsnNode.html
-
-			// TODO: how do I write a lint check to tell if this method has a bad name?
 		}
 	}
 

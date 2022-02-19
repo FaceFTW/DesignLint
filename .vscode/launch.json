@@ -30,7 +30,7 @@
 			"request": "launch",
 			"mainClass": "main.LinterMain",
 			"projectName": "ASMTreeTutorial",
-			"args": "D:\\Onedrive\\CSSE374\\FinalProject\\202220-Project-TeamS4G2\\target"
+			"args": ""
 		}
 	]
 }
