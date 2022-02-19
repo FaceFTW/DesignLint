@@ -160,5 +160,14 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 		assertTrue(false);
 	}
 	
+	@Test
+	public void testCommunicateWithNewObjectGiveParameter() {
+		this.setupAnalyzer();
+		String [] classes = {"example.demeter.C"};
+		ReturnType results = this.analyzer.getFeedback(classes);
+		for(LinterError error : results.errorsCaught) {
+			assertTrue(!error.methodName.equals("letADoThingWithC"));
+		}
+	}
 	
 }

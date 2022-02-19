@@ -490,6 +490,7 @@ public class ASMParser {
 		Set<String> fieldStructVars = new HashSet<String>();
 		try {
 			Frame<SourceValue>[] frames = analyzer.analyze(className, method);
+			instructions:
 			for (int i = 0; i < frames.length; i++) {
 				AbstractInsnNode insn = method.instructions.get(i);
 				if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
@@ -517,7 +518,7 @@ public class ASMParser {
 											fieldStructVars.add(method.localVariables.get(fieldVar.var).name);
 										}
 									}
-									break;
+									continue instructions;
 								case AbstractInsnNode.VAR_INSN:
 									VarInsnNode varInsn = (VarInsnNode) insn2;
 
@@ -542,14 +543,14 @@ public class ASMParser {
 												method.localVariables.get(varInsn.var).name,
 												call.owner));
 									}
-									break;
+									continue instructions;
 								case AbstractInsnNode.METHOD_INSN:
 									Invoker type = Invoker.RETURNED;
 									methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
 											type,
 											"",
 											call.owner));
-									break;
+									continue instructions;
 								default:
 									break;
 							}
