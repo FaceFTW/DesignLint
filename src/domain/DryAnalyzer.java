@@ -62,9 +62,12 @@ public class DryAnalyzer extends DomainAnalyzer{
     public void analyzeData() {
         for(String className : this.classToMethods.keySet()) {
 			for(Method method : this.classToMethods.get(className)) {
+                if(method.getName() != "<init>"){
 				for(MethodCall methodCall : method.getMethodCalls()) {
+
                     checkForDuplication(className, method, methodCall);
 				}
+            }
 			}
         }
     }
@@ -78,9 +81,15 @@ public class DryAnalyzer extends DomainAnalyzer{
      * 
      */
     public void checkForDuplication(String classNameToCheck, Method methodToCheck, MethodCall methodCallToCheck){
-
+        if(methodToCheck.getName().equals("<init>")){
+            return;
+        }
+        int duplicateCount = 0;
+        boolean addE = true;
+        String message = "Possible Duplication with methods in the classes " ;
+        
         for(String className: this.classToMethods.keySet()) {
-            
+        
             for(Method method : this.classToMethods.get(className)) {
                 if(method.getName().equals("<init>")){
                     continue;
@@ -88,30 +97,35 @@ public class DryAnalyzer extends DomainAnalyzer{
                 if(className.equals(classNameToCheck) && methodToCheck.equals(method)){
                     continue;
                 } else{
-                for(MethodCall methodCall : method.getMethodCalls()) {  
-               
-                    if(methodCall.getCalledMethodName().equals(methodCallToCheck.getCalledMethodName())){
-                        
-                        LinterError e = new LinterError(classNameToCheck, methodToCheck.getName(), 
-                        "Duplication in method " + method.getName() + " from class " + className, ErrType.WARNING);
-                        boolean addE = true;
-                        for(LinterError err : this.errors){
-                            if(err.className.equals(e.className) && err.methodName.equals(e.methodName)){
-                                addE = false;
+                    for(MethodCall methodCall : method.getMethodCalls()) {  
+                        if(methodCall.getCalledMethodName().equals(methodCallToCheck.getCalledMethodName())){
+                            duplicateCount++;
+                            for(LinterError err : this.errors){
+
+                                if(err.className.equals(classNameToCheck) && err.methodName.equals(methodToCheck.getName())){
+                                    addE = false;
+                                }
                             }
                         }
-                        if(addE){
-                            if(!e.methodName.equals("<init>")){
-                            errors.add(e);
-                            }
-                        }
-                        continue;
                     }
                 }
-            }
-        }
+            
+            String classNameToAddToMessage = "[" + className + "] ";
+            message += classNameToAddToMessage;
+        }{
+            
         }
     }
+
+    if(addE && duplicateCount >= 1){
+        
+            LinterError e = new LinterError(classNameToCheck, methodToCheck.getName(), 
+        message, ErrType.WARNING);
+        if(!methodToCheck.equals("<init>")){
+            errors.add(e);
+            }
+}
+}
 
     @Override
     public ReturnType composeReturnType() {

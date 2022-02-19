@@ -28,7 +28,7 @@ public class EqualsAndHashcodeStyleCheckTest {
         ReturnType returnVal = this.analyzer.getFeedback(classList);
         List<LinterError> errors = returnVal.errorsCaught;
         assertTrue(errors.size() == 1);
-        assertEquals("if overriding the equals method, you should also override the hashCode method ", errors.get(0).message);
+        assertEquals("When overriding the equals method, you should also override the hashCode method ", errors.get(0).message);
         assertTrue(returnVal.analyzerName == "Equals And Hashcode Override Check");
 
     }
@@ -39,7 +39,7 @@ public class EqualsAndHashcodeStyleCheckTest {
         ReturnType returnVal = this.analyzer.getFeedback(classList);
         List<LinterError> errors = returnVal.errorsCaught;
         assertTrue(errors.size() == 1);
-        assertEquals("if overriding the hashCode method, you should also override the equals method ", errors.get(0).message);
+        assertEquals("When overriding the hashCode method, you should also override the equals method ", errors.get(0).message);
         assertTrue(returnVal.analyzerName == "Equals And Hashcode Override Check");
 
     }
