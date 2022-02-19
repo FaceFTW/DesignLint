@@ -9,6 +9,7 @@ import java.util.List;
 
 import datasource.ASMParser;
 import domain.DomainAnalyzer;
+import domain.DryAnalyzer;
 import domain.EqualsAndHashcodeAnalyzer;
 import domain.GenericTypeNameAnalyzer;
 import domain.LinterError;
@@ -59,9 +60,11 @@ public class PresentationLayer {
 			// Principle Violations
 			analyzers.add(new HighCouplingAnalyzer(parser));
 			analyzers.add(new PrincipleOfLeastKnowledgeAnalyzer(parser));
+			analyzers.add(new DryAnalyzer(parser));
 			// Pattern Detection
 			analyzers.add(new SingletonAnalyzer(parser));
 			analyzers.add(new ObjectAdapterIdentifierAnalyzer(parser));
+
 
 		} catch (IOException e) {
 			e.printStackTrace();
