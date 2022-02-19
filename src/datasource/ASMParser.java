@@ -507,8 +507,11 @@ public class ASMParser {
 					if (call.getOpcode() == Opcodes.INVOKESPECIAL && call.name.equals("<init>")) {
 						if (!call.owner.equals("java/lang/Object") &&
 								call.getNext().getType() == AbstractInsnNode.VAR_INSN) {
+
 							VarInsnNode newVar = (VarInsnNode) call.getNext();
-							newVars.add(method.localVariables.get(newVar.var).name);
+							if (newVar.var < method.localVariables.size()) {
+								newVars.add(method.localVariables.get(newVar.var).name);
+							}
 						}
 					}
 					for (int j = 0; j < frames[i].getStackSize(); j++) {
@@ -520,11 +523,13 @@ public class ASMParser {
 											Invoker.FIELD,
 											((FieldInsnNode) insn2).name,
 											call.owner));
-									if (call.owner.length() >= 9 && call.owner.substring(0, 9).equals("java/util")
+									if (call.owner.length() > 9 && call.owner.substring(0, 9).equals("java/util")
 											&& call.getNext().getType() == AbstractInsnNode.TYPE_INSN) {
 										if (call.getNext().getNext().getType() == AbstractInsnNode.VAR_INSN) {
 											VarInsnNode fieldVar = (VarInsnNode) call.getNext().getNext();
-											fieldStructVars.add(method.localVariables.get(fieldVar.var).name);
+											if (fieldVar.var < method.localVariables.size()) {
+												fieldStructVars.add(method.localVariables.get(fieldVar.var).name);
+											}
 										}
 									}
 									continue instructions;
@@ -537,7 +542,7 @@ public class ASMParser {
 												Invoker.PARAMETER,
 												method.localVariables.get(varInsn.var).name,
 												call.owner));
-									} else if(varInsn.var >= method.localVariables.size()) {
+									} else if (varInsn.var >= method.localVariables.size()) {
 										continue instructions;
 									} else if (newVars.contains(method.localVariables.get(varInsn.var).name)) {
 										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,

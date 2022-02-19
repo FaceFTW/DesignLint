@@ -60,11 +60,11 @@ public class PresentationLayer {
 			analyzers.add(new EqualsAndHashcodeAnalyzer(parser));
 			// Principle Violations
 			analyzers.add(new HighCouplingAnalyzer(parser));
-			// analyzers.add(new PrincipleOfLeastKnowledgeAnalyzer(parser));
-			// analyzers.add(new DryAnalyzer(parser));
+			analyzers.add(new PrincipleOfLeastKnowledgeAnalyzer(parser));
+			analyzers.add(new DryAnalyzer(parser));
 			// Pattern Detection
 			analyzers.add(new SingletonAnalyzer(parser));
-			// analyzers.add(new ObjectAdapterIdentifierAnalyzer(parser));
+			analyzers.add(new ObjectAdapterIdentifierAnalyzer(parser));
 			analyzers.add(new StrategyAnalyzer(parser));
 
 
