@@ -170,4 +170,14 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 		}
 	}
 	
+	@Test
+	public void testCommunicateWithSuper() {
+		this.setupAnalyzer();
+		String [] classes = {"example.demeter.D"};
+		ReturnType results = this.analyzer.getFeedback(classes);
+		for(LinterError error : results.errorsCaught) {
+			assertTrue(!error.methodName.equals("doDThing"));
+		}
+	}
+	
 }
