@@ -1,2 +1,3 @@
 *.class
 target/
+/src/domain/CodeToInterfaceTest.java

@@ -59,7 +59,7 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
 //                    System.out.println("Class: " + className);
 //                    System.out.println("Method: " + methodName);
 //                    System.out.println("VarName: " + varName);
-                    //System.out.println(this.possibleInterfaces.get(className).get(methodName).get(varName));
+//                    System.out.println(this.possibleInterfaces.get(className).get(methodName).get(varName));
 
                     analyzePotentialInterfaces(className, methodName, varName);
                 }
@@ -150,6 +150,7 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
     }
 
     public boolean findShortCut(String className, String methodName, String varName) {
+        System.out.println(varName);
         if (!this.methodVarNames.get(className).get(methodName).contains(varName)) {
             return false;
         }
@@ -174,18 +175,18 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
 
     public void checkMethodSignature(String className, String methodName) {
         //System.out.println(className + ": " + methodName);
-        List<MethodCall> methodCalls = this.parser.removeThis(this.parser.getMethodCalls(className, methodName),
-                this.methodVarNames.get(className).get(methodName));
-//        for (MethodCall m : methodCalls) {
-//            System.out.println(m);
-//        }
+        List<MethodCall> methodCalls = this.parser.removeThis(this.parser.getMethodCalls(className, methodName));
+        if (methodName.compareTo("anotherFunc") == 0) {
+            for (MethodCall m : methodCalls) {
+                System.out.println(m);
+                System.out.println();
+            }
+        }
+
         for (MethodCall method : methodCalls) {
-            if (method.getInvoker() == Invoker.FIELD) {
-                continue;
-            }
-            else if (method.getInvoker() == Invoker.CONSTRUCTED) {
-                System.out.println(method.getInvokerName());
-            }
+//            if (method.getInvoker() == Invoker.FIELD) {
+//                continue;
+//            }
             List<String> interfaces = parser.getInterfacesWithoutMap(method.getInvokedClass());
             if (interfaces.size() > 0) {
                 //System.out.println(interfaces);
@@ -258,56 +259,3 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
         return this.possibleInterfaces;
     }
 }
-
-//    public void checkForPrimitive(List<String> varNameArr, List<String> varTypeArr, String className, String methodName) {
-//        for (int i = 0; i < varNameArr.size(); i++) {
-//            String varType = varTypeArr.get(i);
-//            //In ASM, non-primitive types begin with 'L'.
-//            //We are going to consider String as a "primitive" type.
-//            if (varType.charAt(0) == 'L' && varType.compareTo("Ljava/lang/String;") != 0) {
-//                checkForInterface(varNameArr.get(i), varTypeArr.get(i), className, methodName);
-//            }
-//        }
-//    }
-//
-//    public void checkForInterface(String varName, String varType, String className, String methodName) {
-//        varType = varType.substring(1, varType.length() - 1);
-//
-//        //Common interfaces that we want to utilize. Simplifies the searching.
-//        if (varType.compareTo("java/util/ArrayList") == 0) {
-//            this.foundErrors.add(new LinterError(className, methodName,
-//                    "Variable " + varName + " should be of type List<> (instead of type ArrayList<>).", ErrType.ERROR));
-//        }
-//        else if (varType.compareTo("java/util/HashMap") == 0) {
-//            this.foundErrors.add(new LinterError(className, methodName,
-//                    "Variable " + varName + " should be of type Map<> (instead of type HashMap<>).", ErrType.ERROR));
-//        }
-//        else if (varType.compareTo("java/util/HashSet") == 0) {
-//            this.foundErrors.add(new LinterError(className, methodName,
-//                    "Variable " + varName + " should be of type Set<> (instead of type HashSet<>).", ErrType.ERROR));
-//        }
-//        else {
-//            List<String> interfaces = this.parser.getInterfacesWithoutMap(varType);
-//
-//            if (interfaces.size() > 0) {
-//                int size = interfaces.size();
-//                String message = "Variable " + varName + " (Type: " + varType + ") is currently implementing interfaces: ";
-//
-//                if (interfaces.size() > 3) {
-//                    size = 3;
-//                }
-//
-//                //List 3 potential interface you could write to. We don't know enough about their code to say for certain which one.
-//                for (int i = 0; i < size; i++) {
-//                    message += interfaces.get(i);
-//                    if (i != size-1) {
-//                        message += ", ";
-//                    }
-//                }
-//                //Errors of type Warning, as we don't know if coding to the interface is correct.
-//                this.foundErrors.add(new LinterError(className, methodName, message, ErrType.WARNING));
-//            }
-//            //Else, move to next entry.
-//        }
-//    }
-//}

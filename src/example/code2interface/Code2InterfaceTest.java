@@ -25,6 +25,8 @@ public class Code2InterfaceTest {
         tri6.getArea();
 
         tri3.compareShape(this.triangleTest);
+
+        tri4.compareTriangle(tri1);
     }
 
     public void anotherFunc() {
@@ -35,15 +37,14 @@ public class Code2InterfaceTest {
         for (Triangle tri : innerList) {
             tri.getArea();
         }
-//        for (int i = 0; i < innerList.size(); i++) {
-//            innerList.get(i).getArea();
-//        }
 
         HashMap<String, String> mapTest = new HashMap<>();
         mapTest.put("1", "2");
 
         HashSet<String> setTest = new HashSet<>();
         setTest.add("1");
+        setTest.add("2");
+        mapTest.put("3", "4");
     }
 }
 
