@@ -49,9 +49,11 @@ public class DryTest {
             System.out.println(l);
         }
         assertEquals("DryAnalyzer", returned.analyzerName);
-        assertEquals(1, returned.errorsCaught.size());
+        assertEquals(2, returned.errorsCaught.size());
         assertEquals("example/dry/Dog" , returned.errorsCaught.get(0).className);
+        assertEquals("example/dry/Dog" , returned.errorsCaught.get(1).className);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(0).type);
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(1).type);
         
     }
     @Test
@@ -81,9 +83,11 @@ public class DryTest {
         }
 
         assertEquals("DryAnalyzer", returned.analyzerName);
-        assertEquals(1, returned.errorsCaught.size());
+        assertEquals(2, returned.errorsCaught.size());
         assertEquals("example/dry/Dog" , returned.errorsCaught.get(0).className);
+        assertEquals("example/dry/Dog" , returned.errorsCaught.get(1).className);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(0).type);
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(1).type);
         
         
     }
@@ -98,12 +102,16 @@ public class DryTest {
             System.out.println(l);
         }
         assertEquals("DryAnalyzer", returned.analyzerName);
-        assertEquals(2, returned.errorsCaught.size());
+        assertEquals(4, returned.errorsCaught.size());
         assertEquals("example/dry/Cat" , returned.errorsCaught.get(0).className);
-        assertEquals("example/dry/Dog" , returned.errorsCaught.get(1).className);
+        assertEquals("example/dry/Cat" , returned.errorsCaught.get(1).className);
+        assertEquals("example/dry/Dog" , returned.errorsCaught.get(2).className);
+        assertEquals("example/dry/Dog" , returned.errorsCaught.get(3).className);
         
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(0).type);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(1).type);
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(2).type);
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(3).type);
     }
     @Test 
     public void allClassesTest(){
@@ -117,16 +125,19 @@ public class DryTest {
         }
         
 
-        assertEquals(4, returned.errorsCaught.size());
+        assertEquals(6, returned.errorsCaught.size());
         assertEquals("example/dry/DogExtendsAnimal" , returned.errorsCaught.get(0).className);
         assertEquals("example/dry/Cat" , returned.errorsCaught.get(1).className);
-        assertEquals("example/dry/Dog" , returned.errorsCaught.get(2).className);
-        assertEquals("example/dry/CatExtendsAnimal" , returned.errorsCaught.get(3).className);
+        assertEquals("example/dry/Cat" , returned.errorsCaught.get(2).className);
+        assertEquals("example/dry/Dog" , returned.errorsCaught.get(3).className);
+        assertEquals("example/dry/Dog" , returned.errorsCaught.get(4).className);
+        assertEquals("example/dry/CatExtendsAnimal" , returned.errorsCaught.get(5).className);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(0).type);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(1).type);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(2).type);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(3).type);
- 
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(4).type);
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(5).type);
     }
 
 }
