@@ -50,7 +50,8 @@ public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 				for(MethodCall methodCall : method.getMethodCalls()) {
 					String errorMessage = "Principle of Least Knowledge Violation in Class '" + className + "', Method '" + method.getName() + "'\n";
 					if(this.consideredClasses.contains(methodCall.getInvokedClass())
-					   && !methodCall.getCalledMethodName().equals("<init>")) {
+					   && !methodCall.getCalledMethodName().equals("<init>")
+					   && !methodCall.getInvokerName().equals("this")) {
 						switch(methodCall.getInvoker()) {
 							case FIELD:
 								break;
