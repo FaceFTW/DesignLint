@@ -42,7 +42,6 @@ public class SingletonAnalyzer extends DomainAnalyzer {
 			List<String> classFields = this.parser.getClassStaticPrivateFieldNames(className);
 			validFields.put(className, classFields);
 		}
-
 		for (String className : classList) {
 			List<String> classMethods = this.parser.getStaticMethods(className);
 			staticMethods.put(className, classMethods);
@@ -55,7 +54,6 @@ public class SingletonAnalyzer extends DomainAnalyzer {
 			boolean hasStaticField = analyzeFields(className);
 			boolean hasPriCon = parser.isClassConstructorPrivate(className);
 			boolean hasStaticMethod = analyzeMethods(className);
-
 			if (hasPriCon && hasStaticField && hasStaticMethod) {
 				LinterError err = new LinterError(className, "Singleton Pattern detected!", ErrType.PATTERN);
 				errors.add(err);
@@ -74,7 +72,6 @@ public class SingletonAnalyzer extends DomainAnalyzer {
 	}
 
 	private boolean analyzeMethods(String className) {
-
 		for (String method : this.staticMethods.get(className)) {
 			if (method.equals("getInstance")) {
 				return true;
