@@ -528,6 +528,8 @@ public class ASMParser {
 												Invoker.PARAMETER,
 												method.localVariables.get(varInsn.var).name,
 												call.owner));
+									} else if(varInsn.var >= method.localVariables.size()) {
+										continue instructions;
 									} else if (newVars.contains(method.localVariables.get(varInsn.var).name)) {
 										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
 												Invoker.CONSTRUCTED,
