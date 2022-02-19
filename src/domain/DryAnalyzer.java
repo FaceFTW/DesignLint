@@ -13,9 +13,14 @@ public class DryAnalyzer extends DomainAnalyzer{
 
     private ASMParser parser;
 	private List<LinterError> errors;
-    private String[] classList;
     private Map<String, List<Method>> classToMethods;
 
+
+    public DryAnalyzer(ASMParser parser){
+        this.parser = parser;
+        this.errors = new ArrayList<>();
+        this.classToMethods = new HashMap<>();
+    }
     public DryAnalyzer(String[] classList){
         try {
 			this.parser = new ASMParser(classList);
@@ -28,7 +33,6 @@ public class DryAnalyzer extends DomainAnalyzer{
 
     @Override
     public void getRelevantData(String[] classList) {
-        this.classList = classList;
         for(String className : classList) {
 			className = className.replace('.', '/');
 			List<Method> methods = new ArrayList<Method>();
