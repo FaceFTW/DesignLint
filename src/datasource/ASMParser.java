@@ -498,22 +498,25 @@ public class ASMParser {
 		Analyzer<SourceValue> analyzer = new Analyzer<SourceValue>(new SourceInterpreter());
 		Set<String> newVars = new HashSet<String>();
 		Set<String> fieldStructVars = new HashSet<String>();
+		
 		try {
 			Frame<SourceValue>[] frames = analyzer.analyze(className, method);
 			instructions: for (int i = 0; i < frames.length; i++) {
 				AbstractInsnNode insn = method.instructions.get(i);
 				if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
 					MethodInsnNode call = (MethodInsnNode) insn;
+					
 					if (call.getOpcode() == Opcodes.INVOKESPECIAL && call.name.equals("<init>")) {
 						if (!call.owner.equals("java/lang/Object") &&
-								call.getNext().getType() == AbstractInsnNode.VAR_INSN) {
-
-							VarInsnNode newVar = (VarInsnNode) call.getNext();
-							if (newVar.var < method.localVariables.size()) {
-								newVars.add(method.localVariables.get(newVar.var).name);
+							call.getNext().getType() == AbstractInsnNode.VAR_INSN) {
+								VarInsnNode newVar = (VarInsnNode) call.getNext();
+								if(newVar.var < method.localVariables.size()) {
+									newVars.add(method.localVariables.get(newVar.var).name);
+								}
+								continue instructions;
 							}
-						}
 					}
+					Map<Integer,LocalVariableNode> varsCurrentContext = this.getLocalVarContext(method, i);
 					for (int j = 0; j < frames[i].getStackSize(); j++) {
 						SourceValue value = (SourceValue) frames[i].getStack(j);
 						for (AbstractInsnNode insn2 : value.insns) {
@@ -527,8 +530,8 @@ public class ASMParser {
 											&& call.getNext().getType() == AbstractInsnNode.TYPE_INSN) {
 										if (call.getNext().getNext().getType() == AbstractInsnNode.VAR_INSN) {
 											VarInsnNode fieldVar = (VarInsnNode) call.getNext().getNext();
-											if (fieldVar.var < method.localVariables.size()) {
-												fieldStructVars.add(method.localVariables.get(fieldVar.var).name);
+											if (varsCurrentContext.containsKey(fieldVar.var)) {
+												fieldStructVars.add(varsCurrentContext.get(fieldVar.var).name);
 											}
 										}
 									}
@@ -542,21 +545,21 @@ public class ASMParser {
 												Invoker.PARAMETER,
 												method.localVariables.get(varInsn.var).name,
 												call.owner));
-									} else if (varInsn.var >= method.localVariables.size()) {
+									} else if (!varsCurrentContext.containsKey(varInsn.var)) {
 										continue instructions;
-									} else if (newVars.contains(method.localVariables.get(varInsn.var).name)) {
+									} else if (newVars.contains(varsCurrentContext.get(varInsn.var).name)) {
 										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
 												Invoker.CONSTRUCTED,
-												method.localVariables.get(varInsn.var).name,
+												varsCurrentContext.get(varInsn.var).name,
 												call.owner));
 									} else {
 										Invoker type = Invoker.RETURNED;
-										if (fieldStructVars.contains(method.localVariables.get(varInsn.var).name)) {
+										if (fieldStructVars.contains(varsCurrentContext.get(varInsn.var).name)) {
 											type = Invoker.FIELD;
 										}
 										methodCalls.add(new MethodCall(((MethodInsnNode) insn).name,
 												type,
-												method.localVariables.get(varInsn.var).name,
+												varsCurrentContext.get(varInsn.var).name,
 												call.owner));
 									}
 									continue instructions;
@@ -581,6 +584,28 @@ public class ASMParser {
 		return methodCalls;
 	}
 
+	private Map<Integer,LocalVariableNode> getLocalVarContext(MethodNode method, int index) {
+		Map<Integer,LocalVariableNode> vars = new HashMap<Integer,LocalVariableNode>();
+		int localVarIndex = 0;
+		for(LocalVariableNode var : method.localVariables) {
+			int start = 0;
+			int end = 0;
+			for(int i = 0; i < method.instructions.size(); i++) {
+				if(method.instructions.get(i) == var.start) {
+					start = i;
+				}
+				if(method.instructions.get(i) == var.end) {
+					end = i;
+				}
+			}
+			if(start <= index && index < end) {
+				vars.put(localVarIndex, var);
+				localVarIndex++;
+			}
+		}
+		return vars;
+	}
+	
 	/**
 	 * Determines all of the types used by fields of a specified parsed class.
 	 * This does not actually associate any information about what field has what
