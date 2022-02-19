@@ -91,6 +91,9 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
 
     public void analyzePotentialInterfaces(String className, String methodName, String varName) {
         if (!findShortCut(className, methodName, varName)) {
+            if (varName.compareTo("this") == 0) {
+                return;
+            }
             Map<String, List<String>> interfaces = this.possibleInterfaces.get(className).get(methodName).get(varName);
             //System.out.println(varName + " " + interfaces);
             List<String> union = new ArrayList<>();
@@ -174,8 +177,8 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
     }
 
     public void checkMethodSignature(String className, String methodName) {
-        //System.out.println(className + ": " + methodName);
-        List<MethodCall> methodCalls = this.parser.removeThis(this.parser.getMethodCalls(className, methodName));
+        System.out.println(className + ": " + methodName);
+        List<MethodCall> methodCalls = this.parser.getMethodCalls(className, methodName);
         if (methodName.compareTo("anotherFunc") == 0) {
             for (MethodCall m : methodCalls) {
                 System.out.println(m);

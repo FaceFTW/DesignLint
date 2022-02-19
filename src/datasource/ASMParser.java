@@ -431,9 +431,51 @@ public class ASMParser {
 		return false;
 	}
 
-	public List<MethodCall> removeThis(List<MethodCall> list) {
-//		List<MethodCall> arrList = new ArrayList<>();
-//
+	public List<String> getAbstractMethods(String className) {
+		ClassNode classNode = this.classMap.get(className);
+		List<MethodNode> methods = classNode.methods;
+		List<String> abstractMethods = new ArrayList<>();
+		for (MethodNode method : methods) {
+			if ((method.access & Opcodes.ACC_ABSTRACT) != 0) {
+				abstractMethods.add(method.name);
+			}
+		}
+
+		return abstractMethods;
+	}
+
+	public List<String> getConcreteMethods(String className) {
+		ClassNode classNode = this.classMap.get(className);
+		List<MethodNode> methods = classNode.methods;
+		List<String> abstractMethods = new ArrayList<>();
+		for (MethodNode method : methods) {
+			if ((method.access & Opcodes.ACC_ABSTRACT) == 0) {
+				abstractMethods.add(method.name);
+			}
+		}
+
+		return abstractMethods;
+	}
+
+	public List<String> getAbstractMethodsInConcrete(String className, String methodName, List<String> methodList) {
+		List<String> abstractMethodNames = new ArrayList<>();
+		List<MethodCall> methodCalls = getMethodCalls(className, methodName);
+		for (MethodCall method : methodCalls) {
+			if (method.getInvokedClass().compareTo(className) == 0) {
+				if (methodList.contains(method.getCalledMethodName())) {
+					MethodNode node = getMethodNode(className, method.getCalledMethodName());
+					if ((node.access & Opcodes.ACC_ABSTRACT) != 0) {
+						abstractMethodNames.add(node.name);
+					}
+				}
+			}
+		}
+		return abstractMethodNames;
+	}
+
+	public List<MethodCall> removeThis(List<MethodCall> list, List<String> names) {
+		List<MethodCall> arrList = (ArrayList<MethodCall>) list;
+
 //		for (MethodCall method : list) {
 //			if (method.getInvokerName().compareTo("this") != 0 || true) {
 //				arrList.add(method);
@@ -441,27 +483,28 @@ public class ASMParser {
 //		}
 //		return arrList;
 
-		return list;
-//		if (arrList.get(0).getInvokerName().compareTo("this") != 0) {
-//			return list;
-//		} else {
-//			List<MethodCall> newList = new ArrayList<>();
-//			for (int i = 0; i < arrList.size() - 1; i++) {
-//				newList.add(new MethodCall(
-//						arrList.get(i).getCalledMethodName(),
-//						arrList.get(i).getInvoker(),
-//						arrList.get(i + 1).getInvokerName(),
-//						arrList.get(i).getInvokedClass()));
-//			}
-//			if (names.size() > 0) {
-//				newList.add(new MethodCall(
-//						arrList.get(arrList.size() - 1).getCalledMethodName(),
-//						arrList.get(arrList.size() - 1).getInvoker(),
-//						names.get(names.size() - 1),
-//						arrList.get(arrList.size() - 1).getInvokedClass()));
-//
-//			}
-//		}
+
+		if (arrList.get(0).getInvokerName().compareTo("this") != 0) {
+			return list;
+		} else {
+			List<MethodCall> newList = new ArrayList<>();
+			for (int i = 0; i < arrList.size() - 1; i++) {
+				newList.add(new MethodCall(
+						arrList.get(i).getCalledMethodName(),
+						arrList.get(i).getInvoker(),
+						arrList.get(i + 1).getInvokerName(),
+						arrList.get(i).getInvokedClass()));
+			}
+			if (names.size() > 0) {
+				newList.add(new MethodCall(
+						arrList.get(arrList.size() - 1).getCalledMethodName(),
+						arrList.get(arrList.size() - 1).getInvoker(),
+						names.get(names.size() - 1),
+						arrList.get(arrList.size() - 1).getInvokedClass()));
+
+			}
+			return newList;
+		}
 	}
 
 	public String getSignature(String className) {
