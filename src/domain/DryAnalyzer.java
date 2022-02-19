@@ -89,7 +89,7 @@ public class DryAnalyzer extends DomainAnalyzer{
         String message = "duplication found between this class and the following classes " ;
         
         for(String className: this.classToMethods.keySet()) {
-        
+            
             for(Method method : this.classToMethods.get(className)) {
                 if(method.getName().equals("<init>")){
                     continue;
@@ -109,10 +109,9 @@ public class DryAnalyzer extends DomainAnalyzer{
                         }
                     }
                 }
-            
-            String classNameToAddToMessage = "[" + className + "] ";
-            message += classNameToAddToMessage;
         }
+        String classNameToAddToMessage = "[" + className + "] ";
+            message += classNameToAddToMessage;
 
     }
 
