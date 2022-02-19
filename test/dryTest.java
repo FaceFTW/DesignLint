@@ -9,35 +9,78 @@ import domain.DryAnalyzer;
 
 public class DryTest {
     private DryAnalyzer analyzer;
+
     @Test
     public void oneClassNoDuplicationTest(){
-        //cat - shouldnt give an error
-        String[] classList = { "example/dry/Cat" };
+        String[] classList = { "example/dry/Kitten" };
         this.analyzer = new DryAnalyzer(classList);
         ReturnType returned = this.analyzer.getFeedback(classList);
 
         assertEquals("DryAnalyzer", returned.analyzerName);
-        assertEquals(0, returned.errorsCaught.size());
         for(LinterError l : returned.errorsCaught){
             System.out.println(l);
         }
-    }
-    @Test
-    public void twoClassNoDuplicationTest(){
-        //cat and dog with interfaces - shouldn't give an error
-        String[] classList = { "example/dry/CatExtendsAnimal", "example/dry/DogExtendsAnimal"};
-        this.analyzer = new DryAnalyzer(classList);
-        ReturnType returned = this.analyzer.getFeedback(classList);
-
         assertEquals("DryAnalyzer", returned.analyzerName);
         assertEquals(0, returned.errorsCaught.size());
     }
     @Test
-    public void oneClassWithDuplicationTest(){
-        //dog - should give two errors, one error for walk and one for run methods
+    public void twoClassNoDuplicationTest(){
+        String[] classList = { "example/dry/Puppy", "example/dry/Kitten"};
+        this.analyzer = new DryAnalyzer(classList);
+        ReturnType returned = this.analyzer.getFeedback(classList);
+
+        assertEquals("DryAnalyzer", returned.analyzerName);
+        for(LinterError l : returned.errorsCaught){
+            System.out.println(l);
+        }
+        assertEquals("DryAnalyzer", returned.analyzerName);
+        assertEquals(0, returned.errorsCaught.size());
+    }
+
+
+    @Test
+    public void oneClassSmallDuplicationTest(){
         String[] classList = { "example/dry/Dog" };
         this.analyzer = new DryAnalyzer(classList);
         ReturnType returned = this.analyzer.getFeedback(classList);
+
+        assertEquals("DryAnalyzer", returned.analyzerName);
+        for(LinterError l : returned.errorsCaught){
+            System.out.println(l);
+        }
+        assertEquals("DryAnalyzer", returned.analyzerName);
+        assertEquals(2, returned.errorsCaught.size());
+        assertEquals("example/dry/Dog" , returned.errorsCaught.get(0).className);
+        assertEquals("example/dry/Dog" , returned.errorsCaught.get(1).className);
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(0).type);
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(1).type);
+        
+    }
+    @Test
+    public void twoClassSlightDuplicationTest(){
+        
+        String[] classList = { "example/dry/CatExtendsAnimal", "example/dry/DogExtendsAnimal"};
+        this.analyzer = new DryAnalyzer(classList);
+        ReturnType returned = this.analyzer.getFeedback(classList);
+        for(LinterError l : returned.errorsCaught){
+            System.out.println(l);
+        }
+        assertEquals("DryAnalyzer", returned.analyzerName);
+        assertEquals(2, returned.errorsCaught.size());
+        assertEquals("example/dry/DogExtendsAnimal" , returned.errorsCaught.get(0).className);
+        assertEquals("example/dry/CatExtendsAnimal" , returned.errorsCaught.get(1).className);
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(0).type);
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(1).type);
+
+    }
+    @Test
+    public void oneClassWithDuplicationTest(){
+        String[] classList = { "example/dry/Dog" };
+        this.analyzer = new DryAnalyzer(classList);
+        ReturnType returned = this.analyzer.getFeedback(classList);
+        for(LinterError l : returned.errorsCaught){
+            System.out.println(l);
+        }
 
         assertEquals("DryAnalyzer", returned.analyzerName);
         assertEquals(2, returned.errorsCaught.size());
@@ -50,15 +93,18 @@ public class DryTest {
     }
     @Test
     public void twoClassWithDuplicationTest(){
-        // cat and dog -  should give 4 errors, one error for walk and one for run methods, one for each eat methods
         String[] classList = { "example/dry/Cat", "example/dry/Dog"};
         this.analyzer = new DryAnalyzer(classList);
         ReturnType returned = this.analyzer.getFeedback(classList);
 
+
+        for(LinterError l : returned.errorsCaught){
+            System.out.println(l);
+        }
         assertEquals("DryAnalyzer", returned.analyzerName);
         assertEquals(4, returned.errorsCaught.size());
         assertEquals("example/dry/Cat" , returned.errorsCaught.get(0).className);
-        assertEquals("example/dry/Dog" , returned.errorsCaught.get(1).className);
+        assertEquals("example/dry/Cat" , returned.errorsCaught.get(1).className);
         assertEquals("example/dry/Dog" , returned.errorsCaught.get(2).className);
         assertEquals("example/dry/Dog" , returned.errorsCaught.get(3).className);
         
@@ -69,7 +115,6 @@ public class DryTest {
     }
     @Test 
     public void allClassesTest(){
-        // - should give 4 errors, one error for walk and one for run methods, one for each eat methods
         String[] classList = { "example/dry/Cat", "example/dry/Dog", "example/dry/CatExtendsAnimal", "example/dry/DogExtendsAnimal" };
         this.analyzer = new DryAnalyzer(classList);
         ReturnType returned = this.analyzer.getFeedback(classList);
@@ -78,15 +123,21 @@ public class DryTest {
         for(LinterError e : returned.errorsCaught){
             System.out.println(e.toString());
         }
-        assertEquals(4, returned.errorsCaught.size());
-        assertEquals("example/dry/Cat" , returned.errorsCaught.get(0).className);
-        assertEquals("example/dry/Dog" , returned.errorsCaught.get(1).className);
-        assertEquals("example/dry/Dog" , returned.errorsCaught.get(2).className);
+        
+
+        assertEquals(6, returned.errorsCaught.size());
+        assertEquals("example/dry/DogExtendsAnimal" , returned.errorsCaught.get(0).className);
+        assertEquals("example/dry/Cat" , returned.errorsCaught.get(1).className);
+        assertEquals("example/dry/Cat" , returned.errorsCaught.get(2).className);
         assertEquals("example/dry/Dog" , returned.errorsCaught.get(3).className);
+        assertEquals("example/dry/Dog" , returned.errorsCaught.get(4).className);
+        assertEquals("example/dry/CatExtendsAnimal" , returned.errorsCaught.get(5).className);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(0).type);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(1).type);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(2).type);
         assertEquals(ErrType.WARNING , returned.errorsCaught.get(3).type);
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(4).type);
+        assertEquals(ErrType.WARNING , returned.errorsCaught.get(5).type);
     }
 
 }

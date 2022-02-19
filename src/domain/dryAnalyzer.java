@@ -58,15 +58,30 @@ public class DryAnalyzer extends DomainAnalyzer{
         for(String className: this.classToMethods.keySet()) {
             
             for(Method method : this.classToMethods.get(className)) {
+                if(method.getName().equals("<init>")){
+                    continue;
+                }
                 if(className.equals(classNameToCheck) && methodToCheck.equals(method)){
                     continue;
                 } else{
                 for(MethodCall methodCall : method.getMethodCalls()) {  
                
-                    if(methodCall.equals(methodCallToCheck)){
+                    if(methodCall.getCalledMethodName().equals(methodCallToCheck.getCalledMethodName())){
+                        
                         LinterError e = new LinterError(classNameToCheck, methodToCheck.getName(), 
-                        "Duplication in method " + method.getName() + "from class " + className, ErrType.WARNING);
-                        errors.add(e);
+                        "Duplication in method " + method.getName() + " from class " + className, ErrType.WARNING);
+                        boolean addE = true;
+                        for(LinterError err : this.errors){
+                            if(err.className.equals(e.className) && err.methodName.equals(e.methodName)){
+                                addE = false;
+                            }
+                        }
+                        if(addE){
+                            if(!e.methodName.equals("<init>")){
+                            errors.add(e);
+                            }
+                        }
+                        continue;
                     }
                 }
             }
@@ -76,6 +91,8 @@ public class DryAnalyzer extends DomainAnalyzer{
 
     @Override
     public ReturnType composeReturnType() {
+
+        
         return new ReturnType("DryAnalyzer", this.errors);
     }
     
