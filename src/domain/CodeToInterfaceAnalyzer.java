@@ -183,9 +183,6 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
             if (method.getInvoker() == Invoker.FIELD) {
                 continue;
             }
-            else if (method.getInvoker() == Invoker.CONSTRUCTED) {
-                System.out.println(method.getInvokerName());
-            }
             List<String> interfaces = parser.getInterfacesWithoutMap(method.getInvokedClass());
             if (interfaces.size() > 0) {
                 //System.out.println(interfaces);
