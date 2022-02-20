@@ -1,9 +1,9 @@
 package domain;
 
 import datasource.ASMParser;
+import datasource.Invoker;
 import datasource.MethodCall;
 
-import java.io.IOException;
 import java.util.*;
 
 public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
@@ -167,21 +167,17 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
     }
 
     public void checkMethodSignature(String className, String methodName) {
-//        System.out.println(className + ": " + methodName);
         List<MethodCall> methodCalls = this.parser.getMethodCalls(className, methodName);
-//        if (methodName.compareTo("anotherFunc") == 0) {
-//            for (MethodCall m : methodCalls) {
-//                System.out.println(m);
-//                System.out.println();
-//            }
-//        }
 
         for (MethodCall method : methodCalls) {
-//            if (method.getInvoker() == Invoker.FIELD) {
-//                continue;
-//            }
-            List<String> interfaces = parser.getInterfacesWithoutMap(method.getInvokedClass());
-            if (interfaces.size() > 0) {
+            if (method.getInvoker() == Invoker.FIELD) {
+                continue;
+            }
+            List<String> interfaces = parser.getInterfacesList(method.getInvokedClass());
+            if (interfaces == null) {
+                continue;
+            }
+            else if (interfaces.size() > 0) {
                 //System.out.println(interfaces);
                 boolean foundInInterface = false;
                 for (String interf : interfaces) {

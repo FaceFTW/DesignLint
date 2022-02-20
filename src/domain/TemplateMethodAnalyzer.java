@@ -80,7 +80,7 @@ public class TemplateMethodAnalyzer extends DomainAnalyzer {
                                     allConcrete = false;
                                 }
                             }
-                            if (allConcrete) {
+                            if (allConcrete && methodName.get(0).compareTo("<init>") != 0) {
                                 //System.out.println(subclassName + " " + className);
                                     this.foundPatterns.add(new LinterError(className, methodName.get(0),
                                             "Template Method Pattern Found: " + methodName.get(0) + " (Subclass: " + subclassName + ")",

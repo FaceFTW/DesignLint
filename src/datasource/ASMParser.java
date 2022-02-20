@@ -12,7 +12,6 @@ import org.objectweb.asm.tree.analysis.SourceValue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class ASMParser {
@@ -371,18 +370,25 @@ public class ASMParser {
 		return methodNames;
 	}
 
-	public List<String> getInterfacesWithoutMap(String className) {
-		// className = className.replace('.', '/');
-		try {
-			ClassReader reader = new ClassReader(className);
-			ClassNode decompiled = new ClassNode();
-			reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
+	public List<String> getInterfacesList(String className) {
+			if (this.classMap.get(className) == null) {
+				try {
+					ClassReader reader = new ClassReader(className);
+					ClassNode decompiled = new ClassNode();
+					reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
 
-			return decompiled.interfaces;
-		} catch (IOException e) {
-			System.out.println("Class Not Found: " + className);
-			return null;
-		}
+					this.classMap.put(className, decompiled);
+					return decompiled.interfaces;
+				}
+				catch (IOException e) {
+					System.out.println("Class Not Found: " + className);
+					return new ArrayList<>();
+				}
+			}
+			else {
+				//System.out.println("Class: " + className + " " + this.classMap.get(className).interfaces);
+				return this.classMap.get(className).interfaces;
+			}
 	}
 
 	public boolean compareMethodFromInterface(String className, String methodName, String interfaceName) {
