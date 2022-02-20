@@ -8,16 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import datasource.ASMParser;
-import domain.DomainAnalyzer;
-import domain.DryAnalyzer;
-import domain.EqualsAndHashcodeAnalyzer;
-import domain.GenericTypeNameAnalyzer;
-import domain.LinterError;
-import domain.ObjectAdapterIdentifierAnalyzer;
-import domain.PrincipleOfLeastKnowledgeAnalyzer;
-import domain.ReturnType;
-import domain.SingletonAnalyzer;
-import domain.VarNameAnalyzer;
+import domain.*;
 import domain.analyzer.ExceptionThrownAnalyzer;
 import domain.analyzer.HighCouplingAnalyzer;
 import domain.analyzer.StrategyAnalyzer;
@@ -62,10 +53,12 @@ public class PresentationLayer {
 			analyzers.add(new HighCouplingAnalyzer(parser));
 			analyzers.add(new PrincipleOfLeastKnowledgeAnalyzer(parser));
 			analyzers.add(new DryAnalyzer(parser));
+			analyzers.add(new CodeToInterfaceAnalyzer(parser));
 			// Pattern Detection
 			analyzers.add(new SingletonAnalyzer(parser));
 			analyzers.add(new ObjectAdapterIdentifierAnalyzer(parser));
 			analyzers.add(new StrategyAnalyzer(parser));
+			analyzers.add(new TemplateMethodAnalyzer(parser));
 
 
 		} catch (IOException e) {

@@ -482,40 +482,6 @@ public class ASMParser {
 		return abstractMethodNames;
 	}
 
-	public List<MethodCall> removeThis(List<MethodCall> list, List<String> names) {
-		List<MethodCall> arrList = (ArrayList<MethodCall>) list;
-
-//		for (MethodCall method : list) {
-//			if (method.getInvokerName().compareTo("this") != 0 || true) {
-//				arrList.add(method);
-//			}
-//		}
-//		return arrList;
-
-
-		if (arrList.get(0).getInvokerName().compareTo("this") != 0) {
-			return list;
-		} else {
-			List<MethodCall> newList = new ArrayList<>();
-			for (int i = 0; i < arrList.size() - 1; i++) {
-				newList.add(new MethodCall(
-						arrList.get(i).getCalledMethodName(),
-						arrList.get(i).getInvoker(),
-						arrList.get(i + 1).getInvokerName(),
-						arrList.get(i).getInvokedClass()));
-			}
-			if (names.size() > 0) {
-				newList.add(new MethodCall(
-						arrList.get(arrList.size() - 1).getCalledMethodName(),
-						arrList.get(arrList.size() - 1).getInvoker(),
-						names.get(names.size() - 1),
-						arrList.get(arrList.size() - 1).getInvokedClass()));
-
-			}
-			return newList;
-		}
-	}
-
 	public String getSignature(String className) {
 		return (this.classMap.get(className).signature);
 	}
