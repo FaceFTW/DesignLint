@@ -12,6 +12,7 @@ import org.objectweb.asm.tree.analysis.SourceValue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class ASMParser {
@@ -431,41 +432,49 @@ public class ASMParser {
 		return false;
 	}
 
-	public List<String> getAbstractMethods(String className) {
+	public List<List<String>> getAbstractMethods(String className) {
 		ClassNode classNode = this.classMap.get(className);
 		List<MethodNode> methods = classNode.methods;
-		List<String> abstractMethods = new ArrayList<>();
+		List<List<String>> abstractMethods = new ArrayList<>();
 		for (MethodNode method : methods) {
 			if ((method.access & Opcodes.ACC_ABSTRACT) != 0) {
-				abstractMethods.add(method.name);
+				List<String> list = new ArrayList<>();
+				list.add(method.name);
+				list.add(method.desc);
+				abstractMethods.add(list);
 			}
 		}
-
+		//System.out.println("Array " + className + " " + abstractMethods);
 		return abstractMethods;
 	}
 
-	public List<String> getConcreteMethods(String className) {
+	public List<List<String>> getConcreteMethods(String className) {
 		ClassNode classNode = this.classMap.get(className);
 		List<MethodNode> methods = classNode.methods;
-		List<String> abstractMethods = new ArrayList<>();
+		List<List<String>> abstractMethods = new ArrayList<>();
 		for (MethodNode method : methods) {
 			if ((method.access & Opcodes.ACC_ABSTRACT) == 0) {
-				abstractMethods.add(method.name);
+				List<String> list = new ArrayList<>();
+				list.add(method.name);
+				list.add(method.desc);
+				abstractMethods.add(list);
 			}
 		}
 
 		return abstractMethods;
 	}
 
-	public List<String> getAbstractMethodsInConcrete(String className, String methodName, List<String> methodList) {
+	public List<String> getAbstractMethodsInConcrete(String className, List<String> methodName, List<List<String>> methodList) {
 		List<String> abstractMethodNames = new ArrayList<>();
-		List<MethodCall> methodCalls = getMethodCalls(className, methodName);
+		List<MethodCall> methodCalls = getMethodCalls(className, methodName.get(0));
 		for (MethodCall method : methodCalls) {
 			if (method.getInvokedClass().compareTo(className) == 0) {
-				if (methodList.contains(method.getCalledMethodName())) {
-					MethodNode node = getMethodNode(className, method.getCalledMethodName());
-					if ((node.access & Opcodes.ACC_ABSTRACT) != 0) {
-						abstractMethodNames.add(node.name);
+				for (int i = 0; i < methodList.size(); i++) {
+					if (methodList.get(i).get(0).compareTo(method.getCalledMethodName()) == 0) {
+						MethodNode node = getMethodNode(className, method.getCalledMethodName());
+						if ((node.access & Opcodes.ACC_ABSTRACT) != 0) {
+							abstractMethodNames.add(node.name);
+						}
 					}
 				}
 			}

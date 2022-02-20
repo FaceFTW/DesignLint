@@ -8,4 +8,8 @@ public abstract class ConcreteSubclass extends AbstractNotTemplate{
     public void implementedAbstract() {
         System.out.println("I'm implemented now!");
     }
+
+    public void notImplementedAbstract(int argument) {
+        System.out.println(argument);
+    }
 }

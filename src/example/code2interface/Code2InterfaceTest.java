@@ -33,11 +33,10 @@ public class Code2InterfaceTest {
         ArrayList<String> testList = new ArrayList<>();
         testList.get(0);
 
-//        ArrayList<Triangle> innerList = new ArrayList<>();
-//        for (int i = 0; i < innerList.size(); i++){
-//            System.out.println(innerList.get(i));
-//        }
-
+        ArrayList<Triangle> innerList = new ArrayList<>();
+        for (int i = 0; i < innerList.size(); i++){
+            System.out.println(innerList.get(i));
+        }
 
         HashMap<String, String> mapTest = new HashMap<>();
         mapTest.put("1", "2");

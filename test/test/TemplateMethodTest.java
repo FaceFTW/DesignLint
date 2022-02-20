@@ -62,9 +62,13 @@ public class TemplateMethodTest {
 
         System.out.println(this.analyzer.getAbstractMethods().get("example/template/CaffeineBeverage"));
 
-        assertTrue(this.analyzer.getAbstractMethods().get("example/template/CaffeineBeverage").contains("brew"));
-        assertTrue(this.analyzer.getAbstractMethods().get("example/template/CaffeineBeverage").contains("addCondiments"));
+        List<String> list = new ArrayList<>();
+        for (List<String> innerList : this.analyzer.getAbstractMethods().get("example/template/CaffeineBeverage")) {
+            list.add(innerList.get(0));
+        }
 
+        assertTrue(list.contains("brew"));
+        assertTrue(list.contains("addCondiments"));
     }
 
     @Test
@@ -74,12 +78,22 @@ public class TemplateMethodTest {
 
         System.out.println(this.analyzer.getConcreteMethods().get("example/template/CaffeineBeverage"));
 
-        assertTrue(this.analyzer.getConcreteMethods().get("example/template/CaffeineBeverage").contains("prepareRecipe"));
-        assertTrue(this.analyzer.getConcreteMethods().get("example/template/CaffeineBeverage").contains("boilWater"));
-        assertTrue(this.analyzer.getConcreteMethods().get("example/template/CaffeineBeverage").contains("pourInCup"));
-        assertTrue(this.analyzer.getConcreteMethods().get("example/template/Tea").contains("brew"));
-        assertTrue(this.analyzer.getConcreteMethods().get("example/template/Tea").contains("addCondiments"));
+        List<String> list = new ArrayList<>();
+        for (List<String> innerList : this.analyzer.getConcreteMethods().get("example/template/CaffeineBeverage")) {
+            list.add(innerList.get(0));
+        }
 
+        assertTrue(list.contains("prepareRecipe"));
+        assertTrue(list.contains("boilWater"));
+        assertTrue(list.contains("pourInCup"));
+
+        List<String> list2 = new ArrayList<>();
+        for (List<String> innerList : this.analyzer.getConcreteMethods().get("example/template/Tea")) {
+            list2.add(innerList.get(0));
+        }
+
+        assertTrue(list2.contains("brew"));
+        assertTrue(list2.contains("addCondiments"));
     }
 
     @Test
@@ -88,17 +102,21 @@ public class TemplateMethodTest {
         this.analyzer.getRelevantData(allClasses);
 
         for (String className : this.analyzer.getAbstractInsideConcreteMethods().keySet()) {
-            for (String methodName : this.analyzer.getAbstractInsideConcreteMethods().get(className).keySet()) {
+            for (List<String> methodName : this.analyzer.getAbstractInsideConcreteMethods().get(className).keySet()) {
                 System.out.println(className + " " + methodName + " " +
                         this.analyzer.getAbstractInsideConcreteMethods().get(className).get(methodName));
             }
         }
         //System.out.println(this.analyzer.getMethodsInsideAbstractMethods());
+        List<String> l1 = new ArrayList<>();
+        l1.add("prepareRecipe"); l1.add("()V");
+        List<String> l2 = new ArrayList<>();
+        l2.add("testFunc"); l2.add("()V");
 
         assertNotNull(this.analyzer.getAbstractInsideConcreteMethods().get("example/template/CaffeineBeverage").
-                get("prepareRecipe"));
+                get(l1));
         assertNotNull(this.analyzer.getAbstractInsideConcreteMethods().get("example/template/AbstractNotTemplate").
-                get("testFunc"));
+                get(l2));
     }
 
     @Test
@@ -145,8 +163,8 @@ public class TemplateMethodTest {
 
     @Test
     public void testTemplateMethodNotFound() {
-        setUpCorrectClasses();
-        ReturnType returned = this.analyzer.getFeedback(correctClasses);
+        setUpAllClasses();
+        ReturnType returned = this.analyzer.getFeedback(allClasses);
 
         List<LinterError> patterns = returned.errorsCaught;
 
@@ -164,8 +182,8 @@ public class TemplateMethodTest {
 
     @Test
     public void testTemplateMethodNotFound2() {
-        setUpCorrectClasses();
-        ReturnType returned = this.analyzer.getFeedback(correctClasses);
+        setUpAllClasses();
+        ReturnType returned = this.analyzer.getFeedback(allClasses);
 
         List<LinterError> patterns = returned.errorsCaught;
 
