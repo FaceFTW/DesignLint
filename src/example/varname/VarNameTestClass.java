@@ -13,13 +13,14 @@ public class VarNameTestClass {
 	public static final int $DOLLAR_GLOBAL = 10;
 	public static final int _UNDERSCORE_GLOBAL = 1;
 	public static int BG = 2;
-	public int thirtyCharacterVarNameForTest;
+	public int thirtyCharacterVariNameForTest;
+	public int thirtyOneCharacterVarNameToTest;
 
 	VarNameTestClass(int testVariable, int superLongUnnecessaryVariableName) {
 		this.testVariable = testVariable;
 	}
 
-	public int methodName(int _x, int $y, int anotherThirtyCharacterVarName1) {
+	public int methodName(int _x, int $y, int anotherThirtyCharacterVarName1, int anotherThirty1CharacterVarName1) {
 		int Z;
 		Z = _x + $y;
 		return Z;

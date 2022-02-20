@@ -20,6 +20,8 @@ public class TemplateMethodAnalyzer extends DomainAnalyzer {
 
     public List<LinterError> foundPatterns;
 
+    public List<String> trashCollection;
+
 
     public TemplateMethodAnalyzer(String[] classNames) {
         try {
@@ -59,14 +61,13 @@ public class TemplateMethodAnalyzer extends DomainAnalyzer {
         //We look through our abstractInConcrete to find potential candidates.
         for (String className : this.abstractInConcrete.keySet()) {
             for (List<String> methodName : this.abstractInConcrete.get(className).keySet()) {
-                if (this.abstractInConcrete.get(className).get(methodName).size() > 0) {
-
                     //We have abstract methods! Check for subclasses
                     for (String subclassName : this.extendedClasses.keySet()) {
+                        //System.out.println(className + " " + methodName + " " + subclassName);
                         boolean allConcrete = true;
                         if (this.extendedClasses.get(subclassName).compareTo(className) == 0) {
+                            //System.out.println("HERE");
                             for (String abstractMethod : this.abstractInConcrete.get(className).get(methodName)) {
-                                //System.out.println(this.concreteMethods.get(subclassName));
                                 boolean counter = false;
 
                                 String abstractDesc = null;
@@ -74,7 +75,7 @@ public class TemplateMethodAnalyzer extends DomainAnalyzer {
                                     if (this.abstractMethods.get(className).get(i).get(0).compareTo(abstractMethod) == 0) {
                                         abstractDesc = this.abstractMethods.get(className).get(i).get(1);
                                     }
-                                 }
+                                }
                                 for (int i = 0; i < this.concreteMethods.get(subclassName).size(); i++) {
                                     if (this.concreteMethods.get(subclassName).get(i).get(0).compareTo(abstractMethod) == 0 &&
                                             abstractDesc != null &&
@@ -94,10 +95,6 @@ public class TemplateMethodAnalyzer extends DomainAnalyzer {
                             }
                         }
                     }
-                }
-                else {
-                    continue;
-                }
             }
         }
     }

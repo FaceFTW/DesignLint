@@ -18,6 +18,7 @@ public class VarNameAnalyzer extends DomainAnalyzer {
 	// Erroneous Values
 	List<LinterError> foundErrors;
 
+	//For Testing Purposes only.
 	public VarNameAnalyzer(String[] classNames) {
 		try {
 			this.parser = new ASMParser(classNames);

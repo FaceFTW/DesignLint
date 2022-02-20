@@ -14,10 +14,12 @@ public class TemplateMethodTest {
     private final String[] wrongClasses = { "example/template/NotTemplate", "example/template/NotTemplateSubclass" };
     private final String[] sortOfWrongClasses = { "example/template/AbstractNotTemplate", "example/template/AbstractSubclass",
     "example/template/ConcreteSubclass" };
+    private final String[] simpleCorrectClasses = { "example/template/Template1Abstract", "example/template/Template1AbstractImplement" };
     private final String[] allClasses = { "example/template/CaffeineBeverage", "example/template/Tea",
             "example/template/Coffee", "example/template/NotTemplate", "example/template/NotTemplateSubclass",
             "example/template/AbstractNotTemplate", "example/template/AbstractSubclass",
             "example/template/ConcreteSubclass" };
+
 
     //Analyzer Class
     private TemplateMethodAnalyzer analyzer;
@@ -25,6 +27,7 @@ public class TemplateMethodTest {
     //Instantiate the Analyzer Class
     public void setUpCorrectClasses() { this.analyzer = new TemplateMethodAnalyzer(correctClasses); }
     public void setUpWrongClasses() { this.analyzer = new TemplateMethodAnalyzer(wrongClasses); }
+    public void setUpSimpleCorrectClasses() { this.analyzer = new TemplateMethodAnalyzer(simpleCorrectClasses); }
     public void setUpSortOfWrongClasses() { this.analyzer = new TemplateMethodAnalyzer(sortOfWrongClasses); }
     public void setUpAllClasses() { this.analyzer = new TemplateMethodAnalyzer(allClasses); }
 
@@ -52,7 +55,8 @@ public class TemplateMethodTest {
             System.out.println(className + ":  " + this.analyzer.getExtendedClasses().get(className));
         }
 
-        assertNotNull(this.analyzer.getExtendedClasses());
+        assertTrue(this.analyzer.getExtendedClasses().get("example/template/Tea").contains("example/template/CaffeineBeverage"));
+        assertTrue(this.analyzer.getExtendedClasses().get("example/template/Coffee").contains("example/template/CaffeineBeverage"));
     }
 
     @Test
@@ -159,6 +163,55 @@ public class TemplateMethodTest {
         assertEquals("example/template/CaffeineBeverage", foundErr.className);
         assertEquals("prepareRecipe", foundErr.methodName);
         assertEquals(ErrType.PATTERN, foundErr.type);
+    }
+
+    @Test
+    public void testTemplateMethodFoundOfLength1() {
+        setUpSimpleCorrectClasses();
+        ReturnType returned = this.analyzer.getFeedback(simpleCorrectClasses);
+
+        for (String className : this.analyzer.getAbstractInsideConcreteMethods().keySet()) {
+            System.out.println(className + " " + this.analyzer.getAbstractInsideConcreteMethods().get(className));
+        }
+        //System.out.println(this.analyzer.foundPatterns);
+
+        List<LinterError> patterns = returned.errorsCaught;
+
+        boolean found = false;
+        LinterError foundErr = null;
+        for (LinterError err : patterns) {
+            if (err.message.compareTo("Template Method Pattern Found: testAbstract (Subclass: example/template/Template1AbstractImplement)") == 0) {
+                found = true;
+                foundErr = err;
+            }
+        }
+
+        assertTrue(found);
+        assertEquals("example/template/Template1Abstract", foundErr.className);
+        assertEquals("testAbstract", foundErr.methodName);
+        assertEquals(ErrType.PATTERN, foundErr.type);
+    }
+
+    @Test
+    public void testTemplateMethodFoundAfterRemovingAbstractMethodData() {
+        setUpCorrectClasses();
+        this.analyzer.getRelevantData(correctClasses);
+        //Bout to meddle
+        this.analyzer.getAbstractMethods().get("example/template/CaffeineBeverage").remove(0);
+        this.analyzer.analyzeData();
+        ReturnType returned = this.analyzer.composeReturnType();
+
+        List<LinterError> patterns = returned.errorsCaught;
+
+        boolean found = false;
+        LinterError foundErr = null;
+        for (LinterError err : patterns) {
+            if (err.message.compareTo("Template Method Pattern Found: prepareRecipe (Subclass: example/template/Tea)") == 0) {
+                found = true;
+                foundErr = err;
+            }
+        }
+        assertFalse(found);
     }
 
     @Test

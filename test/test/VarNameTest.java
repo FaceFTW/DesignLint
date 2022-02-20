@@ -439,11 +439,37 @@ public class VarNameTest {
 
         boolean found = false;
         for (LinterError err : errors) {
-            if (err.message.compareTo("thirtyCharacterVarNameForTest too long (>30 characters)") == 0) {
+            if (err.message.compareTo("thirtyCharacterVariNameForTest too long (>30 characters)") == 0) {
                 found = true;
             }
         }
+        for (LinterError err : errors) {
+            System.out.println(err);
+        }
+
         assertFalse(found);
+    }
+
+    @Test
+    public void testThirtyONECharacterFieldName() {
+        setUpSingleClass();
+        ReturnType returned = this.analyzer.getFeedback(singleClass);
+
+        assertTrue(returned.errorsCaught.size() > 0);
+        List<LinterError> errors = returned.errorsCaught;
+
+        boolean found = false;
+        LinterError foundErr = null;
+        for (LinterError err : errors) {
+            if (err.message.compareTo("thirtyOneCharacterVarNameToTest too long (>30 characters)") == 0) {
+                found = true;
+                foundErr = err;
+            }
+        }
+        assertTrue(found);
+        assertEquals(multipleClasses[0], foundErr.className);
+        assertNull(foundErr.methodName);
+        assertEquals(ErrType.WARNING, foundErr.type);
     }
 
     @Test
@@ -461,5 +487,27 @@ public class VarNameTest {
             }
         }
         assertFalse(found);
+    }
+
+    @Test
+    public void testThirtyONECharacterLocalName() {
+        setUpSingleClass();
+        ReturnType returned = this.analyzer.getFeedback(singleClass);
+
+        assertTrue(returned.errorsCaught.size() > 0);
+        List<LinterError> errors = returned.errorsCaught;
+
+        boolean found = false;
+        LinterError foundErr = null;
+        for (LinterError err : errors) {
+            if (err.message.compareTo("anotherThirty1CharacterVarName1 too long (>30 characters)") == 0) {
+                found = true;
+                foundErr = err;
+            }
+        }
+        assertTrue(found);
+        assertEquals(multipleClasses[0], foundErr.className);
+        assertEquals("methodName", foundErr.methodName);
+        assertEquals(ErrType.WARNING, foundErr.type);
     }
 }
