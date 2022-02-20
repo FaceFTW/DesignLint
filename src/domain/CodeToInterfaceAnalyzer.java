@@ -1,7 +1,6 @@
 package domain;
 
 import datasource.ASMParser;
-import datasource.Invoker;
 import datasource.MethodCall;
 
 import java.io.IOException;
@@ -21,18 +20,14 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
     //Erroneous Values
     List<LinterError> foundErrors;
 
-    public CodeToInterfaceAnalyzer(String[] classNames) {
-        try {
-            this.parser = new ASMParser(classNames);
-            this.fieldNames = new HashMap<>();
-            this.fieldTypes = new HashMap<>();
-            this.methodVarNames = new HashMap<>();
-            this.methodVarTypes = new HashMap<>();
-            this.possibleInterfaces = new HashMap<>();
-            this.foundErrors = new ArrayList<>();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public CodeToInterfaceAnalyzer(ASMParser parser) {
+        this.parser = parser;
+        this.fieldNames = new HashMap<>();
+        this.fieldTypes = new HashMap<>();
+        this.methodVarNames = new HashMap<>();
+        this.methodVarTypes = new HashMap<>();
+        this.possibleInterfaces = new HashMap<>();
+        this.foundErrors = new ArrayList<>();
     }
 
     public void getRelevantData(String[] classList) {
@@ -91,9 +86,6 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
 
     public void analyzePotentialInterfaces(String className, String methodName, String varName) {
         if (!findShortCut(className, methodName, varName)) {
-            if (varName.compareTo("this") == 0) {
-                return;
-            }
             Map<String, List<String>> interfaces = this.possibleInterfaces.get(className).get(methodName).get(varName);
             //System.out.println(varName + " " + interfaces);
             List<String> union = new ArrayList<>();
@@ -107,28 +99,27 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
 
                 if (interfaces.get(methodKey).contains("X"))
                     x = true;
-                else if (!x) {
+
+                if (!x) {
                     union = intersectLists(union, interfaces.get(methodKey));
                 }
             }
-//            System.out.println(union);
-//            System.out.println(x);
-            if (!x && union.size() > 0 && union.get(0).compareTo("<init>") != 0) {
+            if (!x && union.get(0).compareTo("<init>") != 0) {
                 //System.out.println("Error for " + className + " " + methodName + " " + varName);
                 for (int i = 0; i < union.size(); i++) {
                     //Finally, if the types in the union match the type of the variable, do not throw an error.
                     int index = this.methodVarNames.get(className).get(methodName).indexOf(varName);
-                    if (index == -1) {
-                        index = this.fieldNames.get(className).indexOf(varName);
-                        if (this.fieldTypes.get(className).get(index).compareTo("L" + union.get(i) + ";") != 0) {
-                            this.foundErrors.add(new LinterError(className, methodName,
-                                    "Potential Interface for " + varName + ": " + union.get(i), ErrType.WARNING));
-                        }
-                    }
-                    else if (this.methodVarTypes.get(className).get(methodName).get(index).compareTo("L" + union.get(i) + ";") != 0) {
+//                    if (this.methodVarTypes.get(className).get(methodName).get(index).compareTo("L" + union.get(i) + ";") != 0) {
                         this.foundErrors.add(new LinterError(className, methodName,
                                 "Potential Interface for " + varName + ": " + union.get(i), ErrType.WARNING));
-                    }
+//                    }
+//                    else {
+//                        //index = this.fieldNames.get(className).indexOf(varName);
+//                       // if (this.fieldTypes.get(className).get(index).compareTo("L" + union.get(i) + ";") != 0) {
+//                            this.foundErrors.add(new LinterError(className, methodName,
+//                                    "Potential Interface for " + varName + ": " + union.get(i), ErrType.WARNING));
+//                       // }
+//                    }
                 }
             }
         }
@@ -153,7 +144,6 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
     }
 
     public boolean findShortCut(String className, String methodName, String varName) {
-        System.out.println(varName);
         if (!this.methodVarNames.get(className).get(methodName).contains(varName)) {
             return false;
         }
@@ -177,14 +167,14 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
     }
 
     public void checkMethodSignature(String className, String methodName) {
-        System.out.println(className + ": " + methodName);
+//        System.out.println(className + ": " + methodName);
         List<MethodCall> methodCalls = this.parser.getMethodCalls(className, methodName);
-        if (methodName.compareTo("anotherFunc") == 0) {
-            for (MethodCall m : methodCalls) {
-                System.out.println(m);
-                System.out.println();
-            }
-        }
+//        if (methodName.compareTo("anotherFunc") == 0) {
+//            for (MethodCall m : methodCalls) {
+//                System.out.println(m);
+//                System.out.println();
+//            }
+//        }
 
         for (MethodCall method : methodCalls) {
 //            if (method.getInvoker() == Invoker.FIELD) {

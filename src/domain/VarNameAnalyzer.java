@@ -18,19 +18,6 @@ public class VarNameAnalyzer extends DomainAnalyzer {
 	// Erroneous Values
 	List<LinterError> foundErrors;
 
-	//For Testing Purposes only.
-	public VarNameAnalyzer(String[] classNames) {
-		try {
-			this.parser = new ASMParser(classNames);
-			this.fieldNames = new HashMap<String, List<String>>();
-			this.globalNames = new HashMap<String, List<String>>();
-			this.methodNames = new HashMap<String, Map<String, List<String>>>();
-			this.foundErrors = null;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public VarNameAnalyzer(ASMParser parser) {
 		this.parser = parser;
 		this.fieldNames = new HashMap<String, List<String>>();
@@ -94,19 +81,19 @@ public class VarNameAnalyzer extends DomainAnalyzer {
 			if (Character.isLetter(var.charAt(0)) &&
 					var.charAt(0) != Character.toLowerCase(var.charAt(0))) {
 				this.foundErrors
-						.add(new LinterError(className, null, var + " begins with capital letter", ErrType.ERROR));
+						.add(new LinterError(className, null, "Field " + var + " begins with capital letter", ErrType.ERROR));
 			}
 
 			// Too long (>30 characters) - Warning
 			if (var.length() > 30) {
 				this.foundErrors
-						.add(new LinterError(className, null, var + " too long (>30 characters)", ErrType.WARNING));
+						.add(new LinterError(className, null, "Field " + var + " too long (>30 characters)", ErrType.WARNING));
 			}
 
 			// Too short (1-2 characters) - Warning
 			if (var.length() <= 2) {
 				this.foundErrors
-						.add(new LinterError(className, null, var + " too short (<=2 characters)", ErrType.WARNING));
+						.add(new LinterError(className, null, "Field " + var + " too short (<=2 characters)", ErrType.WARNING));
 			}
 		}
 
@@ -117,35 +104,30 @@ public class VarNameAnalyzer extends DomainAnalyzer {
 			// Entire name must be capitalized - Error
 			if (var.toUpperCase().compareTo(var) != 0) {
 				this.foundErrors
-						.add(new LinterError(className, null, var + " must only be capital letters", ErrType.ERROR));
+						.add(new LinterError(className, null, "Global Variable " + var + " must only be capital letters", ErrType.ERROR));
 			}
 
 			// Too short (1-2 characters) - Warning
 			if (var.length() <= 2) {
 				this.foundErrors
-						.add(new LinterError(className, null, var + " too short (<=2 characters)", ErrType.WARNING));
+						.add(new LinterError(className, null, "Global Variable " + var + " too short (<=2 characters)", ErrType.WARNING));
 			}
 		}
 	}
 
 	public void analyzeMethodNames(List<String> varNames, String className, String methodName) {
 		for (String var : varNames) {
-			// Ignore "this"
-			if (var.compareTo("this") == 0) {
-				continue;
-			}
-
 			// First character must be lowercase - ERROR
 			if (Character.isLetter(var.charAt(0)) &&
 					var.charAt(0) != Character.toLowerCase(var.charAt(0))) {
 				this.foundErrors.add(
-						new LinterError(className, methodName, var + " begins with capital letter", ErrType.ERROR));
+						new LinterError(className, methodName, "Local Variable " + var + " begins with capital letter", ErrType.ERROR));
 			}
 
 			// Too long (>30 characters) - WARNING
 			if (var.length() > 30) {
 				this.foundErrors.add(
-						new LinterError(className, methodName, var + " too long (>30 characters)", ErrType.WARNING));
+						new LinterError(className, methodName, "Local Variable "  + var + " too long (>30 characters)", ErrType.WARNING));
 			}
 		}
 	}

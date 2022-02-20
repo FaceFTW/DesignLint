@@ -1,9 +1,11 @@
 package test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import datasource.ASMParser;
 import domain.ErrType;
 import domain.LinterError;
 import org.junit.Test;
@@ -21,14 +23,39 @@ public class VarNameTest {
     private VarNameAnalyzer analyzer;
 
     //Instantiate the Analyzer Class
-    public void setUpSingleClass() { this.analyzer = new VarNameAnalyzer(singleClass); }
-    public void setUpMultiClass() { this.analyzer = new VarNameAnalyzer(multipleClasses); }
+    public void setUpSingleClass() {
+        try {
+            this.analyzer = new VarNameAnalyzer(new ASMParser(singleClass));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error reading from class files specified in arguments!");
+            System.exit(1);
+        }
+    }
+    public void setUpMultiClass() {
+        try {
+            this.analyzer = new VarNameAnalyzer(new ASMParser(multipleClasses));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error reading from class files specified in arguments!");
+            System.exit(1);
+        }
+    }
 
 
     //Given no classes, all fields within the analyzer should be blank, and return no errors.
     @Test
     public void testFieldsGivenNoClasses() {
-        this.analyzer = new VarNameAnalyzer(new String[0]);
+        try {
+            this.analyzer = new VarNameAnalyzer(new ASMParser(new String[0]));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error reading from class files specified in arguments!");
+            System.exit(1);
+        }
 
         ReturnType returned = this.analyzer.getFeedback(new String[0]);
 
@@ -129,7 +156,7 @@ public class VarNameTest {
         boolean found = false;
         LinterError foundErr = null;
         for (LinterError err : errors) {
-            if (err.message.compareTo("BadVariable begins with capital letter") == 0) {
+            if (err.message.compareTo("Field BadVariable begins with capital letter") == 0) {
                 found = true;
                 foundErr = err;
             }
@@ -151,7 +178,7 @@ public class VarNameTest {
         boolean found = false;
         LinterError foundErr = null;
         for (LinterError err : errors) {
-            if (err.message.compareTo("reallyLongFieldForTestingPurposes too long (>30 characters)") == 0) {
+            if (err.message.compareTo("Field reallyLongFieldForTestingPurposes too long (>30 characters)") == 0) {
                 found = true;
                 foundErr = err;
             }
@@ -173,7 +200,7 @@ public class VarNameTest {
         boolean found = false;
         LinterError foundErr = null;
         for (LinterError err : errors) {
-            if (err.message.compareTo("fV too short (<=2 characters)") == 0) {
+            if (err.message.compareTo("Field fV too short (<=2 characters)") == 0) {
                 found = true;
                 foundErr = err;
             }
@@ -239,7 +266,7 @@ public class VarNameTest {
         boolean found = false;
         LinterError foundErr = null;
         for (LinterError err : errors) {
-            if (err.message.compareTo("BG too short (<=2 characters)") == 0) {
+            if (err.message.compareTo("Global Variable BG too short (<=2 characters)") == 0) {
                 found = true;
                 foundErr = err;
             }
@@ -261,7 +288,7 @@ public class VarNameTest {
         boolean found = false;
         LinterError foundErr = null;
         for (LinterError err : errors) {
-            if (err.message.compareTo("bad_Global must only be capital letters") == 0) {
+            if (err.message.compareTo("Global Variable bad_Global must only be capital letters") == 0) {
                 found = true;
                 foundErr = err;
             }
@@ -339,7 +366,7 @@ public class VarNameTest {
         boolean found = false;
         LinterError foundErr = null;
         for (LinterError err : errors) {
-            if (err.message.compareTo("Z begins with capital letter") == 0) {
+            if (err.message.compareTo("Local Variable Z begins with capital letter") == 0) {
                 found = true;
                 foundErr = err;
             }
@@ -361,7 +388,7 @@ public class VarNameTest {
         boolean found = false;
         LinterError foundErr = null;
         for (LinterError err : errors) {
-            if (err.message.compareTo("superLongUnnecessaryVariableName too long (>30 characters)") == 0) {
+            if (err.message.compareTo("Local Variable superLongUnnecessaryVariableName too long (>30 characters)") == 0) {
                 found = true;
                 foundErr = err;
             }
@@ -399,7 +426,7 @@ public class VarNameTest {
         boolean found = false;
         LinterError foundErr = null;
         for (LinterError err : errors) {
-            if (err.message.compareTo("superLongUnnecessaryVariableName too long (>30 characters)") == 0) {
+            if (err.message.compareTo("Local Variable superLongUnnecessaryVariableName too long (>30 characters)") == 0) {
                 found = true;
                 foundErr = err;
             }
@@ -439,7 +466,7 @@ public class VarNameTest {
 
         boolean found = false;
         for (LinterError err : errors) {
-            if (err.message.compareTo("thirtyCharacterVariNameForTest too long (>30 characters)") == 0) {
+            if (err.message.compareTo("Field thirtyCharacterVariNameForTest too long (>30 characters)") == 0) {
                 found = true;
             }
         }
@@ -461,7 +488,7 @@ public class VarNameTest {
         boolean found = false;
         LinterError foundErr = null;
         for (LinterError err : errors) {
-            if (err.message.compareTo("thirtyOneCharacterVarNameToTest too long (>30 characters)") == 0) {
+            if (err.message.compareTo("Field thirtyOneCharacterVarNameToTest too long (>30 characters)") == 0) {
                 found = true;
                 foundErr = err;
             }
@@ -482,7 +509,7 @@ public class VarNameTest {
 
         boolean found = false;
         for (LinterError err : errors) {
-            if (err.message.compareTo("anotherThirtyCharacterVarName1 too long (>30 characters)") == 0) {
+            if (err.message.compareTo("Local Variable anotherThirtyCharacterVarName1 too long (>30 characters)") == 0) {
                 found = true;
             }
         }
@@ -500,7 +527,7 @@ public class VarNameTest {
         boolean found = false;
         LinterError foundErr = null;
         for (LinterError err : errors) {
-            if (err.message.compareTo("anotherThirty1CharacterVarName1 too long (>30 characters)") == 0) {
+            if (err.message.compareTo("Local Variable anotherThirty1CharacterVarName1 too long (>30 characters)") == 0) {
                 found = true;
                 foundErr = err;
             }

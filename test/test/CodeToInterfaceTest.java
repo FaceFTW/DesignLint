@@ -1,9 +1,11 @@
 package test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import datasource.ASMParser;
 import domain.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -15,12 +17,26 @@ public class CodeToInterfaceTest {
     private CodeToInterfaceAnalyzer analyzer;
 
     //Instantiate the Analyzer Class
-    public void setUpOurClass() { this.analyzer = new CodeToInterfaceAnalyzer(ourClass); }
+    public void setUpOurClass() {
+        try {
+            this.analyzer = new CodeToInterfaceAnalyzer(new ASMParser(ourClass));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error reading from class files specified in arguments!");
+            System.exit(1);
+        }
+    }
 
     //Given no classes, all fields within the analyzer should be blank, and return no errors.
     @Test
     public void testFieldsGivenNoClasses() {
-        this.analyzer = new CodeToInterfaceAnalyzer(new String[0]);
+        try {
+            this.analyzer = new CodeToInterfaceAnalyzer(new ASMParser(new String[0]));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error reading from class files specified in arguments!");
+            System.exit(1);
+        }
 
         ReturnType returned = this.analyzer.getFeedback(new String[0]);
 
@@ -35,8 +51,22 @@ public class CodeToInterfaceTest {
     }
 
     @Test
+    public void testFieldsGivenClasses() {
+        setUpOurClass();
+        ReturnType returned = this.analyzer.getFeedback(ourClass);
+
+        assertNotEquals(new HashMap<>(), this.analyzer.getFieldNames());
+        assertNotEquals(new HashMap<>(), this.analyzer.getFieldTypes());
+        assertNotEquals(new HashMap<>(), this.analyzer.getMethodVarNames());
+        assertNotEquals(new HashMap<>(), this.analyzer.getMethodVarTypes());
+        assertNotEquals(new HashMap<>(), this.analyzer.getPossibleInterfaces());
+
+        assertNotEquals(new ArrayList<>(), returned.errorsCaught);
+    }
+
+    @Test
     public void testReturnedArrayListField() {
-        this.analyzer = new CodeToInterfaceAnalyzer(ourClass);
+        setUpOurClass();
         ReturnType returned = this.analyzer.getFeedback(ourClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
@@ -58,7 +88,7 @@ public class CodeToInterfaceTest {
 
     @Test
     public void testReturnedHashMapField() {
-        this.analyzer = new CodeToInterfaceAnalyzer(ourClass);
+        setUpOurClass();
         ReturnType returned = this.analyzer.getFeedback(ourClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
@@ -80,7 +110,7 @@ public class CodeToInterfaceTest {
 
     @Test
     public void testReturnedHashSetField() {
-        this.analyzer = new CodeToInterfaceAnalyzer(ourClass);
+        setUpOurClass();
         ReturnType returned = this.analyzer.getFeedback(ourClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
@@ -102,7 +132,7 @@ public class CodeToInterfaceTest {
 
     @Test
     public void testFieldWithNoInterfacesToImplement() {
-        this.analyzer = new CodeToInterfaceAnalyzer(ourClass);
+        setUpOurClass();
         ReturnType returned = this.analyzer.getFeedback(ourClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
@@ -123,7 +153,7 @@ public class CodeToInterfaceTest {
     //Tests that tri1 will detect being type Shape
     @Test
     public void testMethodVarOfType1() {
-        this.analyzer = new CodeToInterfaceAnalyzer(ourClass);
+        setUpOurClass();
         ReturnType returned = this.analyzer.getFeedback(ourClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
@@ -145,7 +175,7 @@ public class CodeToInterfaceTest {
 
     @Test
     public void testMethodVarOfType2() {
-        this.analyzer = new CodeToInterfaceAnalyzer(ourClass);
+        setUpOurClass();
         ReturnType returned = this.analyzer.getFeedback(ourClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
@@ -168,7 +198,7 @@ public class CodeToInterfaceTest {
     //Tri3 is called by two Shape methods, getArea and compareShape
     @Test
     public void testMethodVarOfType3() {
-        this.analyzer = new CodeToInterfaceAnalyzer(ourClass);
+        setUpOurClass();
         ReturnType returned = this.analyzer.getFeedback(ourClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
@@ -191,7 +221,7 @@ public class CodeToInterfaceTest {
     //Tri4 called a Triangle method, and should not throw an error.
     @Test
     public void testMethodVarOfType4() {
-        this.analyzer = new CodeToInterfaceAnalyzer(ourClass);
+        setUpOurClass();
         ReturnType returned = this.analyzer.getFeedback(ourClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
@@ -211,7 +241,7 @@ public class CodeToInterfaceTest {
     //Tri5 calls another Triangle method, so it should not throw an error.
     @Test
     public void testMethodVarOfType5() {
-        this.analyzer = new CodeToInterfaceAnalyzer(ourClass);
+        setUpOurClass();
         ReturnType returned = this.analyzer.getFeedback(ourClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
@@ -231,7 +261,7 @@ public class CodeToInterfaceTest {
     //Tri6 already a Shape (even if a Triangle object), so it should not throw an error.
     @Test
     public void testMethodVarOfType6() {
-        this.analyzer = new CodeToInterfaceAnalyzer(ourClass);
+        setUpOurClass();
         ReturnType returned = this.analyzer.getFeedback(ourClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
@@ -250,7 +280,7 @@ public class CodeToInterfaceTest {
 
     @Test
     public void testMethodVarList() {
-        this.analyzer = new CodeToInterfaceAnalyzer(ourClass);
+        setUpOurClass();
         ReturnType returned = this.analyzer.getFeedback(ourClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
@@ -267,13 +297,13 @@ public class CodeToInterfaceTest {
         assertTrue(found);
         assertEquals(ourClass[0], foundErr.className);
         assertEquals("anotherFunc", foundErr.methodName);
-        assertEquals(ErrType.ERROR, foundErr.type);;
+        assertEquals(ErrType.ERROR, foundErr.type);
     }
 
 
     @Test
     public void testMethodVarMap() {
-        this.analyzer = new CodeToInterfaceAnalyzer(ourClass);
+        setUpOurClass();
         ReturnType returned = this.analyzer.getFeedback(ourClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
@@ -295,7 +325,7 @@ public class CodeToInterfaceTest {
 
     @Test
     public void testMethodVarSet() {
-        this.analyzer = new CodeToInterfaceAnalyzer(ourClass);
+        setUpOurClass();
         ReturnType returned = this.analyzer.getFeedback(ourClass);
 
         assertTrue(returned.errorsCaught.size() > 0);
@@ -314,5 +344,31 @@ public class CodeToInterfaceTest {
         assertEquals("anotherFunc", foundErr.methodName);
         assertEquals(ErrType.ERROR, foundErr.type);
     }
+
+    @Test
+    public void testFindShortcutExits() {
+        setUpOurClass();
+        this.analyzer.getRelevantData(ourClass);
+
+        //Variable Does Not Exist
+        assertFalse(this.analyzer.findShortCut(ourClass[0], "testFunc", "tri7"));
+        assertTrue(this.analyzer.findShortCut(ourClass[0], "anotherFunc", "testList"));
+        assertTrue(this.analyzer.findShortCut(ourClass[0], "anotherFunc", "mapTest"));
+        assertTrue(this.analyzer.findShortCut(ourClass[0], "anotherFunc", "setTest"));
+    }
+
+    @Test
+    public void testClassImplementsOwnMethod() {
+        setUpOurClass();
+        this.analyzer.getRelevantData(ourClass);
+
+        //Variable Does Not Exist
+        assertFalse(this.analyzer.findShortCut(ourClass[0], "testFunc", "tri7"));
+        assertTrue(this.analyzer.findShortCut(ourClass[0], "anotherFunc", "testList"));
+        assertTrue(this.analyzer.findShortCut(ourClass[0], "anotherFunc", "mapTest"));
+        assertTrue(this.analyzer.findShortCut(ourClass[0], "anotherFunc", "setTest"));
+    }
+
+
 }
 

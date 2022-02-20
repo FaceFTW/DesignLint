@@ -22,15 +22,8 @@ public class TemplateMethodAnalyzer extends DomainAnalyzer {
 
     public List<String> trashCollection;
 
-
-    public TemplateMethodAnalyzer(String[] classNames) {
-        try {
-            this.parser = new ASMParser(classNames);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    public TemplateMethodAnalyzer(ASMParser parser) {
+        this.parser = parser;
         this.extendedClasses = new HashMap<>();
         this.abstractMethods = new HashMap<>();
         this.concreteMethods = new HashMap<>();

@@ -1,9 +1,11 @@
 package test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import datasource.ASMParser;
 import domain.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -25,15 +27,47 @@ public class TemplateMethodTest {
     private TemplateMethodAnalyzer analyzer;
 
     //Instantiate the Analyzer Class
-    public void setUpCorrectClasses() { this.analyzer = new TemplateMethodAnalyzer(correctClasses); }
-    public void setUpWrongClasses() { this.analyzer = new TemplateMethodAnalyzer(wrongClasses); }
-    public void setUpSimpleCorrectClasses() { this.analyzer = new TemplateMethodAnalyzer(simpleCorrectClasses); }
-    public void setUpSortOfWrongClasses() { this.analyzer = new TemplateMethodAnalyzer(sortOfWrongClasses); }
-    public void setUpAllClasses() { this.analyzer = new TemplateMethodAnalyzer(allClasses); }
+    public void setUpCorrectClasses() {
+        try {
+            this.analyzer = new TemplateMethodAnalyzer(new ASMParser(correctClasses));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error reading from class files specified in arguments!");
+            System.exit(1);
+        }
+    }
+    public void setUpSimpleCorrectClasses() {
+        try {
+            this.analyzer = new TemplateMethodAnalyzer(new ASMParser(simpleCorrectClasses));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error reading from class files specified in arguments!");
+            System.exit(1);
+        }
+    }
+    public void setUpAllClasses() {
+        try {
+            this.analyzer = new TemplateMethodAnalyzer(new ASMParser(allClasses));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error reading from class files specified in arguments!");
+            System.exit(1);
+        }
+    }
 
     @Test
     public void testFieldsGivenNoClasses() {
-        this.analyzer = new TemplateMethodAnalyzer(new String[0]);
+        try {
+            this.analyzer = new TemplateMethodAnalyzer(new ASMParser(new String[0]));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error reading from class files specified in arguments!");
+            System.exit(1);
+        }
 
         ReturnType returned = this.analyzer.getFeedback(new String[0]);
 

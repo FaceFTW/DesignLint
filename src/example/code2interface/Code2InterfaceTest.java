@@ -27,6 +27,7 @@ public class Code2InterfaceTest {
         tri3.compareShape(this.triangleTest);
 
         tri4.compareTriangle(tri1);
+        tri4.compareShape(tri2);
     }
 
     public void anotherFunc() {
