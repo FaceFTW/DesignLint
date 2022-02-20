@@ -81,6 +81,10 @@ public class PresentationLayer {
 	// This way you can change the actual LinterMain to output to a file if you
 	// wanted
 	public void vomitOutput(PrintStream stream) {
+		int returnNum = 0;
+		int errNum = 0;
+		int warnNum = 0;
+		int patternNum = 0;
 		for (ReturnType returnType : linterReturns) {
 			stream.format("Linter Name - %s\n", returnType.analyzerName);
 			stream.println("======================================================================");
@@ -92,15 +96,19 @@ public class PresentationLayer {
 				switch (error.type) {
 					case ERROR:
 						errType = "Error";
+						errNum++; returnNum++;
 						break;
 					case INFO:
 						errType = "Info";
+						returnNum++;
 						break;
 					case PATTERN:
 						errType = "Pattern";
+						patternNum++; returnNum++;
 						break;
 					case WARNING:
 						errType = "Warning";
+						warnNum++; returnNum++;
 						break;
 					default:
 						throw new IllegalArgumentException("Error, We somehow got an unexpected enum value!");
@@ -109,6 +117,13 @@ public class PresentationLayer {
 				stream.format("Message - %s\n", error.message);
 				stream.println();
 			}
+
 		}
+		stream.println("Summary:");
+		stream.println("======================================================================");
+		stream.println("Errors Found : " + errNum);
+		stream.println("Warnings Found: " + warnNum);
+		stream.println("Total Patterns Found : " + patternNum);
+		stream.println("Total Linter Findings : " + returnNum);
 	}
 }
