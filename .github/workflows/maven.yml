@@ -51,7 +51,7 @@ jobs:
         with:
           name: build
       - name: Build Tests with Maven
-        run: mvn -B compile-tests --file pom.xml
+        run: mvn -B compiler:testCompile --file pom.xml
       - name: Upload Compiled Artifacts
         uses: actions/upload-artifact@v3.0.0
         with:
