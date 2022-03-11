@@ -23,15 +23,15 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn -B compile --file pom.xml
-      - name: Where are we?
-        run: |
-              pwd
-              ls
+      # - name: Where are we?
+      #   run: |
+      #         pwd
+      #         ls
       - name: Upload Compiled Artifacts
         uses: actions/upload-artifact@v3.0.0
         with:
           name: build
-          path: ${{ github.GITHUB_WORKSPACE }}/DesignLint/target/
+          path: target/
           if-no-files-found: error
           retention-days: 1
 
@@ -50,14 +50,13 @@ jobs:
         uses: actions/download-artifact@v3.0.0
         with:
           name: build
-          path: ${{ github.GITHUB_WORKSPACE}}DesignLint/
       - name: Build Tests with Maven
         run: mvn -B compile-tests --file pom.xml
       - name: Upload Compiled Artifacts
         uses: actions/upload-artifact@v3.0.0
         with:
           name: build-tests
-          path: ${{ github.GITHUB_WORKSPACE }}DesignLint/target/
+          path: target/
           if-no-files-found: error
           retention-days: 1
 
@@ -76,7 +75,6 @@ jobs:
         uses: actions/download-artifact@v3.0.0
         with:
           name: build-tests
-          path: ${{ github.GITHUB_WORKSPACE}}DesignLint/
       - name: Run Surefire tests
         run: mvn -B surefire:test --file pom.xml
   # This is a pass-fail job w/o artifacts. reuse build-tests 
@@ -96,14 +94,13 @@ jobs:
         uses: actions/download-artifact@v3.0.0
         with:
           name: build-tests
-          path: ${{ github.GITHUB_WORKSPACE}}/DesignLint/
       - name: Run PIT Testing
         run: mvn -B pitest:mutationCoverage --file pom.xml
       - name: Save PIT report as an artifact
         uses: actions/upload-artifact@v3.0.0
         with: 
           name: PIT_Report
-          path: ${{ github.GITHUB_WORKSPACE }}/target/pit-reports/
+          path: target/pit-reports/
           if-no-files-found: error
           retention-days: 1
   
