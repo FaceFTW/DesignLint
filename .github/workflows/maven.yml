@@ -27,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v3.0.0
         with:
           name: build
-          path: ${{ github.GITHUB_WORKSPACE }}/target/*
+          path: ${{ github.GITHUB_WORKSPACE }}/target/
           if-no-files-found: error
           retention-days: 1
 
@@ -53,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v3.0.0
         with:
           name: build-tests
-          path: ${{ github.GITHUB_WORKSPACE }}/target/*
+          path: ${{ github.GITHUB_WORKSPACE }}/target/
           if-no-files-found: error
           retention-days: 1
 
@@ -99,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@v3.0.0
         with: 
           name: PIT_Report
-          path: ${{ github.GITHUB_WORKSPACE }}/target/pit-reports/*
+          path: ${{ github.GITHUB_WORKSPACE }}/target/pit-reports/
           if-no-files-found: error
           retention-days: 1
   
