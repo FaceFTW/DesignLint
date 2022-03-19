@@ -11,7 +11,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class CodeToInterfaceTest {
-    private final String[] ourClass = { "example/code2Interface/code2InterfaceTest" };
+    private final String[] ourClass = { "example/code2interface/Code2InterfaceTest" };
 
     //Analyzer Class
     private CodeToInterfaceAnalyzer analyzer;
