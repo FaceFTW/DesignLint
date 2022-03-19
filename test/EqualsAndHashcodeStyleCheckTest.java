@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import domain.EqualsAndHashcodeAnalyzer;
 import domain.LinterError;
 import domain.ReturnType;
+import domain.analyzer.EqualsAndHashcodeAnalyzer;
 
 public class EqualsAndHashcodeStyleCheckTest {
    

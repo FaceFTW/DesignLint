@@ -8,8 +8,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import domain.LinterError;
-import domain.PrincipleOfLeastKnowledgeAnalyzer;
 import domain.ReturnType;
+import domain.analyzer.PrincipleOfLeastKnowledgeAnalyzer;
 
 public class PrincipleOfLeastKnowledgeCheckTest {
 	

@@ -12,7 +12,7 @@ import java.util.List;
 
 import domain.ErrType;
 import domain.ReturnType;
-import domain.ObjectAdapterIdentifierAnalyzer;
+import domain.analyzer.ObjectAdapterIdentifierAnalyzer;
 
 public class ObjectAdapterIdentifierTest {
 	

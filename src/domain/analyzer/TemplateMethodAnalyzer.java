@@ -1,12 +1,16 @@
-package domain;
+package domain.analyzer;
 
 import datasource.ASMParser;
+import domain.DomainAnalyzer;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import domain.ErrType;
+import domain.LinterError;
+import domain.ReturnType;
 
 public class TemplateMethodAnalyzer extends DomainAnalyzer {
 

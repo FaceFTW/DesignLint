@@ -1,6 +1,10 @@
-package domain;
+package domain.analyzer;
 
 import datasource.ASMParser;
+import domain.DomainAnalyzer;
+import domain.ErrType;
+import domain.LinterError;
+import domain.ReturnType;
 
 import java.io.IOException;
 import java.util.ArrayList;

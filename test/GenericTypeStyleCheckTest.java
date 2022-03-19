@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import domain.ErrType;
-import domain.GenericTypeNameAnalyzer;
 import domain.LinterError;
 import domain.ReturnType;
+import domain.analyzer.GenericTypeNameAnalyzer;
 
 public class GenericTypeStyleCheckTest {
 	

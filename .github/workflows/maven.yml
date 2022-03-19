@@ -5,7 +5,7 @@ name: A Really Convenient CI Scheme
 
 on:
   push:
-    branches: [main, DES-6-ci-fix-testing-workflow]
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -23,10 +23,6 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn -B compile --file pom.xml
-      # - name: Where are we?
-      #   run: |
-      #         pwd
-      #         ls
       - name: Upload Compiled Artifacts
         uses: actions/upload-artifact@v3.0.0
         with:
@@ -46,10 +42,6 @@ jobs:
           java-version: "11"
           distribution: "temurin"
           cache: maven
-      # - name: Download binaries compiled in previous tests
-      #   uses: actions/download-artifact@v3.0.0
-      #   with:
-      #     name: build
       - name: Build Binaries with Maven
         run: mvn -B compiler:compile --file pom.xml
       - name: Build Tests with Maven
@@ -73,17 +65,12 @@ jobs:
           java-version: "11"
           distribution: "temurin"
           cache: maven
-      # - name: Download binaries compiled in previous tests
-      #   uses: actions/download-artifact@v3.0.0
-      #   with:
-      #     name: build-tests
       - name: Build Binaries with Maven
         run: mvn -B compiler:compile --file pom.xml
       - name: Build Tests with Maven
         run: mvn -B compiler:testCompile --file pom.xml
       - name: Run Surefire tests
         run: mvn -B surefire:test --file pom.xml
-  # This is a pass-fail job w/o artifacts. reuse build-tests
 
   run-pit-tests:
     runs-on: ubuntu-latest
@@ -96,10 +83,6 @@ jobs:
           java-version: "11"
           distribution: "temurin"
           cache: maven
-      # - name: Download binaries compiled in previous tests
-      #   uses: actions/download-artifact@v3.0.0
-      #   with:
-      #     name: build-tests
       - name: Build Binaries with Maven
         run: mvn -B compiler:compile --file pom.xml
       - name: Build Tests with Maven

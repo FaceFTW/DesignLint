@@ -5,7 +5,7 @@ import org.junit.Test;
 import domain.ErrType;
 import domain.LinterError;
 import domain.ReturnType;
-import domain.DryAnalyzer;
+import domain.analyzer.DryAnalyzer;
 
 public class DryTest {
     private DryAnalyzer analyzer;

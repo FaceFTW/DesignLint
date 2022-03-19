@@ -1,8 +1,12 @@
-package domain;
+package domain.analyzer;
 
 import datasource.ASMParser;
 import datasource.Invoker;
 import datasource.MethodCall;
+import domain.DomainAnalyzer;
+import domain.ErrType;
+import domain.LinterError;
+import domain.ReturnType;
 
 import java.util.*;
 

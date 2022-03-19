@@ -1,4 +1,4 @@
-package domain;
+package domain.analyzer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +9,11 @@ import java.util.Set;
 
 import datasource.ASMParser;
 import datasource.MethodCall;
+import domain.DomainAnalyzer;
+import domain.ErrType;
+import domain.LinterError;
+import domain.Method;
+import domain.ReturnType;
 
 public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 	

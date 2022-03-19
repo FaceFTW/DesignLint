@@ -1,4 +1,4 @@
-package domain;
+package domain.analyzer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,10 @@ import java.util.Map;
 
 
 import datasource.ASMParser;
+import domain.DomainAnalyzer;
+import domain.ErrType;
+import domain.LinterError;
+import domain.ReturnType;
 
 public class GenericTypeNameAnalyzer extends DomainAnalyzer {
 	

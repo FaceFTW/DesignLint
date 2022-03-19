@@ -1,4 +1,4 @@
-package domain;
+package domain.analyzer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,6 +8,11 @@ import java.util.Map;
 
 import datasource.ASMParser;
 import datasource.MethodCall;
+import domain.DomainAnalyzer;
+import domain.ErrType;
+import domain.LinterError;
+import domain.Method;
+import domain.ReturnType;
 
 /**
  *  This class uses the given ASMParser (or creates one from the given classList) to check for possible violations
