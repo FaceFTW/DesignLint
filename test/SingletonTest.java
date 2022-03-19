@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import domain.ErrType;
 import domain.ReturnType;
-import domain.SingletonAnalyzer;
+import domain.analyzer.SingletonAnalyzer;
 
 public class SingletonTest {
     private SingletonAnalyzer analyzer;

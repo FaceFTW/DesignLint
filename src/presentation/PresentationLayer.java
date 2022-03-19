@@ -9,9 +9,18 @@ import java.util.List;
 
 import datasource.ASMParser;
 import domain.*;
+import domain.analyzer.CodeToInterfaceAnalyzer;
+import domain.analyzer.DryAnalyzer;
+import domain.analyzer.EqualsAndHashcodeAnalyzer;
 import domain.analyzer.ExceptionThrownAnalyzer;
+import domain.analyzer.GenericTypeNameAnalyzer;
 import domain.analyzer.HighCouplingAnalyzer;
+import domain.analyzer.ObjectAdapterIdentifierAnalyzer;
+import domain.analyzer.PrincipleOfLeastKnowledgeAnalyzer;
+import domain.analyzer.SingletonAnalyzer;
 import domain.analyzer.StrategyAnalyzer;
+import domain.analyzer.TemplateMethodAnalyzer;
+import domain.analyzer.VarNameAnalyzer;
 
 public class PresentationLayer {
 	private List<DomainAnalyzer> analyzers;

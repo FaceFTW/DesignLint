@@ -1,4 +1,4 @@
-package test;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,8 +11,8 @@ import domain.LinterError;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import domain.VarNameAnalyzer;
 import domain.ReturnType;
+import domain.analyzer.VarNameAnalyzer;
 
 public class VarNameTest {
     //Combinations of our two classes, make sure we pull the right data
