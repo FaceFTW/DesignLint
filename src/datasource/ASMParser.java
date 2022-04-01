@@ -70,11 +70,6 @@ public class ASMParser {
 		return classNames;
 	}
 
-	public String getUserFriendlyName(String className) {
-		ClassNode decompiled = this.classMap.get(className);
-		return Type.getObjectType(decompiled.name).getClassName();
-	}
-
 	public String getSuperName(String className) {
 		ClassNode decompiled = this.classMap.get(className);
 		return decompiled.superName;
@@ -187,41 +182,6 @@ public class ASMParser {
 		String[] result = new String[caughtExceptionTypes.size()];
 		caughtExceptionTypes.toArray(result);
 		return result;
-	}
-
-	/**
-	 * Returns a list of compiler annotations for a method.
-	 * 
-	 * @param className  The name of the class where the method should reside in
-	 * @param methodName THe name of the method to retrieve compiler annotations
-	 *                   from
-	 * @return A Set<String> of all of the annotations from the compiler for the
-	 *         specified method
-	 * 
-	 */
-	public Set<String> getMethodCompilerAnnotations(String className, String methodName) {
-		ClassNode decompiled = this.classMap.get(className);
-
-		MethodNode decompMethod = null;
-		for (MethodNode node : decompiled.methods) {
-			if (node.name.equals(methodName)) {
-				decompMethod = node;
-			}
-		}
-
-		if (decompMethod == null) {
-			throw new IllegalArgumentException("Error! Specified Method was not found in the class!");
-		}
-		List<AnnotationNode> annotations = decompMethod.invisibleAnnotations;
-		Set<String> annotationStrs = new HashSet<String>();
-
-		if (annotations != null) {
-			for (AnnotationNode annotation : annotations) {
-				annotationStrs.add(annotation.toString());
-			}
-		}
-
-		return annotationStrs;
 	}
 
 	/**
@@ -878,10 +838,6 @@ public class ASMParser {
 
 	public boolean isInterface(String className) {
 		return ((this.classMap.get(className).access & Opcodes.ACC_INTERFACE) == Opcodes.ACC_INTERFACE);
-	}
-
-	public boolean isAbstractClass(String className) {
-		return (this.classMap.get(className).access & Opcodes.ACC_ABSTRACT) == Opcodes.ACC_ABSTRACT;
 	}
 
 	public boolean isEnum(String className) {
