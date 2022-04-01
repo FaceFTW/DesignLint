@@ -38,8 +38,8 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
         for (String className : classList) {
             this.fieldNames.put(className, parser.getClassFieldNames(className));
             this.fieldTypes.put(className, parser.getClassFieldTypes(className));
-            this.methodVarNames.put(className, parser.getMethodNamesAndVariables(className));
-            this.methodVarTypes.put(className, parser.getMethodVarTypes(className));
+            this.methodVarNames.put(className, parser.findCorrectMethodInfo(className, true));
+            this.methodVarTypes.put(className, parser.findCorrectMethodInfo(className, false));
         }
 
         for (String className : this.methodVarNames.keySet()) {

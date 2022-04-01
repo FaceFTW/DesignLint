@@ -272,7 +272,7 @@ public class ASMParser {
 		return this.reusedDataList;
 	}
 
-	public Map<String, List<String>> getMethodNamesAndVariables(String className) {
+	public Map<String, List<String>> findCorrectMethodInfo(String className, Boolean names_and_vars) {
 		Map<String, List<String>> methodNames = new HashMap<>();
 		this.currentClassNode = this.classMap.get(className);
 
@@ -282,8 +282,11 @@ public class ASMParser {
 			} else {
 				ArrayList<String> methodVar = new ArrayList<>();
 				for (LocalVariableNode local : method.localVariables) {
-					if (local.name.compareTo("this") != 0)
+					if (local.name.compareTo("this") != 0 && names_and_vars) {
 						methodVar.add(local.name);
+					} else if (local.name.compareTo("this") != 0) {
+						methodVar.add(local.desc);
+					}
 				}
 				methodNames.put(method.name, methodVar);
 			}
@@ -305,26 +308,6 @@ public class ASMParser {
 		}
 
 		return this.reusedDataList;
-	}
-
-	public Map<String, List<String>> getMethodVarTypes(String className) {
-		Map<String, List<String>> methodNames = new HashMap<>();
-		this.currentClassNode = this.classMap.get(className);
-
-		for (MethodNode method : this.currentClassNode.methods) {
-			if (method.localVariables == null) {
-				methodNames.put(method.name, new ArrayList<String>());
-			} else {
-				ArrayList<String> methodVar = new ArrayList<>();
-				for (LocalVariableNode local : method.localVariables) {
-					if (local.name.compareTo("this") != 0)
-						methodVar.add(local.desc);
-				}
-				methodNames.put(method.name, methodVar);
-			}
-		}
-
-		return methodNames;
 	}
 
 	public List<String> getInterfacesList(String className) {
