@@ -2,7 +2,7 @@ package domain;
 
 public class LinterError {
 	public String className;
-	public String methodName; // <init> for Constructor, null if outside a method
+	public String methodName;
 	public String message;
 	public ErrType type;
 	

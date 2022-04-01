@@ -36,7 +36,6 @@ public class EqualsAndHashcodeAnalyzer extends DomainAnalyzer {
 	public void getRelevantData(String[] classList) {
 
 		for (String className : classList) {
-			// System.out.println(className);
 			String[] methodNames = parser.getMethods(className);
 			classAndMethodNames.put(className, methodNames);
 		}

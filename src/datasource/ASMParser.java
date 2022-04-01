@@ -35,7 +35,6 @@ public class ASMParser {
 			System.exit(1);
 		}
 
-		// This should be all we need for the parser to function
 	}
 
 	public ASMParser(InputStream[] classStreams) throws IOException {
@@ -47,7 +46,6 @@ public class ASMParser {
 				ClassNode decompiled = new ClassNode();
 				reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
 
-				// We still need the fully qualified class name
 				String className = decompiled.name;
 				classMap.put(className, decompiled);
 			}
@@ -123,7 +121,6 @@ public class ASMParser {
 	public String[] getMethodExceptionSignature(String className, String methodName) {
 		ClassNode decompiled = this.classMap.get(className);
 
-		// Kinda have to find the method in the first place, use basic search for now
 		MethodNode decompMethod = null;
 		for (MethodNode node : decompiled.methods) {
 			if (node.name.equals(methodName)) {
@@ -131,7 +128,6 @@ public class ASMParser {
 			}
 		}
 
-		// Just a safeguard
 		if (decompMethod == null) {
 			throw new IllegalArgumentException("Error! Specified Method was not found in the class!");
 		}
@@ -159,7 +155,6 @@ public class ASMParser {
 	public String[] getMethodExceptionCaught(String className, String methodName) {
 		ClassNode decompiled = this.classMap.get(className);
 
-		// Kinda have to find the method in the first place, use basic search for now
 		MethodNode decompMethod = null;
 		for (MethodNode node : decompiled.methods) {
 			if (node.name.equals(methodName)) {
@@ -167,7 +162,6 @@ public class ASMParser {
 			}
 		}
 
-		// Just a safeguard
 		if (decompMethod == null) {
 			throw new IllegalArgumentException("Error! Specified Method was not found in the class!");
 		}
@@ -346,7 +340,6 @@ public class ASMParser {
 				}
 			}
 			else {
-				//System.out.println("Class: " + className + " " + this.classMap.get(className).interfaces);
 				return this.classMap.get(className).interfaces;
 			}
 	}
@@ -354,7 +347,6 @@ public class ASMParser {
 	public boolean compareMethodFromInterface(String className, String methodName, String interfaceName) {
 		try {
 			if (!this.classMap.keySet().contains(className)) {
-				// System.out.println(className + " not found");
 				ClassReader reader = new ClassReader(className);
 				ClassNode decompiled = new ClassNode();
 				reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
@@ -362,7 +354,6 @@ public class ASMParser {
 			}
 
 			if (!this.classMap.keySet().contains(interfaceName)) {
-				// System.out.println(interfaceName + " not found");
 				ClassReader reader1 = new ClassReader(interfaceName);
 				ClassNode decompiled1 = new ClassNode();
 				reader1.accept(decompiled1, ClassReader.EXPAND_FRAMES);
@@ -378,14 +369,12 @@ public class ASMParser {
 			original = getMethodNode(className, methodName);
 		} catch (IllegalArgumentException e) {
 			original = null;
-			// System.out.println("Func not found in " + className + ", " + methodName );
 		}
 
 		try {
 			compare = getMethodNode(interfaceName, methodName);
 		} catch (IllegalArgumentException e) {
 			compare = null;
-			// System.out.println("Func not found in " + interfaceName + ", " + methodName);
 		}
 
 		if (original != null && compare != null) {
@@ -410,7 +399,6 @@ public class ASMParser {
 				abstractMethods.add(list);
 			}
 		}
-		//System.out.println("Array " + className + " " + abstractMethods);
 		return abstractMethods;
 	}
 
@@ -611,23 +599,16 @@ public class ASMParser {
 		Set<String> types = new HashSet<>();
 		ClassNode decompiled = this.classMap.get(className);
 
-		// For each field, add the type if it isn't already in the list
 		for (FieldNode field : decompiled.fields) {
-			// Parse the description (Signature tends to be wonky and variable w/ generics);
 			String internalTypeName = field.desc;
 			String betterTypeName = Type.getType(internalTypeName).getInternalName();
 
-			// Each dimension of an array is indicated with a left bracket
-			// Only the type should count toward the coupling, so remove them if they exist
 			betterTypeName = betterTypeName.replace("[", "");
 
 			if (betterTypeName.charAt(0) == 'L' && betterTypeName.charAt(betterTypeName.length() - 1) == ';') {
 				betterTypeName = betterTypeName.substring(1, betterTypeName.length() - 1);
 			}
-			// Primitives in the JVM are single letter types, so we can filter them out
-			// after removing any array identifiers by checking string length
 
-			// We also can ignore duplicate detection by using a Set, instead of a list
 			if (betterTypeName.length() > 1) {
 				types.add(betterTypeName);
 			}
@@ -652,25 +633,13 @@ public class ASMParser {
 		Set<String> types = new HashSet<>();
 		ClassNode decompiled = this.classMap.get(className);
 
-		// For each field, add the type if it isn't already in the list
 		for (MethodNode method : decompiled.methods) {
-			// Get the method data
 			String betterTypeName = Type.getReturnType(method.desc).getInternalName();
 
-			// We get parameter types from the description, so do some regex matching
-
-			// Method descriptors will have parenthesis, therefore we need to remove them
-			// We parse parameter types in a different method as well
 			betterTypeName = betterTypeName.replaceAll("\\(.*\\)", "");
 
-			// Each dimension of an array is indicated with a left bracket
-			// Only the type should count toward the coupling, so remove them if they exist
 			betterTypeName = betterTypeName.replace("[", "");
 
-			// Primitives in the JVM are single letter types, so we can filter them out
-			// after removing any array identifiers by checking string length
-
-			// We also can ignore duplicate detection by using a Set, instead of a list
 			if (betterTypeName.length() > 1) {
 				types.add(betterTypeName);
 			}
@@ -694,9 +663,7 @@ public class ASMParser {
 		Set<String> types = new HashSet<>();
 		ClassNode decompiled = this.classMap.get(className);
 
-		// For each field, add the type if it isn't already in the list
 		for (MethodNode method : decompiled.methods) {
-			// Get the Parameter data
 			for (Type paramType : Type.getArgumentTypes(method.desc)) {
 				String betterTypeName = "";
 				if (paramType.getSort() == Type.ARRAY) {
@@ -707,16 +674,7 @@ public class ASMParser {
 					betterTypeName = paramType.getInternalName();
 					betterTypeName = betterTypeName.replace("[", "");
 				}
-				// Each dimension of an array is indicated with a left bracket
-				// Only the type should count toward the coupling, so remove them if they exist
 
-				// Just in case parse the type again (apparently arrays can screw this up)
-				// betterTypeName = Type.getType(betterTypeName).getInternalName();
-
-				// Primitives in the JVM are single letter types, so we can filter them out
-				// after removing any array identifiers by checking string length
-
-				// We also can ignore duplicate detection by using a Set, instead of a list
 				if (betterTypeName.length() > 1) {
 					types.add(betterTypeName);
 				}
@@ -733,7 +691,6 @@ public class ASMParser {
 		Set<String> types = new HashSet<>();
 		ClassNode decompiled = this.classMap.get(className);
 
-		// For each field, add the type if it isn't already in the list
 		for (MethodNode method : decompiled.methods) {
 			for (AbstractInsnNode instruction : method.instructions) {
 				String betterTypeName = "";
@@ -755,15 +712,8 @@ public class ASMParser {
 						break;
 				}
 
-				// Each dimension of an array is indicated with a left bracket
-				// Only the type should count toward the coupling, so remove them if they
-				// exist
 				betterTypeName = betterTypeName.replace("[", "");
 
-				// Primitives in the JVM are single letter types, so we can filter them out
-				// after removing any array identifiers by checking string length
-
-				// We also can ignore duplicate detection by using a Set, instead of a list
 				if (betterTypeName.length() > 1) {
 					types.add(betterTypeName);
 				}
@@ -780,7 +730,6 @@ public class ASMParser {
 		Set<String> types = new HashSet<>();
 		ClassNode decompiled = this.classMap.get(className);
 
-		// For each field, add the type if it isn't already in the list
 		for (MethodNode method : decompiled.methods) {
 			if (method.localVariables != null) {
 				for (LocalVariableNode local : method.localVariables) {
@@ -797,15 +746,8 @@ public class ASMParser {
 
 					Type.getType(local.desc).getInternalName();
 
-					// Each dimension of an array is indicated with a left bracket
-					// Only the type should count toward the coupling, so remove them if they
-					// exist
 					betterTypeName = betterTypeName.replace("[", "");
 
-					// Primitives in the JVM are single letter types, so we can filter them out
-					// after removing any array identifiers by checking string length
-
-					// We also can ignore duplicate detection by using a Set, instead of a list
 					if (betterTypeName.length() > 1) {
 						types.add(betterTypeName);
 					}
@@ -823,10 +765,8 @@ public class ASMParser {
 		Set<String> types = new HashSet<>();
 		ClassNode decompiled = this.classMap.get(className);
 
-		// Null check
 		if (decompiled.interfaces != null) {
 			for (String interfaceType : decompiled.interfaces) {
-				// These are explicit class names in the first place, so just add them
 				types.add(interfaceType);
 			}
 		}
