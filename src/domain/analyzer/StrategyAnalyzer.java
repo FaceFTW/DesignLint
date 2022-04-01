@@ -81,7 +81,6 @@ public class StrategyAnalyzer extends DomainAnalyzer {
 
 		for (String strategyType : this.strategyTypeList) {
 			List<String> implementingStrategies = new ArrayList<>();
-			// Do it again but this time for implementing
 			for (String className : classList) {
 				List<String> interfaces = Arrays.asList(this.parser.getInterfaces(className));
 				if (interfaces.contains(strategyType)) {
@@ -101,7 +100,6 @@ public class StrategyAnalyzer extends DomainAnalyzer {
 	}
 
 	public void lintInterfaceList() {
-		// Check for strategy types without implementations
 		List<String> typesToRemove = new ArrayList<>();
 		for (String stratType : this.strategyTypeStrategiesMap.keySet()) {
 			if (this.strategyTypeStrategiesMap.get(stratType).size() == 0) {
@@ -118,13 +116,11 @@ public class StrategyAnalyzer extends DomainAnalyzer {
 			}
 		}
 
-		// Check for strategies implementing multiple classes
 		List<String> toRemove = new ArrayList<>();
 		for (String strat : this.strategyList) {
 			String[] interfaces = this.parser.getInterfaces(strat);
 
 			if (interfaces.length >= 2) {
-				// Error found, make the LinterError and clean it from the maps
 				this.errorList.add(
 						new LinterError(strat, String.format(IMPLEMENTS_TOO_MANY_INTERFACE_ERR, strat), ErrType.ERROR));
 
@@ -156,9 +152,6 @@ public class StrategyAnalyzer extends DomainAnalyzer {
 		for (String className : this.nonStratclassList) {
 			List<String> usedStrats = new ArrayList<>();
 			if (parser.isFinal(className) && parser.allMethodsStatic(className)) {
-				// This is the only practical instance where having strategy by method makes
-				// sense
-				// Get all method parameter types
 				String[] paramTypes = parser.getAllMethodParameterTypes(className);
 				for (String param : paramTypes) {
 					if (this.strategyTypeList.contains(param)) {
@@ -166,10 +159,8 @@ public class StrategyAnalyzer extends DomainAnalyzer {
 					}
 				}
 			} else {
-				// Get the fields used by that class
 				String[] classFields = parser.getFieldTypeNames(className);
 				for (String field : classFields) {
-					// Ignore array types
 					String fixedField = field.replace("[", "");
 					if (this.strategyList.contains(fixedField)) {
 						errorList.add(

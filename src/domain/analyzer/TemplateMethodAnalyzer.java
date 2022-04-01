@@ -55,15 +55,11 @@ public class TemplateMethodAnalyzer extends DomainAnalyzer {
 
 
     public void analyzeData() {
-        //We look through our abstractInConcrete to find potential candidates.
         for (String className : this.abstractInConcrete.keySet()) {
             for (List<String> methodName : this.abstractInConcrete.get(className).keySet()) {
-                    //We have abstract methods! Check for subclasses
                     for (String subclassName : this.extendedClasses.keySet()) {
-                        //System.out.println(className + " " + methodName + " " + subclassName);
                         boolean allConcrete = true;
                         if (this.extendedClasses.get(subclassName).compareTo(className) == 0) {
-                            //System.out.println("HERE");
                             for (String abstractMethod : this.abstractInConcrete.get(className).get(methodName)) {
                                 boolean counter = false;
 
@@ -85,7 +81,6 @@ public class TemplateMethodAnalyzer extends DomainAnalyzer {
                                 }
                             }
                             if (allConcrete && methodName.get(0).compareTo("<init>") != 0) {
-                                //System.out.println(subclassName + " " + className);
                                     this.foundPatterns.add(new LinterError(className, methodName.get(0),
                                             "Template Method Pattern Found: " + methodName.get(0) + " (Subclass: " + subclassName + ")",
                                             ErrType.PATTERN));
