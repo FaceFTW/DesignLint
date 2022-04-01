@@ -10,8 +10,6 @@ import presentation.PresentationLayer;
 
 public class LinterMain {
 	public static void main(String[] args) {
-		// Presentation layer will only expect a list of files, so check for dirs in
-		// case
 		List<String> classFilesToAnalyze = new ArrayList<>();
 
 		for (String string : args) {
@@ -30,11 +28,6 @@ public class LinterMain {
 		String[] classList = new String[classFilesToAnalyze.size()];
 		classFilesToAnalyze.toArray(classList);
 
-		// For now just test if we recurse properly
-		// for (String path : classList) {
-		// 	System.out.println(path);
-		// }
-
 		PresentationLayer frontend = new PresentationLayer();
 		frontend.setupAnalyzers(classList);
 		frontend.runAnalyzers();
@@ -42,25 +35,17 @@ public class LinterMain {
 
 	}
 
-	// Presentation layer will not determine what files to parse, only to parse
-	// files
-	// Hence directory recursion is defined here and not in the presentation layer
 	private static String[] recurseDirectory(String path) {
 		List<String> files = new ArrayList<>();
 		File currentDir = new File(path);
 
-		// We will check beforehand if this is a directory
 		for (File child : currentDir.listFiles()) {
-			// I am NOT PROCESSING SYMLINKS, THAT'S JUST STUPID
 			if (Files.isSymbolicLink(child.toPath())) {
 				throw new IllegalArgumentException(
 						"Error, I found a symlink and I don't want to touch that yucky stuff >:P");
 			} else if (child.isFile() && child.getName().contains(".class")) {
-				// We will resolve paths as we find them
 				files.add(child.getAbsolutePath());
 			} else {
-				// This *must* be a directory, so recurse
-				// The end condition is when there are no more dirs to parse
 				if (child.isDirectory()) {
 					String[] recursed = recurseDirectory(child.getAbsolutePath());
 					if (recursed != null && recursed.length > 0) {

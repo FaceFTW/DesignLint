@@ -55,10 +55,6 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
         for (String className : this.possibleInterfaces.keySet()) {
             for (String methodName : this.possibleInterfaces.get(className).keySet()) {
                 for (String varName : this.possibleInterfaces.get(className).get(methodName).keySet()) {
-//                    System.out.println("Class: " + className);
-//                    System.out.println("Method: " + methodName);
-//                    System.out.println("VarName: " + varName);
-//                    System.out.println(this.possibleInterfaces.get(className).get(methodName).get(varName));
 
                     analyzePotentialInterfaces(className, methodName, varName);
                 }
@@ -91,12 +87,10 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
     public void analyzePotentialInterfaces(String className, String methodName, String varName) {
         if (!findShortCut(className, methodName, varName)) {
             Map<String, List<String>> interfaces = this.possibleInterfaces.get(className).get(methodName).get(varName);
-            //System.out.println(varName + " " + interfaces);
             List<String> union = new ArrayList<>();
             boolean x = false;
             union.add("Init List");
             for (String methodKey : interfaces.keySet()) {
-                //System.out.println(methodKey + " " + union);
                 if (union.get(0).compareTo("Init List") == 0) {
                     union = interfaces.get(methodKey);
                 }
@@ -109,21 +103,10 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
                 }
             }
             if (!x && union.get(0).compareTo("<init>") != 0) {
-                //System.out.println("Error for " + className + " " + methodName + " " + varName);
                 for (int i = 0; i < union.size(); i++) {
-                    //Finally, if the types in the union match the type of the variable, do not throw an error.
                     int index = this.methodVarNames.get(className).get(methodName).indexOf(varName);
-//                    if (this.methodVarTypes.get(className).get(methodName).get(index).compareTo("L" + union.get(i) + ";") != 0) {
                         this.foundErrors.add(new LinterError(className, methodName,
                                 "Potential Interface for " + varName + ": " + union.get(i), ErrType.WARNING));
-//                    }
-//                    else {
-//                        //index = this.fieldNames.get(className).indexOf(varName);
-//                       // if (this.fieldTypes.get(className).get(index).compareTo("L" + union.get(i) + ";") != 0) {
-//                            this.foundErrors.add(new LinterError(className, methodName,
-//                                    "Potential Interface for " + varName + ": " + union.get(i), ErrType.WARNING));
-//                       // }
-//                    }
                 }
             }
         }
@@ -182,7 +165,6 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
                 continue;
             }
             else if (interfaces.size() > 0) {
-                //System.out.println(interfaces);
                 boolean foundInInterface = false;
                 for (String interf : interfaces) {
                     boolean foundinCurrentInterface = false;
@@ -211,10 +193,6 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
                     }
                     //Input into our Map
                     if (foundinCurrentInterface) {
-//                        System.out.println(method.getInvokerName());
-//                        System.out.println(method.getCalledMethodName());
-//                        System.out.println(interf);
-//                        System.out.println();
 
 
                         this.possibleInterfaces.get(className).get(methodName).get(method.getInvokerName()).
@@ -226,9 +204,6 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
                             get(method.getCalledMethodName()).add("X");
                 }
             }
-//            else {
-//                //System.out.println("No interfaces found");
-//            }
         }
     }
 

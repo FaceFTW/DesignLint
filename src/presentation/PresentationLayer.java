@@ -31,13 +31,10 @@ public class PresentationLayer {
 	public PresentationLayer() {
 		this.analyzers = new ArrayList<>();
 		this.linterReturns = new ArrayList<>();
-		this.classList = new String[1]; // Prevent null pointer bs
+		this.classList = new String[1];
 	}
 
-	// caller *MUST* ensure that all strings point to valid files
-	// We throw a hissyfit otherwise >:(
 	public void setupAnalyzers(String[] fileList) {
-		// Create an ASMParser to parse all of the files initially
 
 		List<InputStream> fileStreams = new ArrayList<>();
 		ASMParser parser = null;
@@ -77,7 +74,6 @@ public class PresentationLayer {
 		}
 	}
 
-	// Nothing too complicated, just a couple of loops
 	public void runAnalyzers() {
 		for (DomainAnalyzer domainAnalyzer : analyzers) {
 			domainAnalyzer.getRelevantData(this.classList);
@@ -86,9 +82,6 @@ public class PresentationLayer {
 		}
 	}
 
-	// Technically, this allows for some degree of flexibility
-	// This way you can change the actual LinterMain to output to a file if you
-	// wanted
 	public void vomitOutput(PrintStream stream) {
 		int returnNum = 0;
 		int errNum = 0;
