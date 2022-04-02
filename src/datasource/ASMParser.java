@@ -284,7 +284,7 @@ public class ASMParser {
 				for (LocalVariableNode local : method.localVariables) {
 					if (local.name.compareTo("this") != 0 && names_and_vars) {
 						methodVar.add(local.name);
-					} else if (local.name.compareTo("this") != 0) {
+					} else if (local.name.compareTo("this") != 0 && !names_and_vars) {
 						methodVar.add(local.desc);
 					}
 				}
