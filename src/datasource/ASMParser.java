@@ -17,6 +17,9 @@ import java.util.*;
 public class ASMParser {
 
 	private Map<String, ClassNode> classMap;
+	List<String> reusedDataList = new ArrayList<>();
+	List<MethodNode> reusedNodeList = new ArrayList<>();
+	ClassNode currentClassNode;
 
 	public ASMParser(String[] classList) throws IOException {
 		this.classMap = new HashMap<String, ClassNode>();
@@ -25,9 +28,9 @@ public class ASMParser {
 				className = className.replace('.', '/');
 				ClassReader reader = new ClassReader(className);
 
-				ClassNode decompiled = new ClassNode();
-				reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
-				classMap.put(className, decompiled);
+				this.currentClassNode = new ClassNode();
+				reader.accept(this.currentClassNode, ClassReader.EXPAND_FRAMES);
+				classMap.put(className, this.currentClassNode);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -43,11 +46,11 @@ public class ASMParser {
 			for (InputStream stream : classStreams) {
 				ClassReader reader = new ClassReader(stream);
 
-				ClassNode decompiled = new ClassNode();
-				reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
+				this.currentClassNode = new ClassNode();
+				reader.accept(this.currentClassNode, ClassReader.EXPAND_FRAMES);
 
-				String className = decompiled.name;
-				classMap.put(className, decompiled);
+				String className = this.currentClassNode.name;
+				classMap.put(className, this.currentClassNode);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -69,13 +72,13 @@ public class ASMParser {
 	}
 
 	public String getSuperName(String className) {
-		ClassNode decompiled = this.classMap.get(className);
-		return decompiled.superName;
+		this.currentClassNode = this.classMap.get(className);
+		return this.currentClassNode.superName;
 	}
 
 	public String[] getInterfaces(String className) {
-		ClassNode decompiled = this.classMap.get(className);
-		List<String> interfaces = decompiled.interfaces;
+		this.currentClassNode = this.classMap.get(className);
+		List<String> interfaces = this.currentClassNode.interfaces;
 		String[] result = new String[interfaces.size()];
 		interfaces.toArray(result);
 		return result;
@@ -94,11 +97,11 @@ public class ASMParser {
 			throw new IllegalArgumentException("Error! The specified class was not found in the parsed class map.");
 		}
 
-		ClassNode decompiled = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
 
 		List<String> methodList = new ArrayList<>();
 
-		for (MethodNode node : decompiled.methods) {
+		for (MethodNode node : this.currentClassNode.methods) {
 			methodList.add(node.name);
 		}
 
@@ -119,10 +122,10 @@ public class ASMParser {
 	 */
 
 	public String[] getMethodExceptionSignature(String className, String methodName) {
-		ClassNode decompiled = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
 
 		MethodNode decompMethod = null;
-		for (MethodNode node : decompiled.methods) {
+		for (MethodNode node : this.currentClassNode.methods) {
 			if (node.name.equals(methodName)) {
 				decompMethod = node;
 			}
@@ -132,11 +135,11 @@ public class ASMParser {
 			throw new IllegalArgumentException("Error! Specified Method was not found in the class!");
 		}
 
-		List<String> exceptions = new ArrayList<String>();
-		exceptions = decompMethod.exceptions;
+		
+		reusedDataList = decompMethod.exceptions;
 
-		String[] result = new String[exceptions.size()];
-		exceptions.toArray(result);
+		String[] result = new String[reusedDataList.size()];
+		reusedDataList.toArray(result);
 		return result;
 	}
 
@@ -153,10 +156,10 @@ public class ASMParser {
 	 * 
 	 */
 	public String[] getMethodExceptionCaught(String className, String methodName) {
-		ClassNode decompiled = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
 
 		MethodNode decompMethod = null;
-		for (MethodNode node : decompiled.methods) {
+		for (MethodNode node : this.currentClassNode.methods) {
 			if (node.name.equals(methodName)) {
 				decompMethod = node;
 			}
@@ -167,14 +170,14 @@ public class ASMParser {
 		}
 
 		List<TryCatchBlockNode> caughtExceptions = decompMethod.tryCatchBlocks;
-		List<String> caughtExceptionTypes = new ArrayList<>();
+		
 
 		for (TryCatchBlockNode block : caughtExceptions) {
-			caughtExceptionTypes.add(block.type);
+			reusedDataList.add(block.type);
 		}
 
-		String[] result = new String[caughtExceptionTypes.size()];
-		caughtExceptionTypes.toArray(result);
+		String[] result = new String[reusedDataList.size()];
+		reusedDataList.toArray(result);
 		return result;
 	}
 
@@ -190,17 +193,17 @@ public class ASMParser {
 			throw new IllegalArgumentException("Error! The specified class was not found in the parsed class map.");
 		}
 
-		ClassNode decompiled = this.classMap.get(className);
+		this.currentClassNode= this.classMap.get(className);
 
-		List<String> methodList = new ArrayList<>();
+		
 
-		for (MethodNode node : decompiled.methods) {
+		for (MethodNode node : this.currentClassNode.methods) {
 			if (node.access == Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC) {
-				methodList.add(node.name);
+				reusedDataList.add(node.name);
 			}
 		}
 
-		return methodList;
+		return reusedDataList;
 	}
 
 	/**
@@ -211,9 +214,9 @@ public class ASMParser {
 	 *         false
 	 */
 	public boolean isClassConstructorPrivate(String className) {
-		ClassNode classNode = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
 
-		for (MethodNode method : classNode.methods) {
+		for (MethodNode method : this.currentClassNode.methods) {
 			if (method.name.equals("<init>")) {
 				if (method.access == Opcodes.ACC_PRIVATE) {
 					return true;
@@ -230,57 +233,58 @@ public class ASMParser {
 	 * @return List<String> of fieldNames that are private static
 	 */
 	public List<String> getClassStaticPrivateFieldNames(String className) {
-		List<String> fieldNames = new ArrayList<>();
-		ClassNode classNode = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
+		this.reusedDataList = new ArrayList<>();
 
-		for (FieldNode field : classNode.fields) {
+		for (FieldNode field : this.currentClassNode.fields) {
 
 			if (field.access == Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC) {
-				fieldNames.add(field.name);
+				this.reusedDataList.add(field.name);
 			}
 		}
 
-		return fieldNames;
+		return this.reusedDataList;
 	}
 
 	public List<String> getClassFieldNames(String className) {
-		List<String> fieldNames = new ArrayList<>();
-		ClassNode classNode = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
 
-		for (FieldNode field : classNode.fields) {
+		for (FieldNode field : this.currentClassNode.fields) {
 			if ((field.access & Opcodes.ACC_STATIC) == 0) {
-				fieldNames.add(field.name);
+				this.reusedDataList.add(field.name);
 			}
 		}
 
-		return fieldNames;
+		return this.reusedDataList;
 	}
 
 	public List<String> getGlobalNames(String className) {
-		List<String> globalNames = new ArrayList<>();
-		ClassNode classNode = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
 
-		for (FieldNode field : classNode.fields) {
+		for (FieldNode field : this.currentClassNode.fields) {
 			if ((field.access & Opcodes.ACC_STATIC) != 0) {
-				globalNames.add(field.name);
+				this.reusedDataList.add(field.name);
 			}
 		}
 
-		return globalNames;
+		return this.reusedDataList;
 	}
 
-	public Map<String, List<String>> getMethodNamesAndVariables(String className) {
+	public Map<String, List<String>> findCorrectMethodInfo(String className, Boolean names_and_vars) {
 		Map<String, List<String>> methodNames = new HashMap<>();
-		ClassNode classNode = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
 
-		for (MethodNode method : classNode.methods) {
+		for (MethodNode method : this.currentClassNode.methods) {
 			if (method.localVariables == null) {
 				methodNames.put(method.name, new ArrayList<String>());
 			} else {
 				ArrayList<String> methodVar = new ArrayList<>();
 				for (LocalVariableNode local : method.localVariables) {
-					if (local.name.compareTo("this") != 0)
+					if (local.name.compareTo("this") != 0 && names_and_vars) {
 						methodVar.add(local.name);
+					} else if (local.name.compareTo("this") != 0 && !names_and_vars) {
+						methodVar.add(local.desc);
+					}
 				}
 				methodNames.put(method.name, methodVar);
 			}
@@ -290,49 +294,28 @@ public class ASMParser {
 	}
 
 	public List<String> getClassFieldTypes(String className) {
-		List<String> fieldTypes = new ArrayList<>();
-		ClassNode classNode = this.classMap.get(className);
-		if (classNode == null) {
+		this.currentClassNode = this.classMap.get(className);
+		if (this.currentClassNode == null) {
 			System.out.println("Node not found");
 			return null;
 		}
 
-		for (FieldNode field : classNode.fields) {
-			fieldTypes.add(field.desc);
+		for (FieldNode field : this.currentClassNode.fields) {
+			this.reusedDataList.add(field.desc);
 		}
 
-		return fieldTypes;
-	}
-
-	public Map<String, List<String>> getMethodVarTypes(String className) {
-		Map<String, List<String>> methodNames = new HashMap<>();
-		ClassNode classNode = this.classMap.get(className);
-
-		for (MethodNode method : classNode.methods) {
-			if (method.localVariables == null) {
-				methodNames.put(method.name, new ArrayList<String>());
-			} else {
-				ArrayList<String> methodVar = new ArrayList<>();
-				for (LocalVariableNode local : method.localVariables) {
-					if (local.name.compareTo("this") != 0)
-						methodVar.add(local.desc);
-				}
-				methodNames.put(method.name, methodVar);
-			}
-		}
-
-		return methodNames;
+		return this.reusedDataList;
 	}
 
 	public List<String> getInterfacesList(String className) {
 			if (this.classMap.get(className) == null) {
 				try {
 					ClassReader reader = new ClassReader(className);
-					ClassNode decompiled = new ClassNode();
-					reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
+					this.currentClassNode = new ClassNode();
+					reader.accept(this.currentClassNode, ClassReader.EXPAND_FRAMES);
 
-					this.classMap.put(className, decompiled);
-					return decompiled.interfaces;
+					this.classMap.put(className, this.currentClassNode);
+					return this.currentClassNode.interfaces;
 				}
 				catch (IOException e) {
 					System.out.println("Class Not Found: " + className);
@@ -348,16 +331,16 @@ public class ASMParser {
 		try {
 			if (!this.classMap.keySet().contains(className)) {
 				ClassReader reader = new ClassReader(className);
-				ClassNode decompiled = new ClassNode();
-				reader.accept(decompiled, ClassReader.EXPAND_FRAMES);
-				this.classMap.put(className, decompiled);
+				this.currentClassNode = new ClassNode();
+				reader.accept(this.currentClassNode, ClassReader.EXPAND_FRAMES);
+				this.classMap.put(className, this.currentClassNode);
 			}
 
 			if (!this.classMap.keySet().contains(interfaceName)) {
 				ClassReader reader1 = new ClassReader(interfaceName);
-				ClassNode decompiled1 = new ClassNode();
-				reader1.accept(decompiled1, ClassReader.EXPAND_FRAMES);
-				this.classMap.put(interfaceName, decompiled1);
+				this.currentClassNode = new ClassNode();
+				reader1.accept(this.currentClassNode, ClassReader.EXPAND_FRAMES);
+				this.classMap.put(interfaceName, this.currentClassNode);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -388,10 +371,10 @@ public class ASMParser {
 	}
 
 	public List<List<String>> getAbstractMethods(String className) {
-		ClassNode classNode = this.classMap.get(className);
-		List<MethodNode> methods = classNode.methods;
+		this.currentClassNode = this.classMap.get(className);
+		this.reusedNodeList = this.currentClassNode.methods;
 		List<List<String>> abstractMethods = new ArrayList<>();
-		for (MethodNode method : methods) {
+		for (MethodNode method : this.reusedNodeList) {
 			if ((method.access & Opcodes.ACC_ABSTRACT) != 0) {
 				List<String> list = new ArrayList<>();
 				list.add(method.name);
@@ -403,10 +386,10 @@ public class ASMParser {
 	}
 
 	public List<List<String>> getConcreteMethods(String className) {
-		ClassNode classNode = this.classMap.get(className);
-		List<MethodNode> methods = classNode.methods;
+		this.currentClassNode = this.classMap.get(className);
+		this.reusedNodeList = this.currentClassNode.methods;
 		List<List<String>> abstractMethods = new ArrayList<>();
-		for (MethodNode method : methods) {
+		for (MethodNode method : this.reusedNodeList) {
 			if ((method.access & Opcodes.ACC_ABSTRACT) == 0) {
 				List<String> list = new ArrayList<>();
 				list.add(method.name);
@@ -419,7 +402,6 @@ public class ASMParser {
 	}
 
 	public List<String> getAbstractMethodsInConcrete(String className, List<String> methodName, List<List<String>> methodList) {
-		List<String> abstractMethodNames = new ArrayList<>();
 		List<MethodCall> methodCalls = getMethodCalls(className, methodName.get(0));
 		for (MethodCall method : methodCalls) {
 			if (method.getInvokedClass().compareTo(className) == 0) {
@@ -427,13 +409,13 @@ public class ASMParser {
 					if (methodList.get(i).get(0).compareTo(method.getCalledMethodName()) == 0) {
 						MethodNode node = getMethodNode(className, method.getCalledMethodName());
 						if ((node.access & Opcodes.ACC_ABSTRACT) != 0) {
-							abstractMethodNames.add(node.name);
+							reusedDataList.add(node.name);
 						}
 					}
 				}
 			}
 		}
-		return abstractMethodNames;
+		return reusedDataList;
 	}
 
 	public String getSignature(String className) {
@@ -445,10 +427,10 @@ public class ASMParser {
 	}
 
 	private MethodNode getMethodNode(String className, String methodName) {
-		ClassNode decompiled = this.classMap.get(className);
-		List<MethodNode> methods = decompiled.methods;
+		this.currentClassNode = this.classMap.get(className);
+		this.reusedNodeList = this.currentClassNode.methods;
 		MethodNode method = null;
-		for (MethodNode mNode : methods) {
+		for (MethodNode mNode : this.reusedNodeList) {
 			if (mNode.name.equals(methodName)) {
 				method = mNode;
 				break;
@@ -597,9 +579,9 @@ public class ASMParser {
 	 */
 	public String[] getFieldTypeNames(String className) {
 		Set<String> types = new HashSet<>();
-		ClassNode decompiled = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
 
-		for (FieldNode field : decompiled.fields) {
+		for (FieldNode field : this.currentClassNode.fields) {
 			String internalTypeName = field.desc;
 			String betterTypeName = Type.getType(internalTypeName).getInternalName();
 
@@ -631,9 +613,9 @@ public class ASMParser {
 
 	public String[] getAllMethodReturnTypes(String className) {
 		Set<String> types = new HashSet<>();
-		ClassNode decompiled = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
 
-		for (MethodNode method : decompiled.methods) {
+		for (MethodNode method : this.currentClassNode.methods) {
 			String betterTypeName = Type.getReturnType(method.desc).getInternalName();
 
 			betterTypeName = betterTypeName.replaceAll("\\(.*\\)", "");
@@ -661,9 +643,9 @@ public class ASMParser {
 	 */
 	public String[] getAllMethodParameterTypes(String className) {
 		Set<String> types = new HashSet<>();
-		ClassNode decompiled = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
 
-		for (MethodNode method : decompiled.methods) {
+		for (MethodNode method : this.currentClassNode.methods) {
 			for (Type paramType : Type.getArgumentTypes(method.desc)) {
 				String betterTypeName = "";
 				if (paramType.getSort() == Type.ARRAY) {
@@ -689,9 +671,9 @@ public class ASMParser {
 
 	public String[] getAllMethodBodyTypes(String className) {
 		Set<String> types = new HashSet<>();
-		ClassNode decompiled = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
 
-		for (MethodNode method : decompiled.methods) {
+		for (MethodNode method : this.currentClassNode.methods) {
 			for (AbstractInsnNode instruction : method.instructions) {
 				String betterTypeName = "";
 
@@ -728,9 +710,9 @@ public class ASMParser {
 
 	public String[] getAllMethodLocalTypes(String className) {
 		Set<String> types = new HashSet<>();
-		ClassNode decompiled = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
 
-		for (MethodNode method : decompiled.methods) {
+		for (MethodNode method : this.currentClassNode.methods) {
 			if (method.localVariables != null) {
 				for (LocalVariableNode local : method.localVariables) {
 
@@ -763,10 +745,10 @@ public class ASMParser {
 
 	public String[] getExtendsImplementsTypes(String className) {
 		Set<String> types = new HashSet<>();
-		ClassNode decompiled = this.classMap.get(className);
+		this.currentClassNode = this.classMap.get(className);
 
-		if (decompiled.interfaces != null) {
-			for (String interfaceType : decompiled.interfaces) {
+		if (this.currentClassNode.interfaces != null) {
+			for (String interfaceType : this.currentClassNode.interfaces) {
 				types.add(interfaceType);
 			}
 		}

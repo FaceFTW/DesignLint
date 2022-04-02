@@ -35,7 +35,7 @@ public class VarNameAnalyzer extends DomainAnalyzer {
 	public void getRelevantData(String[] classList) {
 		for (String className : classList) {
 			this.fieldNames.put(className, parser.getClassFieldNames(className));
-			this.methodNames.put(className, parser.getMethodNamesAndVariables(className));
+			this.methodNames.put(className, parser.findCorrectMethodInfo(className, true));
 			this.globalNames.put(className, parser.getGlobalNames(className));
 		}
 	}
