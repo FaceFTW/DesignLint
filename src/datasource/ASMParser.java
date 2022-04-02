@@ -135,7 +135,7 @@ public class ASMParser {
 			throw new IllegalArgumentException("Error! Specified Method was not found in the class!");
 		}
 
-		reusedDataList.clear();
+		
 		reusedDataList = decompMethod.exceptions;
 
 		String[] result = new String[reusedDataList.size()];
@@ -170,7 +170,7 @@ public class ASMParser {
 		}
 
 		List<TryCatchBlockNode> caughtExceptions = decompMethod.tryCatchBlocks;
-		reusedDataList.clear();
+		
 
 		for (TryCatchBlockNode block : caughtExceptions) {
 			reusedDataList.add(block.type);
@@ -195,7 +195,7 @@ public class ASMParser {
 
 		this.currentClassNode= this.classMap.get(className);
 
-		reusedDataList.clear();
+		
 
 		for (MethodNode node : this.currentClassNode.methods) {
 			if (node.access == Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC) {
@@ -247,7 +247,6 @@ public class ASMParser {
 	}
 
 	public List<String> getClassFieldNames(String className) {
-		this.reusedDataList.clear();
 		this.currentClassNode = this.classMap.get(className);
 
 		for (FieldNode field : this.currentClassNode.fields) {
@@ -260,7 +259,6 @@ public class ASMParser {
 	}
 
 	public List<String> getGlobalNames(String className) {
-		this.reusedDataList.clear();
 		this.currentClassNode = this.classMap.get(className);
 
 		for (FieldNode field : this.currentClassNode.fields) {
@@ -296,7 +294,6 @@ public class ASMParser {
 	}
 
 	public List<String> getClassFieldTypes(String className) {
-		this.reusedDataList.clear();
 		this.currentClassNode = this.classMap.get(className);
 		if (this.currentClassNode == null) {
 			System.out.println("Node not found");
@@ -375,7 +372,6 @@ public class ASMParser {
 
 	public List<List<String>> getAbstractMethods(String className) {
 		this.currentClassNode = this.classMap.get(className);
-		this.reusedNodeList.clear();
 		this.reusedNodeList = this.currentClassNode.methods;
 		List<List<String>> abstractMethods = new ArrayList<>();
 		for (MethodNode method : this.reusedNodeList) {
@@ -391,7 +387,6 @@ public class ASMParser {
 
 	public List<List<String>> getConcreteMethods(String className) {
 		this.currentClassNode = this.classMap.get(className);
-		this.reusedNodeList.clear();
 		this.reusedNodeList = this.currentClassNode.methods;
 		List<List<String>> abstractMethods = new ArrayList<>();
 		for (MethodNode method : this.reusedNodeList) {
@@ -407,7 +402,6 @@ public class ASMParser {
 	}
 
 	public List<String> getAbstractMethodsInConcrete(String className, List<String> methodName, List<List<String>> methodList) {
-		reusedDataList.clear();
 		List<MethodCall> methodCalls = getMethodCalls(className, methodName.get(0));
 		for (MethodCall method : methodCalls) {
 			if (method.getInvokedClass().compareTo(className) == 0) {
@@ -434,7 +428,6 @@ public class ASMParser {
 
 	private MethodNode getMethodNode(String className, String methodName) {
 		this.currentClassNode = this.classMap.get(className);
-		this.reusedNodeList.clear();
 		this.reusedNodeList = this.currentClassNode.methods;
 		MethodNode method = null;
 		for (MethodNode mNode : this.reusedNodeList) {
