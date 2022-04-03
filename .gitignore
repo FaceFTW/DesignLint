@@ -3,3 +3,5 @@ target/
 /src/domain/CodeToInterfaceTest.java
 bin/
 .vscode/
+.idea/
+.settings/
