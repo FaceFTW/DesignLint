@@ -10,31 +10,21 @@ import presentation.PresentationLayer;
 
 public class LinterMain {
 	public static void main(String[] args) {
-		List<String> classFilesToAnalyze = new ArrayList<>();
+		String[] classList = {};
 		int flags = 0;
 
 		for (String string : args) {
-
 			// There should be no beginning hyphen for the list of files, therefore we can
 			// assume this is likely an actual path
 			if (string.charAt(0) != '-') {
-				getClassList(classFilesToAnalyze, string);
+				classList = getClassList(string);
 			} else {
 				flags = setFlags(flags, string);
 			}
 		}
 
-		// For now just test if we recurse properly
-		// for (String path : classList) {
-		// System.out.println(path);
-		// }
-
-		// Do a buncha bitmasking here
-		String[] classList = new String[classFilesToAnalyze.size()];
-		classFilesToAnalyze.toArray(classList);
-
 		// If there are no analyzer flags set, enable all of them
-		if ((flags & PresentationLayer.ALL_ANALYZERS) != 0x0) {
+		if ((flags & PresentationLayer.ALL_ANALYZERS) == 0x0) {
 			flags = flags | PresentationLayer.ALL_ANALYZERS;
 		}
 
@@ -45,7 +35,8 @@ public class LinterMain {
 
 	}
 
-	private static void getClassList(List<String> classFilesToAnalyze, String string) {
+	private static String[] getClassList(String string) {
+		List<String> classFilesToAnalyze = new ArrayList<>();
 		File pathListed = new File(string);
 
 		if (pathListed.isDirectory()) {
@@ -57,6 +48,9 @@ public class LinterMain {
 			classFilesToAnalyze.add(pathListed.getAbsolutePath());
 		}
 
+		String[] returnList = new String[classFilesToAnalyze.size()];
+		classFilesToAnalyze.toArray(returnList);
+		return returnList;
 	}
 
 	// Presentation layer will not determine what files to parse, only to parse
