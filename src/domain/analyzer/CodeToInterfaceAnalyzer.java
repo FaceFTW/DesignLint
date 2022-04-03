@@ -38,8 +38,8 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
         for (String className : classList) {
             this.fieldNames.put(className, parser.getClassFieldNames(className));
             this.fieldTypes.put(className, parser.getClassFieldTypes(className));
-            this.methodVarNames.put(className, parser.getMethodNamesAndVariables(className));
-            this.methodVarTypes.put(className, parser.getMethodVarTypes(className));
+            this.methodVarNames.put(className, parser.findCorrectMethodInfo(className, true));
+            this.methodVarTypes.put(className, parser.findCorrectMethodInfo(className, false));
         }
 
         for (String className : this.methodVarNames.keySet()) {
@@ -104,7 +104,7 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
             }
             if (!x && union.get(0).compareTo("<init>") != 0) {
                 for (int i = 0; i < union.size(); i++) {
-                    int index = this.methodVarNames.get(className).get(methodName).indexOf(varName);
+                    // int index = this.methodVarNames.get(className).get(methodName).indexOf(varName);
                         this.foundErrors.add(new LinterError(className, methodName,
                                 "Potential Interface for " + varName + ": " + union.get(i), ErrType.WARNING));
                 }

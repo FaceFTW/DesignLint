@@ -23,12 +23,38 @@ import domain.analyzer.TemplateMethodAnalyzer;
 import domain.analyzer.VarNameAnalyzer;
 
 public class PresentationLayer {
+	// The following represent flags that the wrapper can pass
+	// to the presentation layer to do various things.
+	// We have a max of 32 different options, but shouldn't be a problem
+	public static final int HELP_FLAG = 0x01;		//Placeholder flag for Wrapper to use for help
+	public static final int VERBOSE_FLAG = 0x02; // Increases Verbosity of Output (Specific details)
+
+	// Use the upper bits for analyzer toggles;
+	public static final int GENERIC_NAME_ANALYZER_FLAG = 0x01 << 20; // Enables the Generic Type Name Analyzer
+	public static final int VAR_NAME_ANALYZER_FLAG = 0x01 << 21; // Enables the Variable Name Analyzer
+	public static final int EXCEPTION_THROWN_ANALYZER_FLAG = 0x01 << 22; // Enables the Exception Thrown Analyzer
+	public static final int EQUALS_HASHCODE_ANALYZER_FLAG = 0x01 << 23; // Enables the Equals and Hashcode Analyzer
+	public static final int HIGH_COUPLING_ANALYZER_FLAG = 0x01 << 24; // Enables the High Coupling Analyzer
+	public static final int PRINCIPLE_OF_LEAST_KNOWLEDGE_ANALYZER_FLAG = 0x01 << 25; // Enables the Principle of Least
+																						// Knowledge Analyzer
+	public static final int DRY_ANALYZER_FLAG = 0x01 << 26; // Enables the DRY (Don't Repeat Yourself) Analyzer
+	public static final int CODE_TO_INTERFACE_ANALYZER_FLAG = 0x01 << 27; // Enables the Code To Interface Analyzer
+	public static final int SINGLETON_ANALYZER_FLAG = 0x01 << 28; // Enables the Singleton Pattern Detector
+	public static final int OBJECT_ADAPTER_ANALYZER_FLAG = 0x01 << 29; // Enables the Object Adapter Pattern Detector
+	public static final int STRATEGY_ANALYZER_FLAG = 0x01 << 30; // Enables the Strategy Pattern Detector
+	public static final int TEMPLATE_METHOD_ANALYZER_FLAG = 0x01 << 31; // Enables the Template Method Pattern Detector
+
+	// Mask to enable all analyzers
+	public static final int ALL_ANALYZERS = 0xFFFF << 20;
+
 	private List<DomainAnalyzer> analyzers;
 	private List<ReturnType> linterReturns;
-
 	private String[] classList;
+	private int flags;
 
-	public PresentationLayer() {
+	public PresentationLayer(int flags) {
+
+		this.flags = flags;
 		this.analyzers = new ArrayList<>();
 		this.linterReturns = new ArrayList<>();
 		this.classList = new String[1];
@@ -51,21 +77,7 @@ public class PresentationLayer {
 
 			// Add Analyzers to the list
 			// Style Checks
-			analyzers.add(new GenericTypeNameAnalyzer(parser));
-			analyzers.add(new VarNameAnalyzer(parser));
-			analyzers.add(new ExceptionThrownAnalyzer(parser));
-			analyzers.add(new EqualsAndHashcodeAnalyzer(parser));
-			// Principle Violations
-			analyzers.add(new HighCouplingAnalyzer(parser));
-			analyzers.add(new PrincipleOfLeastKnowledgeAnalyzer(parser));
-			analyzers.add(new DryAnalyzer(parser));
-			analyzers.add(new CodeToInterfaceAnalyzer(parser));
-			// Pattern Detection
-			analyzers.add(new SingletonAnalyzer(parser));
-			analyzers.add(new ObjectAdapterIdentifierAnalyzer(parser));
-			analyzers.add(new StrategyAnalyzer(parser));
-			analyzers.add(new TemplateMethodAnalyzer(parser));
-
+			this.initAnalyzers(parser, flags);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -98,7 +110,8 @@ public class PresentationLayer {
 				switch (error.type) {
 					case ERROR:
 						errType = "Error";
-						errNum++; returnNum++;
+						errNum++;
+						returnNum++;
 						break;
 					case INFO:
 						errType = "Info";
@@ -106,11 +119,13 @@ public class PresentationLayer {
 						break;
 					case PATTERN:
 						errType = "Pattern";
-						patternNum++; returnNum++;
+						patternNum++;
+						returnNum++;
 						break;
 					case WARNING:
 						errType = "Warning";
-						warnNum++; returnNum++;
+						warnNum++;
+						returnNum++;
 						break;
 					default:
 						throw new IllegalArgumentException("Error, We somehow got an unexpected enum value!");
@@ -127,5 +142,48 @@ public class PresentationLayer {
 		stream.println("Warnings Found: " + warnNum);
 		stream.println("Total Patterns Found : " + patternNum);
 		stream.println("Total Linter Findings : " + returnNum);
+	}
+
+	private void initAnalyzers(ASMParser parser, int flags) {
+		if ((flags & GENERIC_NAME_ANALYZER_FLAG) == GENERIC_NAME_ANALYZER_FLAG) {
+			analyzers.add(new GenericTypeNameAnalyzer(parser));
+		}
+		if ((flags & VAR_NAME_ANALYZER_FLAG) == VAR_NAME_ANALYZER_FLAG) {
+			analyzers.add(new VarNameAnalyzer(parser));
+		}
+		if ((flags & EXCEPTION_THROWN_ANALYZER_FLAG) == EXCEPTION_THROWN_ANALYZER_FLAG) {
+			analyzers.add(new ExceptionThrownAnalyzer(parser));
+		}
+		if ((flags & EQUALS_HASHCODE_ANALYZER_FLAG) == EQUALS_HASHCODE_ANALYZER_FLAG) {
+			analyzers.add(new EqualsAndHashcodeAnalyzer(parser));
+		}
+
+		// Principle Violations
+		if ((flags & HIGH_COUPLING_ANALYZER_FLAG) == HIGH_COUPLING_ANALYZER_FLAG) {
+			analyzers.add(new HighCouplingAnalyzer(parser));
+		}
+		if ((flags & PRINCIPLE_OF_LEAST_KNOWLEDGE_ANALYZER_FLAG) == PRINCIPLE_OF_LEAST_KNOWLEDGE_ANALYZER_FLAG) {
+			analyzers.add(new PrincipleOfLeastKnowledgeAnalyzer(parser));
+		}
+		if ((flags & DRY_ANALYZER_FLAG) == DRY_ANALYZER_FLAG) {
+			analyzers.add(new DryAnalyzer(parser));
+		}
+		if ((flags & CODE_TO_INTERFACE_ANALYZER_FLAG) == CODE_TO_INTERFACE_ANALYZER_FLAG) {
+			analyzers.add(new CodeToInterfaceAnalyzer(parser));
+		}
+
+		// Pattern Detection
+		if ((flags & SINGLETON_ANALYZER_FLAG) == SINGLETON_ANALYZER_FLAG) {
+			analyzers.add(new SingletonAnalyzer(parser));
+		}
+		if ((flags & OBJECT_ADAPTER_ANALYZER_FLAG) == OBJECT_ADAPTER_ANALYZER_FLAG) {
+			analyzers.add(new ObjectAdapterIdentifierAnalyzer(parser));
+		}
+		if ((flags & STRATEGY_ANALYZER_FLAG) == STRATEGY_ANALYZER_FLAG) {
+			analyzers.add(new StrategyAnalyzer(parser));
+		}
+		if ((flags & TEMPLATE_METHOD_ANALYZER_FLAG) == TEMPLATE_METHOD_ANALYZER_FLAG) {
+			analyzers.add(new TemplateMethodAnalyzer(parser));
+		}
 	}
 }
