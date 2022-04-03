@@ -16,8 +16,8 @@ public class SingletonAnalyzer extends DomainAnalyzer {
 
 	private ASMParser parser;
 	private List<LinterError> errors;
-	private Map<String, List<String>> validFields;
-	private Map<String, List<String>> staticMethods;
+	private Map<String, String[]> validFields;
+	private Map<String, String[]> staticMethods;
 	private String[] classList;
 
 	public SingletonAnalyzer(String[] classNames) {
@@ -43,11 +43,11 @@ public class SingletonAnalyzer extends DomainAnalyzer {
 	public void getRelevantData(String[] classList) {
 		this.classList = classList;
 		for (String className : classList) {
-			List<String> classFields = this.parser.getClassStaticPrivateFieldNames(className);
+			String[] classFields = this.parser.getClassStaticPrivateFieldNames(className);
 			validFields.put(className, classFields);
 		}
 		for (String className : classList) {
-			List<String> classMethods = this.parser.getStaticMethods(className);
+			String[] classMethods = this.parser.getStaticMethods(className);
 			staticMethods.put(className, classMethods);
 		}
 	}
@@ -72,7 +72,7 @@ public class SingletonAnalyzer extends DomainAnalyzer {
 	}
 
 	private boolean analyzeFields(String className) {
-		return (validFields.get(className).size() > 0);
+		return (validFields.get(className).length > 0);
 	}
 
 	private boolean analyzeMethods(String className) {

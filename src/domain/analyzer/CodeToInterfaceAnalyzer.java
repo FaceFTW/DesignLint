@@ -104,7 +104,7 @@ public class CodeToInterfaceAnalyzer extends DomainAnalyzer {
             }
             if (!x && union.get(0).compareTo("<init>") != 0) {
                 for (int i = 0; i < union.size(); i++) {
-                    int index = this.methodVarNames.get(className).get(methodName).indexOf(varName);
+                    // int index = this.methodVarNames.get(className).get(methodName).indexOf(varName);
                         this.foundErrors.add(new LinterError(className, methodName,
                                 "Potential Interface for " + varName + ": " + union.get(i), ErrType.WARNING));
                 }
