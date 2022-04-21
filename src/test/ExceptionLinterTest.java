@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import domain.ErrType;
@@ -17,7 +18,9 @@ public class ExceptionLinterTest extends AnalyzerFixture<ExceptionThrownAnalyzer
 	private final String[] exampleClasses = { "example.exceptionstyle.ExceptionStyleExamples" };
 
 	@Override
-	public void initAnalyzerUUT() {
+	@BeforeEach
+	protected void initAnalyzerUUT() {
+		this.populateParserData(exampleClasses);
 		this.analyzer = new ExceptionThrownAnalyzer(parser);
 		analyzer.getRelevantData(exampleClasses);
 	}
