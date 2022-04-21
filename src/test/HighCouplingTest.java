@@ -1,13 +1,13 @@
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 
 import datasource.ASMParser;
 import domain.ErrType;
@@ -55,7 +55,6 @@ public class HighCouplingTest {
 
 	// =====================Compliant Classes===================== //
 
-	@Category({ HighCouplingTest.class, HighCouplingCompliantTest.class })
 	@Test
 	public void testZeroCouplingDataStruct() {
 		setupAnalyzer();
@@ -77,7 +76,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category({ HighCouplingTest.class, HighCouplingCompliantTest.class })
 	@Test
 	public void testZeroCouplingObject() {
 		setupAnalyzer();
@@ -99,7 +97,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category({ HighCouplingTest.class, HighCouplingCompliantTest.class })
 	@Test
 	public void testZeroCouplingStaticClass() {
 		setupAnalyzer();
@@ -121,7 +118,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category({ HighCouplingTest.class, HighCouplingCompliantTest.class })
 	@Test
 	public void testLowCouplingObject() {
 		setupAnalyzer();
@@ -148,7 +144,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category({ HighCouplingTest.class, HighCouplingCompliantTest.class })
 	@Test
 	public void testLowCouplingDataStruct() {
 		setupAnalyzer();
@@ -174,7 +169,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category({ HighCouplingTest.class, HighCouplingCompliantTest.class })
 	@Test
 	public void testLowCouplingDataStruct2() {
 		setupAnalyzer();
@@ -200,7 +194,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category({ HighCouplingTest.class, HighCouplingCompliantTest.class })
 	@Test
 	public void testLowCouplingStaticClass() {
 		setupAnalyzer();
@@ -228,7 +221,6 @@ public class HighCouplingTest {
 
 	// ===================Non-Compliant Classes=================== //
 
-	@Category({ HighCouplingTest.class, HighCouplingNonCompliantTest.class })
 	@Test
 	public void testHighCouplingDataStructTotalCount() {
 		setupAnalyzer();
@@ -272,7 +264,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category({ HighCouplingTest.class, HighCouplingNonCompliantTest.class })
 	@Test
 	public void testHighCouplingDataStructProjectCount() {
 		setupAnalyzer();
@@ -304,7 +295,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category({ HighCouplingTest.class, HighCouplingNonCompliantTest.class })
 	@Test
 	public void testHighCouplingObjectTotalCount() {
 		setupAnalyzer();
@@ -350,7 +340,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category({ HighCouplingTest.class, HighCouplingNonCompliantTest.class })
 	@Test
 	public void testHighCouplingObjectProjectCount() {
 		setupAnalyzer();
@@ -382,7 +371,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category({ HighCouplingTest.class, HighCouplingNonCompliantTest.class })
 	@Test
 	public void testHighCouplingStaticClassTotalCount() {
 		setupAnalyzer();
@@ -429,7 +417,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category({ HighCouplingTest.class, HighCouplingNonCompliantTest.class })
 	@Test
 	public void testHighCouplingStaticClassProjectCount() {
 		setupAnalyzer();
@@ -464,7 +451,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category({ HighCouplingTest.class, HighCouplingNonCompliantTest.class })
 	@Test
 	public void testHighCouplingNightmareClass() {
 		setupAnalyzer();
@@ -515,7 +501,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category(HighCouplingTest.class)
 	@Test
 	public void testInterfaceCouplingCount() {
 		setupAnalyzer();
@@ -540,7 +525,6 @@ public class HighCouplingTest {
 		assertEquals(expectedJRECount, jreCount);
 	}
 
-	@Category(HighCouplingTest.class)
 	@Test
 	public void testCoupledToInterfaceCount() {
 		setupAnalyzer();
@@ -575,7 +559,6 @@ public class HighCouplingTest {
 
 	// ====================Output Testing============================ //
 
-	@Category({ HighCouplingTest.class })
 	@Test
 	public void testReturnType() {
 		setupAnalyzer();
@@ -622,15 +605,5 @@ public class HighCouplingTest {
 		assertTrue(linterErrorStrings.contains(linterError6.toString()));
 
 	}
-
-	// ==================Test Category Interfaces==================== //
-	public interface HighCouplingTests {
-	};
-
-	public interface HighCouplingCompliantTest {
-	};
-
-	public interface HighCouplingNonCompliantTest {
-	};
 
 }
