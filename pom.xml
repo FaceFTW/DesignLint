@@ -16,13 +16,17 @@
 		</repository>
 	</repositories>
 	<build>
-		<sourceDirectory>${basedir}/src</sourceDirectory>
-		<testSourceDirectory>${basedir}/src/test</testSourceDirectory>
+		<sourceDirectory>src</sourceDirectory>
+		<testSourceDirectory>src/test</testSourceDirectory>
+		<resources></resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.7.0</version>
 				<configuration>
+					<excludes>
+						<exclude>test/*.java</exclude>
+					</excludes>
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
@@ -36,6 +40,13 @@
 				<groupId>org.pitest</groupId>
 				<artifactId>pitest-maven</artifactId>
 				<version>1.7.4</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.pitest</groupId>
+						<artifactId>pitest-junit5-plugin</artifactId>
+						<version>0.14</version>
+					</dependency>
+				</dependencies>
 				<configuration>
 					<targetClasses>
 						<param>domain.*</param>
