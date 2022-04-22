@@ -104,8 +104,6 @@ public class PresentationLayer {
 		// been the solution the whole time)
 
 		for (ReturnType returnType : linterReturns) {
-			stream.format("Linter Name - %s\n", returnType.analyzerName);
-			stream.println("======================================================================");
 			for (LinterError error : returnType.errorsCaught) {
 
 				String errType = "";
@@ -133,13 +131,15 @@ public class PresentationLayer {
 						throw new IllegalArgumentException("Error, We somehow got an unexpected enum value!");
 				}
 				if ((flags & VERBOSE_FLAG) == VERBOSE_FLAG) {
+					stream.format("Linter Name - %s\n", returnType.analyzerName);
+					stream.println("======================================================================");
 					stream.format("Class Name - %s\n", error.className);
 					stream.format("Method Name - %s\n", error.methodName);
 					stream.format("Type - %s\n", errType);
 					stream.format("Message - %s\n", error.message);
+					stream.println();
 				}
 
-				stream.println();
 			}
 
 		}
