@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import domain.ErrType;
 import domain.LinterError;
@@ -26,93 +28,41 @@ public class ExceptionLinterTest extends AnalyzerFixture<ExceptionThrownAnalyzer
 	}
 
 	// =========================Compliant Methods=========================//
-	@Test
-	public void testCompliantMethodThrowsException() {
-		// Expected List of Issues
+	@ParameterizedTest
+	@ValueSource(strings = { "compliantMethodThrowsException", "compliantMethodCallThrowsException",
+			"compliantMethodThrowsMultipleExceptions", "compliantMethodCatchException",
+			"compliantMethodCallCatchException", "compliantMethodCatchMultipleException",
+			"compliantMethodCallCatchMultipleException", "compliantMethodThrowsAndCatchesException" })
+	public void testLinterResponseToCompliantMethods(String testedMethodName) {
 		List<ExceptionLinterIssue> expected = new ArrayList<>();
 		expected.add(ExceptionLinterIssue.NO_VIOLATION);
 
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0], "compliantMethodThrowsException"));
-	}
-
-	@Test
-	public void testCompliantMethodCallThrowsException() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.NO_VIOLATION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"compliantMethodCallThrowsException"));
-	}
-
-	@Test
-	public void testCompliantMethodThrowsMultipleException() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.NO_VIOLATION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"compliantMethodThrowsMultipleExceptions"));
-	}
-
-	@Test
-	public void testCompliantMethodCatchException() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.NO_VIOLATION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0], "compliantMethodCatchException"));
-	}
-
-	@Test
-	public void testcompliantMethodCallCatchException() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.NO_VIOLATION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"compliantMethodCallCatchException"));
-	}
-
-	@Test
-	public void testCompliantMethodCatchMultipleException() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.NO_VIOLATION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"compliantMethodCatchMultipleException"));
-	}
-
-	@Test
-	public void testCompliantMethodCallCatchMultipleException() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.NO_VIOLATION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"compliantMethodCallCatchMultipleException"));
-	}
-
-	@Test
-	public void testCompliantMethodThrowsAndCatchesExceptions() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.NO_VIOLATION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"compliantMethodThrowsAndCatchesException"));
+		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0], testedMethodName));
 	}
 
 	// ================== Non-Compliant Methods ===================//
-	@Test
-	public void testNonCompliantMethodThrowsException() {
-		// Expected List of Issues
+	@ParameterizedTest
+	@ValueSource(strings = { "nonCompliantMethodThrowsException", "nonCompliantMethodCallsCompliantButThrowsException",
+			"nonCompliantMethodCallsCompliantWithMultipleThrowsButThrowsException",
+			"nonCompliantMethodThrowsAndCatchesCompliantException" })
+	public void testLinterResponseToNonCompliantMethodBecauseThrowException(String testedMethodName) {
 		List<ExceptionLinterIssue> expected = new ArrayList<>();
 		expected.add(ExceptionLinterIssue.THROW_EXCEPTION);
 
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"nonCompliantMethodThrowsException"));
+		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0], testedMethodName));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "nonCompliantMethodCatchesException",
+			"nonCompliantMethodCallsCompliantWithMultipleThrowsButCatchesException",
+			"nonCompliantMethodCallsCompliantButCatchesException", "nonCompliantMethodCatchMultipleExceptions",
+			"nonCompliantMethodThrowsCompliantAndCatchesException" })
+	public void testNonCompliantMethodCatchesException(String testedMethodName) {
+		// Expected List of Issues
+		List<ExceptionLinterIssue> expected = new ArrayList<>();
+		expected.add(ExceptionLinterIssue.CATCH_EXCEPTION);
+
+		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0], testedMethodName));
 	}
 
 	@Test
@@ -142,87 +92,6 @@ public class ExceptionLinterTest extends AnalyzerFixture<ExceptionThrownAnalyzer
 
 		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
 				"nonCompliantMethodThrowsThrowable"));
-	}
-
-	@Test
-	public void testNonCompliantMethodCallsCompliantButThrowsException() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.THROW_EXCEPTION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"nonCompliantMethodCallsCompliantButThrowsException"));
-	}
-
-	@Test
-	public void testNonCompliantMethodCallsCompliantWithMultipleThrowsButThrowsException() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.THROW_EXCEPTION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"nonCompliantMethodCallsCompliantWithMultipleThrowsButThrowsException"));
-	}
-
-	@Test
-	public void testNonCompliantMethodCatchesException() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.CATCH_EXCEPTION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"nonCompliantMethodCatchesException"));
-	}
-
-	@Test
-	public void testNonCompliantMethodCallsCompliantButCatchesException() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.CATCH_EXCEPTION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"nonCompliantMethodCallsCompliantButCatchesException"));
-	}
-
-	@Test
-	public void testNonCompliantMethodCallsCompliantWithMultipleThrowsButCatchesException() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.CATCH_EXCEPTION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"nonCompliantMethodCallsCompliantWithMultipleThrowsButCatchesException"));
-	}
-
-	@Test
-	public void testNonCompliantMethodCatchMultipleExceptions() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.CATCH_EXCEPTION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"nonCompliantMethodCatchMultipleExceptions"));
-
-	}
-
-	@Test
-	public void testNonCompliantMethodThrowsAndCatchesCompliantException() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.THROW_EXCEPTION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"nonCompliantMethodThrowsAndCatchesCompliantException"));
-	}
-
-	@Test
-	public void testNonCompliantMethodThrowsCompliantAndCatchesException() {
-		// Expected List of Issues
-		List<ExceptionLinterIssue> expected = new ArrayList<>();
-		expected.add(ExceptionLinterIssue.CATCH_EXCEPTION);
-
-		assertEquals(expected, analyzer.checkMethodCompliance(exampleClasses[0],
-				"nonCompliantMethodThrowsCompliantAndCatchesException"));
 	}
 
 	@Test
