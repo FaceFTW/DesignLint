@@ -2,20 +2,18 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import datasource.ASMParser;
 import domain.ReturnType;
 import domain.analyzer.StrategyAnalyzer;
 
-public class StrategyTest {
+public class StrategyTest extends AnalyzerFixture<StrategyAnalyzer>{
 
-	private ASMParser parser;
 	private final String[] exampleClasses = {
 			"example/strategy/strategytype/typea/CompliantStrategyA1",
 			"example/strategy/strategytype/typea/CompliantStrategyA2",
@@ -36,24 +34,16 @@ public class StrategyTest {
 			"example/strategy/CompliantAbstractClassUsingSomeStrategy"
 	};
 
-	// We use an explicit instance to test the protected method checkViolation()
-	private StrategyAnalyzer analyzer;
-
-	// Common Testing Setup
-	public void setupAnalyzer() {
-		try {
-			this.parser = new ASMParser(exampleClasses);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+	@Override
+	@BeforeEach
+	protected void initAnalyzerUUT() {
+		this.populateParserData(exampleClasses);
 		this.analyzer = new StrategyAnalyzer(parser);
-		analyzer.getRelevantData(exampleClasses);
+		analyzer.getRelevantData(exampleClasses);		
 	}
 
 	@Test
 	public void testStrategyTypeDetection() {
-		setupAnalyzer();
 		analyzer.sweepInterfaces(exampleClasses);
 		analyzer.lintInterfaceList();
 
@@ -94,8 +84,6 @@ public class StrategyTest {
 
 	@Test
 	public void testProperUsingDetection() {
-		setupAnalyzer();
-
 		analyzer.sweepInterfaces(exampleClasses);
 		analyzer.lintInterfaceList();
 		analyzer.getUsingClasses();
@@ -153,11 +141,11 @@ public class StrategyTest {
 
 	@Test
 	public void testReturnType() {
-		setupAnalyzer();
 		analyzer.analyzeData();
 		ReturnType actual = analyzer.composeReturnType();
 
 		assertEquals("Strategy Pattern Detection", actual.analyzerName);
 		assertEquals(19, actual.errorsCaught.size());
 	}
+
 }

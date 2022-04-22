@@ -2,22 +2,20 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import datasource.ASMParser;
 import domain.ErrType;
 import domain.LinterError;
 import domain.ReturnType;
 import domain.analyzer.HighCouplingAnalyzer;
 
-public class HighCouplingTest {
+public class HighCouplingTest extends AnalyzerFixture<HighCouplingAnalyzer>{
 
-	private ASMParser parser;
 	private final String[] exampleClasses = {
 			"example/coupling/ZeroCouplingDataStruct",
 			"example/coupling/ZeroCouplingObject",
@@ -36,28 +34,19 @@ public class HighCouplingTest {
 			"example/coupling/CouplingInterfaceExample",
 			"example/coupling/CoupledToInterfaceExample",
 	};
-
-	// We use an explicit instance to test the protected method checkViolation()
-	private HighCouplingAnalyzer analyzer;
-
-	// Common Testing Setup
-	public void setupAnalyzer() {
-		try {
-			this.parser = new ASMParser(exampleClasses);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+	@Override
+	@BeforeEach
+	protected void initAnalyzerUUT() {
+		this.populateParserData(exampleClasses);
 		this.analyzer = new HighCouplingAnalyzer(parser);
 		analyzer.getRelevantData(exampleClasses);
-
+		
 	}
 
 	// =====================Compliant Classes===================== //
 
 	@Test
 	public void testZeroCouplingDataStruct() {
-		setupAnalyzer();
 		String[] expected = {};
 		int expectedJRECount = 0;
 		String[] actual = analyzer.countClassCoupling("example/coupling/ZeroCouplingDataStruct");
@@ -78,7 +67,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testZeroCouplingObject() {
-		setupAnalyzer();
 		String[] expected = {};
 		int expectedJRECount = 0;
 		String[] actual = analyzer.countClassCoupling("example/coupling/ZeroCouplingObject");
@@ -99,7 +87,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testZeroCouplingStaticClass() {
-		setupAnalyzer();
 		String[] expected = {};
 		int expectedJRECount = 0;
 		String[] actual = analyzer.countClassCoupling("example/coupling/ZeroCouplingStaticClass");
@@ -120,7 +107,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testLowCouplingObject() {
-		setupAnalyzer();
 		String[] expected = {
 				"java/lang/String",
 				"java/lang/System",
@@ -146,7 +132,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testLowCouplingDataStruct() {
-		setupAnalyzer();
 		String[] expected = {
 				"java/lang/String",
 				"java/util/List",
@@ -171,7 +156,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testLowCouplingDataStruct2() {
-		setupAnalyzer();
 		String[] expected = {
 				"example/coupling/LowCouplingDataStruct",
 				"example/coupling/ZeroCouplingDataStruct",
@@ -196,7 +180,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testLowCouplingStaticClass() {
-		setupAnalyzer();
 		String[] expected = {
 				"example/coupling/ZeroCouplingDataStruct",
 				"example/coupling/ZeroCouplingObject",
@@ -223,7 +206,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testHighCouplingDataStructTotalCount() {
-		setupAnalyzer();
 		String[] expected = {
 				"java/util/HashMap",
 				"java/util/Map",
@@ -266,7 +248,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testHighCouplingDataStructProjectCount() {
-		setupAnalyzer();
 		String[] expected = {
 				"example/coupling/ZeroCouplingDataStruct",
 				"example/coupling/ZeroCouplingObject",
@@ -297,7 +278,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testHighCouplingObjectTotalCount() {
-		setupAnalyzer();
 		String[] expected = {
 				"java/util/HashMap",
 				"java/util/Map",
@@ -342,7 +322,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testHighCouplingObjectProjectCount() {
-		setupAnalyzer();
 		String[] expected = {
 				"example/coupling/ZeroCouplingDataStruct",
 				"example/coupling/ZeroCouplingObject",
@@ -373,7 +352,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testHighCouplingStaticClassTotalCount() {
-		setupAnalyzer();
 		String[] expected = {
 				"java/util/List",
 				"java/util/ArrayList",
@@ -419,7 +397,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testHighCouplingStaticClassProjectCount() {
-		setupAnalyzer();
 		String[] expected = {
 				"example/coupling/ZeroCouplingDataStruct",
 				"example/coupling/ZeroCouplingObject",
@@ -453,7 +430,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testHighCouplingNightmareClass() {
-		setupAnalyzer();
 		String[] expected = {
 				"java/util/HashMap",
 				"java/util/Map",
@@ -503,7 +479,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testInterfaceCouplingCount() {
-		setupAnalyzer();
 		String[] expected = {
 				"example/coupling/ZeroCouplingDataStruct",
 				"java/lang/String"
@@ -527,7 +502,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testCoupledToInterfaceCount() {
-		setupAnalyzer();
 		String[] expected = {
 				"example/coupling/CouplingInterfaceExample",
 				"example/coupling/ZeroCouplingDataStruct",
@@ -561,8 +535,6 @@ public class HighCouplingTest {
 
 	@Test
 	public void testReturnType() {
-		setupAnalyzer();
-
 		analyzer.analyzeData();
 
 		ReturnType expectedReturnType = analyzer.composeReturnType();
@@ -605,5 +577,6 @@ public class HighCouplingTest {
 		assertTrue(linterErrorStrings.contains(linterError6.toString()));
 
 	}
+
 
 }

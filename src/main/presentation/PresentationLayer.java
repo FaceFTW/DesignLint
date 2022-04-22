@@ -26,7 +26,7 @@ public class PresentationLayer {
 	// The following represent flags that the wrapper can pass
 	// to the presentation layer to do various things.
 	// We have a max of 32 different options, but shouldn't be a problem
-	public static final int HELP_FLAG = 0x01;		//Placeholder flag for Wrapper to use for help
+	public static final int HELP_FLAG = 0x01; // Placeholder flag for Wrapper to use for help
 	public static final int VERBOSE_FLAG = 0x02; // Increases Verbosity of Output (Specific details)
 
 	// Use the upper bits for analyzer toggles;
@@ -99,12 +99,14 @@ public class PresentationLayer {
 		int errNum = 0;
 		int warnNum = 0;
 		int patternNum = 0;
+
+		// TODO Polymorphically implement the return type switches (that should have
+		// been the solution the whole time)
+
 		for (ReturnType returnType : linterReturns) {
 			stream.format("Linter Name - %s\n", returnType.analyzerName);
 			stream.println("======================================================================");
 			for (LinterError error : returnType.errorsCaught) {
-				stream.format("Class Name - %s\n", error.className);
-				stream.format("Method Name - %s\n", error.methodName);
 
 				String errType = "";
 				switch (error.type) {
@@ -130,8 +132,13 @@ public class PresentationLayer {
 					default:
 						throw new IllegalArgumentException("Error, We somehow got an unexpected enum value!");
 				}
-				stream.format("Type - %s\n", errType);
-				stream.format("Message - %s\n", error.message);
+				if ((flags & VERBOSE_FLAG) == VERBOSE_FLAG) {
+					stream.format("Class Name - %s\n", error.className);
+					stream.format("Method Name - %s\n", error.methodName);
+					stream.format("Type - %s\n", errType);
+					stream.format("Message - %s\n", error.message);
+				}
+
 				stream.println();
 			}
 
