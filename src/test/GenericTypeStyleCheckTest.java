@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import datasource.ASMParser;
@@ -14,26 +15,30 @@ import domain.LinterError;
 import domain.ReturnType;
 import domain.analyzer.GenericTypeNameAnalyzer;
 
-public class GenericTypeStyleCheckTest {
+public class GenericTypeStyleCheckTest extends AnalyzerFixture<GenericTypeNameAnalyzer> {
 
-	private ASMParser parser;
-	private GenericTypeNameAnalyzer analyzer;
+	private final String[] exampleClasses = { "example.typename.OneTypeCorrectClass",
+	"example.typename.OneTypeIncorrectCapitalNonNumericClass",
+	"example.typename.MultipleTypesAllCorrectClass",
+	"example.typename.OneTypeIncorrectNoTClass",
+	"example.typename.MultipleTypesSomeIncorrectClass",
+	"example.typename.OneTypeIncorrectLowercaseClass",
+	"example.typename.NoTypeClass",
+	"example.typename.OneTypeCorrectTClass",
+	"example.typename.InterfaceCorrect",
+	"example.typename.InterfaceIncorrect",
+	"example.typename.AbstractCorrect"};
 
-	public void setupAnalyzer(String[] exampleClasses) {
-		try {
-			this.parser = new ASMParser(exampleClasses);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+	@Override
+	@BeforeEach
+	protected void initAnalyzerUUT() {
+		this.populateParserData(exampleClasses);
 		this.analyzer = new GenericTypeNameAnalyzer(this.parser);
-		analyzer.getRelevantData(exampleClasses);
 	}
 
 	@Test
 	public void testOneTypeCorrect() {
 		String[] classes = { "example.typename.OneTypeCorrectClass" };
-		this.setupAnalyzer(classes);
 		ReturnType results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
@@ -41,7 +46,6 @@ public class GenericTypeStyleCheckTest {
 	@Test
 	public void testNoType() {
 		String[] classes = { "example.typename.NoTypeClass" };
-		this.setupAnalyzer(classes);
 		ReturnType results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
@@ -49,7 +53,6 @@ public class GenericTypeStyleCheckTest {
 	@Test
 	public void testOneTypeCorrectT() {
 		String[] classes = { "example.typename.OneTypeCorrectTClass" };
-		this.setupAnalyzer(classes);
 		ReturnType results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
@@ -57,7 +60,6 @@ public class GenericTypeStyleCheckTest {
 	@Test
 	public void testOneTypeIncorrectLowercase() {
 		String[] classes = { "example.typename.OneTypeIncorrectLowercaseClass" };
-		this.setupAnalyzer(classes);
 		ReturnType results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 1);
 		assertTrue(results.errorsCaught.get(0).type.equals(ErrType.WARNING));
@@ -68,7 +70,6 @@ public class GenericTypeStyleCheckTest {
 	@Test
 	public void testOneTypeIncorrectCapitalNonNumeric() {
 		String[] classes = { "example.typename.OneTypeIncorrectCapitalNonNumericClass" };
-		this.setupAnalyzer(classes);
 		ReturnType results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 1);
 		assertTrue(results.errorsCaught.get(0).type.equals(ErrType.WARNING));
@@ -79,7 +80,6 @@ public class GenericTypeStyleCheckTest {
 	@Test
 	public void testOneTypeIncorrectNoT() {
 		String[] classes = { "example.typename.OneTypeIncorrectNoTClass" };
-		this.setupAnalyzer(classes);
 		ReturnType results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 1);
 		assertTrue(results.errorsCaught.get(0).type.equals(ErrType.WARNING));
@@ -90,7 +90,6 @@ public class GenericTypeStyleCheckTest {
 	@Test
 	public void testMultipleTypesAllCorrect() {
 		String[] classes = { "example.typename.MultipleTypesAllCorrectClass" };
-		this.setupAnalyzer(classes);
 		ReturnType results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
@@ -98,7 +97,6 @@ public class GenericTypeStyleCheckTest {
 	@Test
 	public void testMultipleTypesSomeIncorrect() {
 		String[] classes = { "example.typename.MultipleTypesSomeIncorrectClass" };
-		this.setupAnalyzer(classes);
 		ReturnType results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 1);
 		assertEquals(results.errorsCaught.get(0).message,
@@ -109,7 +107,6 @@ public class GenericTypeStyleCheckTest {
 	public void testMultipleClassesAllCorrect() {
 		String[] classes = { "example.typename.OneTypeCorrectClass",
 				"example.typename.MultipleTypesAllCorrectClass" };
-		this.setupAnalyzer(classes);
 		ReturnType results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
@@ -122,7 +119,6 @@ public class GenericTypeStyleCheckTest {
 				"example.typename.OneTypeIncorrectNoTClass",
 				"example.typename.MultipleTypesSomeIncorrectClass",
 				"example.typename.OneTypeIncorrectLowercaseClass" };
-		this.setupAnalyzer(classes);
 		ReturnType results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 4);
 		List<String> errorMessages = new ArrayList<String>();
@@ -141,7 +137,6 @@ public class GenericTypeStyleCheckTest {
 	@Test
 	public void testInterfaceCorrect() {
 		String[] classes = { "example.typename.InterfaceCorrect" };
-		this.setupAnalyzer(classes);
 		ReturnType results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
@@ -149,7 +144,6 @@ public class GenericTypeStyleCheckTest {
 	@Test
 	public void testInterfaceIncorrect() {
 		String[] classes = { "example.typename.InterfaceIncorrect" };
-		this.setupAnalyzer(classes);
 		ReturnType results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 1);
 		assertEquals(results.errorsCaught.get(0).message,
@@ -159,7 +153,6 @@ public class GenericTypeStyleCheckTest {
 	@Test
 	public void testAbstractClassCorrect() {
 		String[] classes = { "example.typename.AbstractCorrect" };
-		this.setupAnalyzer(classes);
 		ReturnType results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}

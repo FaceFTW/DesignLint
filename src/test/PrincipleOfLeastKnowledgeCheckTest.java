@@ -4,16 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import datasource.ASMParser;
 import domain.LinterError;
 import domain.ReturnType;
 import domain.analyzer.PrincipleOfLeastKnowledgeAnalyzer;
 
-public class PrincipleOfLeastKnowledgeCheckTest {
-
-	private ASMParser parser;
-	private PrincipleOfLeastKnowledgeAnalyzer analyzer;
+public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<PrincipleOfLeastKnowledgeAnalyzer>{
 
 	private final String[] exampleClasses = {
 			"example.demeter.A",
@@ -22,20 +20,16 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 			"example.demeter.D"
 	};
 
-	public void setupAnalyzer() {
-		try {
-			this.parser = new ASMParser(exampleClasses);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+	@Override
+	@BeforeEach
+	protected void initAnalyzerUUT() {
+		this.populateParserData(exampleClasses);
 		this.analyzer = new PrincipleOfLeastKnowledgeAnalyzer(this.parser);
 		analyzer.getRelevantData(exampleClasses);
 	}
 
 	@Test
 	public void testNoMethodCalls() {
-		this.setupAnalyzer();
 		String[] classes = { "example.demeter.A" };
 		ReturnType results = this.analyzer.getFeedback(classes);
 		for (LinterError error : results.errorsCaught) {
@@ -45,7 +39,6 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 
 	@Test
 	public void testUseMethodOfField() {
-		this.setupAnalyzer();
 		String[] classes = { "example.demeter.A" };
 		ReturnType results = this.analyzer.getFeedback(classes);
 		for (LinterError error : results.errorsCaught) {
@@ -55,7 +48,6 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 
 	@Test
 	public void testCommunicateThroughFriend() {
-		this.setupAnalyzer();
 		String[] classes = { "example.demeter.A" };
 		ReturnType results = this.analyzer.getFeedback(classes);
 		for (LinterError error : results.errorsCaught) {
@@ -65,7 +57,6 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 
 	@Test
 	public void testCommunicateWithStrangerUsingFriend() {
-		this.setupAnalyzer();
 		String[] classes = { "example.demeter.A" };
 		ReturnType results = this.analyzer.getFeedback(classes);
 		for (LinterError error : results.errorsCaught) {
@@ -79,7 +70,6 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 
 	@Test
 	public void testCommunicateWithStrangerUsingFriendVariable() {
-		this.setupAnalyzer();
 		String[] classes = { "example.demeter.A" };
 		ReturnType results = this.analyzer.getFeedback(classes);
 		for (LinterError error : results.errorsCaught) {
@@ -93,7 +83,6 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 
 	@Test
 	public void testCommunicateWithSingleMethodParameter() {
-		this.setupAnalyzer();
 		String[] classes = { "example.demeter.A" };
 		ReturnType results = this.analyzer.getFeedback(classes);
 		for (LinterError error : results.errorsCaught) {
@@ -103,7 +92,6 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 
 	@Test
 	public void testCommunicateWithMultipleMethodParameters() {
-		this.setupAnalyzer();
 		String[] classes = { "example.demeter.A" };
 		ReturnType results = this.analyzer.getFeedback(classes);
 		for (LinterError error : results.errorsCaught) {
@@ -113,7 +101,6 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 
 	@Test
 	public void testCommunicateWithStrangerThroughFriendParameter() {
-		this.setupAnalyzer();
 		String[] classes = { "example.demeter.A" };
 		ReturnType results = this.analyzer.getFeedback(classes);
 		for (LinterError error : results.errorsCaught) {
@@ -123,7 +110,6 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 
 	@Test
 	public void testCommunicateWithStrangerUsingFriendParameter() {
-		this.setupAnalyzer();
 		String[] classes = { "example.demeter.A" };
 		ReturnType results = this.analyzer.getFeedback(classes);
 		for (LinterError error : results.errorsCaught) {
@@ -137,7 +123,6 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 
 	@Test
 	public void testCommunicateWithNewObject() {
-		this.setupAnalyzer();
 		String[] classes = { "example.demeter.A" };
 		ReturnType results = this.analyzer.getFeedback(classes);
 		for (LinterError error : results.errorsCaught) {
@@ -147,7 +132,6 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 
 	@Test
 	public void testCreateNewButCommunicateWithStranger() {
-		this.setupAnalyzer();
 		String[] classes = { "example.demeter.A" };
 		ReturnType results = this.analyzer.getFeedback(classes);
 		for (LinterError error : results.errorsCaught) {
@@ -161,7 +145,6 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 
 	@Test
 	public void testCommunicateWithNewObjectGiveParameter() {
-		this.setupAnalyzer();
 		String[] classes = { "example.demeter.C" };
 		ReturnType results = this.analyzer.getFeedback(classes);
 		for (LinterError error : results.errorsCaught) {
@@ -171,7 +154,6 @@ public class PrincipleOfLeastKnowledgeCheckTest {
 
 	@Test
 	public void testCommunicateWithSuper() {
-		this.setupAnalyzer();
 		String[] classes = { "example.demeter.D" };
 		ReturnType results = this.analyzer.getFeedback(classes);
 		for (LinterError error : results.errorsCaught) {
