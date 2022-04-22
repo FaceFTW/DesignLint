@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import datasource.ASMParser;
 import domain.ErrType;
@@ -13,10 +14,7 @@ import domain.LinterError;
 import domain.ReturnType;
 import domain.analyzer.ObjectAdapterIdentifierAnalyzer;
 
-public class ObjectAdapterIdentifierTest {
-
-	private ASMParser parser;
-	private ObjectAdapterIdentifierAnalyzer analyzer;
+public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterIdentifierAnalyzer>{
 
 	private final String[] exampleClasses = {
 			"example.objectadapter.TargetInterface",
@@ -40,20 +38,15 @@ public class ObjectAdapterIdentifierTest {
 			"example.objectadapter.AdapterNoTargetInterface"
 	};
 
-	public void setupAnalyzer() {
-		try {
-			this.parser = new ASMParser(this.exampleClasses);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+	@Override
+	@BeforeEach
+	protected void initAnalyzerUUT() {
+		this.populateParserData(exampleClasses);
 		this.analyzer = new ObjectAdapterIdentifierAnalyzer(this.parser);
-		// this.analyzer.getRelevantData(this.exampleClasses);
 	}
 
 	@Test
 	public void testInterfaceTargetAdapterAdaptee() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterInterfaceCorrect" };
@@ -73,7 +66,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testAbstractClassTargetAdapterAdaptee() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterAbstractClassCorrect" };
@@ -93,7 +85,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testMultipleTargetAdapter() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
@@ -121,7 +112,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testNoTargetInterface() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterInterfaceCorrect" };
 		ReturnType results = this.analyzer.getFeedback(classes);
@@ -130,7 +120,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testNoAdaptee() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.AdapterAbstractClassCorrect" };
 		ReturnType results = this.analyzer.getFeedback(classes);
@@ -139,7 +128,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testNoAdapter() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.Adaptee" };
 		ReturnType results = this.analyzer.getFeedback(classes);
@@ -148,7 +136,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testAdapterAbstractClassIncorrect() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterAbstractClassIncorrect" };
@@ -158,7 +145,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testAdapterInterfaceIncorrect() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterInterfaceIncorrect" };
@@ -168,7 +154,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testAdapterNoTargetInterface() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterNoTargetInterface" };
@@ -178,7 +163,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testAdapterNoTargetAbstractClass() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterNoTargetAbstractClass" };
@@ -188,7 +172,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testAdapterBothIncorrect() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
@@ -199,7 +182,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testAdapterInterfaceCorrectAbstractClassIncorrect() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
@@ -220,7 +202,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testAdapterInterfaceIncorrectAbstractClassCorrect() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
@@ -241,7 +222,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testInterfaceAdaptee() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetInterface",
 				"example.objectadapter.InterfaceAdaptee",
 				"example.objectadapter.AdapterAdaptsInterface" };
@@ -261,7 +241,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testAbstractClassAdaptee() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.AbstractAdaptee",
 				"example.objectadapter.AdapterAdaptsAbstractClass" };
@@ -281,7 +260,6 @@ public class ObjectAdapterIdentifierTest {
 
 	@Test
 	public void testTargetAbstractClassNoAbstractMethods() {
-		this.setupAnalyzer();
 		String[] classes = { "example.objectadapter.TargetAbstractClassNoAbstractMethods",
 				"example.objectadapter.AbstractAdaptee",
 				"example.objectadapter.AdapterFalseAbstractClass" };
