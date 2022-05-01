@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,10 +16,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import datasource.ASMParser;
-import domain.ErrType;
-import domain.LinterError;
-import domain.ReturnType;
+import domain.AnalyzerReturn;
 import domain.analyzer.CodeToInterfaceAnalyzer;
+import domain.message.LinterMessage;
 
 public class CodeToInterfaceTest {
 	private final String[] ourClass = { "example/code2interface/Code2InterfaceTest" };
@@ -49,7 +49,7 @@ public class CodeToInterfaceTest {
 			System.exit(1);
 		}
 
-		ReturnType returned = this.analyzer.getFeedback(new String[0]);
+		AnalyzerReturn returned = this.analyzer.getFeedback(new String[0]);
 
 		// Analyzer entries are null
 		assertEquals(new HashMap<>(), this.analyzer.getFieldNames());
@@ -64,7 +64,7 @@ public class CodeToInterfaceTest {
 	@Test
 	public void testFieldsGivenClasses() {
 		setUpOurClass();
-		ReturnType returned = this.analyzer.getFeedback(ourClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(ourClass);
 
 		assertNotEquals(new HashMap<>(), this.analyzer.getFieldNames());
 		assertNotEquals(new HashMap<>(), this.analyzer.getFieldTypes());
@@ -76,19 +76,19 @@ public class CodeToInterfaceTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"Field fieldListTest should be of type List<>, not ArrayList<>", 
-					"Field fieldMapTest should be of type Map<>, not HashMap<>", 
-					"Field fieldSetTest should be of type Set<>, not HashSet<>"})
+	@ValueSource(strings = { "Field fieldListTest should be of type List<>, not ArrayList<>",
+			"Field fieldMapTest should be of type Map<>, not HashMap<>",
+			"Field fieldSetTest should be of type Set<>, not HashSet<>" })
 	public void testReturnedCollectionFields(String errorMessage) {
 		setUpOurClass();
-		ReturnType returned = this.analyzer.getFeedback(ourClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(ourClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
-		List<LinterError> errors = returned.errorsCaught;
+		List<LinterMessage> errors = returned.errorsCaught;
 
 		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : errors) {
+		LinterMessage foundErr = null;
+		for (LinterMessage err : errors) {
 			if (err.message.compareTo(errorMessage) == 0) {
 				found = true;
 				foundErr = err;
@@ -97,52 +97,49 @@ public class CodeToInterfaceTest {
 		assertTrue(found);
 		assertEquals(ourClass[0], foundErr.className);
 		assertNull(foundErr.methodName);
-		assertEquals(ErrType.ERROR, foundErr.type);
+		assertEquals(AnalyzerFixture.ERROR_MSG_TYPE, foundErr.getMessageType());
 	}
 
 	// Tri4,5 called a Triangle method, and should not throw an error.
 	// Tri6 already a Shape (even if a Triangle object), so it should not throw an
 	// error.
 	@ParameterizedTest
-	@ValueSource(strings = {"Possible Interface for triangleTest: example/code2interface/Shape",
-							"Possible Interface for triangleTest: example/code2interface/Triangle",
-							"Potential Interface for tri4: example/code2interface/Shape",
-							"Potential Interface for tri5: example/code2interface/Shape",
-							"Potential Interface for tri6: example/code2interface/Shape"})
+	@ValueSource(strings = { "Possible Interface for triangleTest: example/code2interface/Shape",
+			"Possible Interface for triangleTest: example/code2interface/Triangle",
+			"Potential Interface for tri4: example/code2interface/Shape",
+			"Potential Interface for tri5: example/code2interface/Shape",
+			"Potential Interface for tri6: example/code2interface/Shape" })
 	public void testNonError(String errorMessage) {
 		setUpOurClass();
-		ReturnType returned = this.analyzer.getFeedback(ourClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(ourClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
-		List<LinterError> errors = returned.errorsCaught;
+		List<LinterMessage> errors = returned.errorsCaught;
 
-		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : errors) {
+		for (LinterMessage err : errors) {
 			if (err.message.compareTo(errorMessage) == 0) {
-				found = true;
-				foundErr = err;
+				fail("Found message :" + err.message + " when it shouldn't exist");
 			}
 		}
-		assertFalse(found);
+		;
 	}
 
 	// Tests that tri1, tri3 will detect being type Shape
 	// Tri3 is called by two Shape methods, getArea and compareShape
 	@ParameterizedTest
-	@ValueSource(strings = {"Potential Interface for tri1: example/code2interface/Shape", 
-							"Potential Interface for tri1: example/code2interface/Shape", 
-							"Potential Interface for tri3: example/code2interface/Shape"})
+	@ValueSource(strings = { "Potential Interface for tri1: example/code2interface/Shape",
+			"Potential Interface for tri1: example/code2interface/Shape",
+			"Potential Interface for tri3: example/code2interface/Shape" })
 	public void testMethodVarOfTypeWarnings(String errorMessage) {
 		setUpOurClass();
-		ReturnType returned = this.analyzer.getFeedback(ourClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(ourClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
-		List<LinterError> errors = returned.errorsCaught;
+		List<LinterMessage> errors = returned.errorsCaught;
 
 		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : errors) {
+		LinterMessage foundErr = null;
+		for (LinterMessage err : errors) {
 			if (err.message.compareTo(errorMessage) == 0) {
 				found = true;
 				foundErr = err;
@@ -151,23 +148,23 @@ public class CodeToInterfaceTest {
 		assertTrue(found);
 		assertEquals(ourClass[0], foundErr.className);
 		assertEquals("testFunc", foundErr.methodName);
-		assertEquals(ErrType.WARNING, foundErr.type);
+		assertEquals(AnalyzerFixture.WARNING_MSG_TYPE, foundErr.getMessageType());
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"Local Variable testList should be of type List<>, not ArrayList<>",
-							"Local Variable mapTest should be of type Map<>, not HashMap<>",
-							"Local Variable setTest should be of type Set<>, not HashSet<>"})
+	@ValueSource(strings = { "Local Variable testList should be of type List<>, not ArrayList<>",
+			"Local Variable mapTest should be of type Map<>, not HashMap<>",
+			"Local Variable setTest should be of type Set<>, not HashSet<>" })
 	public void testMethodVarCollections(String errorMessage) {
 		setUpOurClass();
-		ReturnType returned = this.analyzer.getFeedback(ourClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(ourClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
-		List<LinterError> errors = returned.errorsCaught;
+		List<LinterMessage> errors = returned.errorsCaught;
 
 		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : errors) {
+		LinterMessage foundErr = null;
+		for (LinterMessage err : errors) {
 			if (err.message.compareTo(errorMessage) == 0) {
 				found = true;
 				foundErr = err;
@@ -176,7 +173,7 @@ public class CodeToInterfaceTest {
 		assertTrue(found);
 		assertEquals(ourClass[0], foundErr.className);
 		assertEquals("anotherFunc", foundErr.methodName);
-		assertEquals(ErrType.ERROR, foundErr.type);
+		assertEquals(AnalyzerFixture.ERROR_MSG_TYPE, foundErr.getMessageType());
 	}
 
 	@Test

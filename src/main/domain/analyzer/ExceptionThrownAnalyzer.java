@@ -9,9 +9,9 @@ import java.util.Map.Entry;
 
 import datasource.ASMParser;
 import domain.DomainAnalyzer;
-import domain.ErrType;
-import domain.LinterError;
-import domain.ReturnType;
+import domain.message.LinterMessage;
+import domain.message.WarningLinterMessage;
+import domain.AnalyzerReturn;
 
 public class ExceptionThrownAnalyzer extends DomainAnalyzer {
 	public static final String JAVA_EXCEPTION_INTERNAL_CLASS = "java/lang/Exception";
@@ -67,15 +67,14 @@ public class ExceptionThrownAnalyzer extends DomainAnalyzer {
 		for (Entry<String, String> classMethodPair : methodIssueMap.keySet()) {
 			List<ExceptionLinterIssue> methodIssues = this.checkMethodCompliance(classMethodPair.getKey(),
 					classMethodPair.getValue());
-
 			this.methodIssueMap.put(classMethodPair, methodIssues);
 		}
 
 	}
 
 	@Override
-	public ReturnType composeReturnType() {
-		List<LinterError> errorList = new ArrayList<>();
+	public AnalyzerReturn composeReturnType() {
+		List<LinterMessage> errorList = new ArrayList<>();
 		for (Entry<Entry<String, String>, List<ExceptionLinterIssue>> linterError : methodIssueMap.entrySet()) {
 			Entry<String, String> classMethodPair = linterError.getKey();
 			List<ExceptionLinterIssue> issues = linterError.getValue();
@@ -85,16 +84,15 @@ public class ExceptionThrownAnalyzer extends DomainAnalyzer {
 					String errString = String.format(LINTER_ERROR_FORMAT_STRING,
 							classMethodPair.getKey().replace("/", "."),
 							classMethodPair.getValue(), issue.getErrorString());
-					LinterError err = new LinterError(classMethodPair.getKey().replace("/", "."),
-							classMethodPair.getValue(), errString,
-							ErrType.WARNING);
+					LinterMessage err = new WarningLinterMessage(classMethodPair.getKey().replace("/", "."),
+							classMethodPair.getValue(), errString);
 
 					errorList.add(err);
 				}
 			}
 		}
 
-		ReturnType type = new ReturnType("Generic Exception Linter", errorList);
+		AnalyzerReturn type = new AnalyzerReturn("Generic Exception Linter", errorList);
 		return type;
 	}
 

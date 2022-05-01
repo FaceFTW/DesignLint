@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import datasource.ASMParser;
+import domain.AnalyzerReturn;
 import domain.DomainAnalyzer;
-import domain.ErrType;
-import domain.LinterError;
-import domain.ReturnType;
+import domain.message.LinterMessage;
+import domain.message.PatternLinterMessage;
 
 public class SingletonAnalyzer extends DomainAnalyzer {
 
 	private ASMParser parser;
-	private List<LinterError> errors;
+	private List<LinterMessage> errors;
 	private Map<String, String[]> validFields;
 	private Map<String, String[]> staticMethods;
 	private String[] classList;
@@ -59,15 +59,15 @@ public class SingletonAnalyzer extends DomainAnalyzer {
 			boolean hasPriCon = parser.isClassConstructorPrivate(className);
 			boolean hasStaticMethod = analyzeMethods(className);
 			if (hasPriCon && hasStaticField && hasStaticMethod) {
-				LinterError err = new LinterError(className, "Singleton Pattern detected!", ErrType.PATTERN);
+				LinterMessage err = new PatternLinterMessage(className, "Singleton Pattern detected!");
 				errors.add(err);
 			}
 		}
 	}
 
 	@Override
-	public ReturnType composeReturnType() {
-		ReturnType toReturn = new ReturnType("SingletonAnalyzer", this.errors);
+	public AnalyzerReturn composeReturnType() {
+		AnalyzerReturn toReturn = new AnalyzerReturn("SingletonAnalyzer", this.errors);
 		return toReturn;
 	}
 

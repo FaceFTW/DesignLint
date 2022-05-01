@@ -1,20 +1,17 @@
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import datasource.ASMParser;
-import domain.ErrType;
-import domain.LinterError;
-import domain.ReturnType;
+import domain.AnalyzerReturn;
 import domain.analyzer.ObjectAdapterIdentifierAnalyzer;
+import domain.message.LinterMessage;
 
-public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterIdentifierAnalyzer>{
+public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterIdentifierAnalyzer> {
 
 	private final String[] exampleClasses = {
 			"example.objectadapter.TargetInterface",
@@ -50,12 +47,12 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 		String[] classes = { "example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterInterfaceCorrect" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		List<String> patternCatches = new ArrayList<String>();
 		assertTrue(results.errorsCaught.size() == 1);
-		for (LinterError linterError : results.errorsCaught) {
-			patternCatches.add(linterError.message);
-			assertTrue(linterError.type == ErrType.PATTERN);
+		for (LinterMessage message : results.errorsCaught) {
+			patternCatches.add(message.message);
+			assertTrue(message.getMessageType() == AnalyzerFixture.PATTERN_MSG_TYPE);
 		}
 		String expectedResult = "Object Adapter Pattern Recognized:\n";
 		expectedResult += "Target: example.objectadapter.TargetInterface\n";
@@ -69,12 +66,12 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterAbstractClassCorrect" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		List<String> patternCatches = new ArrayList<String>();
 		assertTrue(results.errorsCaught.size() == 1);
-		for (LinterError linterError : results.errorsCaught) {
-			patternCatches.add(linterError.message);
-			assertTrue(linterError.type == ErrType.PATTERN);
+		for (LinterMessage message : results.errorsCaught) {
+			patternCatches.add(message.message);
+			assertTrue(message.getMessageType() == AnalyzerFixture.PATTERN_MSG_TYPE);
 		}
 		String expectedResult = "Object Adapter Pattern Recognized:\n";
 		expectedResult += "Target: example.objectadapter.TargetAbstractClass\n";
@@ -89,12 +86,12 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 				"example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterBothCorrect" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		List<String> patternCatches = new ArrayList<String>();
 		assertTrue(results.errorsCaught.size() == 2);
-		for (LinterError linterError : results.errorsCaught) {
-			patternCatches.add(linterError.message);
-			assertTrue(linterError.type == ErrType.PATTERN);
+		for (LinterMessage message : results.errorsCaught) {
+			patternCatches.add(message.message);
+			assertTrue(message.getMessageType() == AnalyzerFixture.PATTERN_MSG_TYPE);
 		}
 		String expectedResult1 = "Object Adapter Pattern Recognized:\n";
 		expectedResult1 += "Target: example.objectadapter.TargetAbstractClass\n";
@@ -114,7 +111,7 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 	public void testNoTargetInterface() {
 		String[] classes = { "example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterInterfaceCorrect" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
 
@@ -122,7 +119,7 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 	public void testNoAdaptee() {
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.AdapterAbstractClassCorrect" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
 
@@ -130,7 +127,7 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 	public void testNoAdapter() {
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.Adaptee" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
 
@@ -139,7 +136,7 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterAbstractClassIncorrect" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
 
@@ -148,7 +145,7 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 		String[] classes = { "example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterInterfaceIncorrect" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
 
@@ -157,7 +154,7 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 		String[] classes = { "example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterNoTargetInterface" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
 
@@ -166,7 +163,7 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 		String[] classes = { "example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterNoTargetAbstractClass" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
 
@@ -176,7 +173,7 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 				"example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterBothIncorrect" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
 
@@ -186,12 +183,12 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 				"example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterInterfaceCorrectAbstractClassIncorrect" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		List<String> patternCatches = new ArrayList<String>();
 		assertTrue(results.errorsCaught.size() == 1);
-		for (LinterError linterError : results.errorsCaught) {
-			patternCatches.add(linterError.message);
-			assertTrue(linterError.type == ErrType.PATTERN);
+		for (LinterMessage message : results.errorsCaught) {
+			patternCatches.add(message.message);
+			assertTrue(message.getMessageType() == AnalyzerFixture.PATTERN_MSG_TYPE);
 		}
 		String expectedResult = "Object Adapter Pattern Recognized:\n";
 		expectedResult += "Target: example.objectadapter.TargetInterface\n";
@@ -206,12 +203,12 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 				"example.objectadapter.TargetInterface",
 				"example.objectadapter.Adaptee",
 				"example.objectadapter.AdapterInterfaceIncorrectAbstractClassCorrect" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		List<String> patternCatches = new ArrayList<String>();
 		assertTrue(results.errorsCaught.size() == 1);
-		for (LinterError linterError : results.errorsCaught) {
-			patternCatches.add(linterError.message);
-			assertTrue(linterError.type == ErrType.PATTERN);
+		for (LinterMessage message : results.errorsCaught) {
+			patternCatches.add(message.message);
+			assertTrue(message.getMessageType() == AnalyzerFixture.PATTERN_MSG_TYPE);
 		}
 		String expectedResult = "Object Adapter Pattern Recognized:\n";
 		expectedResult += "Target: example.objectadapter.TargetAbstractClass\n";
@@ -225,12 +222,12 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 		String[] classes = { "example.objectadapter.TargetInterface",
 				"example.objectadapter.InterfaceAdaptee",
 				"example.objectadapter.AdapterAdaptsInterface" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		List<String> patternCatches = new ArrayList<String>();
 		assertTrue(results.errorsCaught.size() == 1);
-		for (LinterError linterError : results.errorsCaught) {
-			patternCatches.add(linterError.message);
-			assertTrue(linterError.type == ErrType.PATTERN);
+		for (LinterMessage message : results.errorsCaught) {
+			patternCatches.add(message.message);
+			assertTrue(message.getMessageType() == AnalyzerFixture.PATTERN_MSG_TYPE);
 		}
 		String expectedResult = "Object Adapter Pattern Recognized:\n";
 		expectedResult += "Target: example.objectadapter.TargetInterface\n";
@@ -244,12 +241,12 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 		String[] classes = { "example.objectadapter.TargetAbstractClass",
 				"example.objectadapter.AbstractAdaptee",
 				"example.objectadapter.AdapterAdaptsAbstractClass" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		List<String> patternCatches = new ArrayList<String>();
 		assertTrue(results.errorsCaught.size() == 1);
-		for (LinterError linterError : results.errorsCaught) {
-			patternCatches.add(linterError.message);
-			assertTrue(linterError.type == ErrType.PATTERN);
+		for (LinterMessage message : results.errorsCaught) {
+			patternCatches.add(message.message);
+			assertTrue(message.getMessageType() == AnalyzerFixture.PATTERN_MSG_TYPE);
 		}
 		String expectedResult = "Object Adapter Pattern Recognized:\n";
 		expectedResult += "Target: example.objectadapter.TargetAbstractClass\n";
@@ -263,7 +260,7 @@ public class ObjectAdapterIdentifierTest extends AnalyzerFixture<ObjectAdapterId
 		String[] classes = { "example.objectadapter.TargetAbstractClassNoAbstractMethods",
 				"example.objectadapter.AbstractAdaptee",
 				"example.objectadapter.AdapterFalseAbstractClass" };
-		ReturnType results = this.analyzer.getFeedback(classes);
+		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 0);
 	}
 

@@ -3,6 +3,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,18 +13,17 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import datasource.ASMParser;
-import domain.ErrType;
-import domain.LinterError;
-import domain.ReturnType;
+import domain.AnalyzerReturn;
 import domain.analyzer.TemplateMethodAnalyzer;
+import domain.message.LinterMessage;
 
 public class TemplateMethodTest {
 	private final String[] correctClasses = { "example/template/CaffeineBeverage", "example/template/Tea",
 			"example/template/Coffee" };
-	private final String[] wrongClasses = { "example/template/NotTemplate", "example/template/NotTemplateSubclass" };
-	private final String[] sortOfWrongClasses = { "example/template/AbstractNotTemplate",
-			"example/template/AbstractSubclass",
-			"example/template/ConcreteSubclass" };
+	// private final String[] wrongClasses = { "example/template/NotTemplate", "example/template/NotTemplateSubclass" };
+	// private final String[] sortOfWrongClasses = { "example/template/AbstractNotTemplate",
+	// 		"example/template/AbstractSubclass",
+	// 		"example/template/ConcreteSubclass" };
 	private final String[] simpleCorrectClasses = { "example/template/Template1Abstract",
 			"example/template/Template1AbstractImplement" };
 	private final String[] allClasses = { "example/template/CaffeineBeverage", "example/template/Tea",
@@ -75,7 +75,7 @@ public class TemplateMethodTest {
 			System.exit(1);
 		}
 
-		ReturnType returned = this.analyzer.getFeedback(new String[0]);
+		AnalyzerReturn returned = this.analyzer.getFeedback(new String[0]);
 
 		// Analyzer entries are null
 		assertEquals(new HashMap<>(), this.analyzer.getExtendedClasses());
@@ -170,13 +170,13 @@ public class TemplateMethodTest {
 	@Test
 	public void testTemplateMethodFound1() {
 		setUpCorrectClasses();
-		ReturnType returned = this.analyzer.getFeedback(correctClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(correctClasses);
 
-		List<LinterError> patterns = returned.errorsCaught;
+		List<LinterMessage> patterns = returned.errorsCaught;
 
 		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : patterns) {
+		LinterMessage foundErr = null;
+		for (LinterMessage err : patterns) {
 			if (err.message.compareTo(
 					"Template Method Pattern Found: prepareRecipe (Subclass: example/template/Coffee)") == 0) {
 				found = true;
@@ -186,19 +186,19 @@ public class TemplateMethodTest {
 		assertTrue(found);
 		assertEquals("example/template/CaffeineBeverage", foundErr.className);
 		assertEquals("prepareRecipe", foundErr.methodName);
-		assertEquals(ErrType.PATTERN, foundErr.type);
+		assertEquals(AnalyzerFixture.PATTERN_MSG_TYPE, foundErr.getMessageType());
 	}
 
 	@Test
 	public void testTemplateMethodFound2() {
 		setUpCorrectClasses();
-		ReturnType returned = this.analyzer.getFeedback(correctClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(correctClasses);
 
-		List<LinterError> patterns = returned.errorsCaught;
+		List<LinterMessage> patterns = returned.errorsCaught;
 
 		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : patterns) {
+		LinterMessage foundErr = null;
+		for (LinterMessage err : patterns) {
 			if (err.message
 					.compareTo("Template Method Pattern Found: prepareRecipe (Subclass: example/template/Tea)") == 0) {
 				found = true;
@@ -208,24 +208,24 @@ public class TemplateMethodTest {
 		assertTrue(found);
 		assertEquals("example/template/CaffeineBeverage", foundErr.className);
 		assertEquals("prepareRecipe", foundErr.methodName);
-		assertEquals(ErrType.PATTERN, foundErr.type);
+		assertEquals(AnalyzerFixture.PATTERN_MSG_TYPE, foundErr.getMessageType());
 	}
 
 	@Test
 	public void testTemplateMethodFoundOfLength1() {
 		setUpSimpleCorrectClasses();
-		ReturnType returned = this.analyzer.getFeedback(simpleCorrectClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(simpleCorrectClasses);
 
 		for (String className : this.analyzer.getAbstractInsideConcreteMethods().keySet()) {
 			System.out.println(className + " " + this.analyzer.getAbstractInsideConcreteMethods().get(className));
 		}
 		// System.out.println(this.analyzer.foundPatterns);
 
-		List<LinterError> patterns = returned.errorsCaught;
+		List<LinterMessage> patterns = returned.errorsCaught;
 
 		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : patterns) {
+		LinterMessage foundErr = null;
+		for (LinterMessage err : patterns) {
 			if (err.message.compareTo(
 					"Template Method Pattern Found: testAbstract (Subclass: example/template/Template1AbstractImplement)") == 0) {
 				found = true;
@@ -236,7 +236,7 @@ public class TemplateMethodTest {
 		assertTrue(found);
 		assertEquals("example/template/Template1Abstract", foundErr.className);
 		assertEquals("testAbstract", foundErr.methodName);
-		assertEquals(ErrType.PATTERN, foundErr.type);
+		assertEquals(AnalyzerFixture.PATTERN_MSG_TYPE, foundErr.getMessageType());
 	}
 
 	@Test
@@ -246,37 +246,34 @@ public class TemplateMethodTest {
 		// Bout to meddle
 		this.analyzer.getAbstractMethods().get("example/template/CaffeineBeverage").remove(0);
 		this.analyzer.analyzeData();
-		ReturnType returned = this.analyzer.composeReturnType();
+		AnalyzerReturn returned = this.analyzer.composeReturnType();
 
-		List<LinterError> patterns = returned.errorsCaught;
+		List<LinterMessage> patterns = returned.errorsCaught;
 
-		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : patterns) {
+		for (LinterMessage err : patterns) {
 			if (err.message
 					.compareTo("Template Method Pattern Found: prepareRecipe (Subclass: example/template/Tea)") == 0) {
-				found = true;
-				foundErr = err;
+				fail("Analyzer found pattern \"prepareRecipe (Subclass: example/template/Tea)\" when it shouldn't have");
 			}
 		}
-		assertFalse(found);
+
 	}
 
 	@Test
 	public void testTemplateMethodNotFound() {
 		setUpAllClasses();
-		ReturnType returned = this.analyzer.getFeedback(allClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(allClasses);
 
-		List<LinterError> patterns = returned.errorsCaught;
+		List<LinterMessage> patterns = returned.errorsCaught;
 
 		boolean found = false;
-		for (LinterError err : patterns) {
+		for (LinterMessage err : patterns) {
 			if (err.message.compareTo(
 					"Template Method Pattern Found: testFunc (Subclass: example/template/ConcreteSubclass)") == 0) {
 				found = true;
 			}
 		}
-		for (LinterError err : patterns) {
+		for (LinterMessage err : patterns) {
 			System.out.println(err);
 		}
 		assertFalse(found);
@@ -285,18 +282,18 @@ public class TemplateMethodTest {
 	@Test
 	public void testTemplateMethodNotFound2() {
 		setUpAllClasses();
-		ReturnType returned = this.analyzer.getFeedback(allClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(allClasses);
 
-		List<LinterError> patterns = returned.errorsCaught;
+		List<LinterMessage> patterns = returned.errorsCaught;
 
 		boolean found = false;
-		for (LinterError err : patterns) {
+		for (LinterMessage err : patterns) {
 			if (err.message.compareTo(
 					"Template Method Pattern Found: prepareRecipe (Subclass: example/template/CaffeineBeverage)") == 0) {
 				found = true;
 			}
 		}
-		for (LinterError err : patterns) {
+		for (LinterMessage err : patterns) {
 			System.out.println(err);
 		}
 		assertFalse(found);
@@ -305,18 +302,18 @@ public class TemplateMethodTest {
 	@Test
 	public void testTemplateMethodNotFound3() {
 		setUpAllClasses();
-		ReturnType returned = this.analyzer.getFeedback(allClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(allClasses);
 
-		List<LinterError> patterns = returned.errorsCaught;
+		List<LinterMessage> patterns = returned.errorsCaught;
 
 		boolean found = false;
-		for (LinterError err : patterns) {
+		for (LinterMessage err : patterns) {
 			if (err.message.compareTo(
 					"Template Method Pattern Found: notTemplate (Subclass: example/template/NotTemplate)") == 0) {
 				found = true;
 			}
 		}
-		for (LinterError err : patterns) {
+		for (LinterMessage err : patterns) {
 			System.out.println(err);
 		}
 		assertFalse(found);

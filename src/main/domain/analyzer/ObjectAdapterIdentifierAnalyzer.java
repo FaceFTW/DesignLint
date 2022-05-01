@@ -11,25 +11,25 @@ import datasource.ASMParser;
 import datasource.Invoker;
 import datasource.MethodCall;
 import domain.DomainAnalyzer;
-import domain.ErrType;
-import domain.LinterError;
 import domain.Method;
-import domain.ReturnType;
+import domain.message.LinterMessage;
+import domain.message.PatternLinterMessage;
+import domain.AnalyzerReturn;
 
 public class ObjectAdapterIdentifierAnalyzer extends DomainAnalyzer {
 
 	private ASMParser parser;
-	private List<LinterError> adapterIdentifications;
+	private List<LinterMessage> adapterIdentifications;
 	private Map<String, Set<String>> classToPotentialTargets;
 	private Map<String, Set<Method>> classToMethods;
 	private Set<String> consideredClasses;
 
 	public ObjectAdapterIdentifierAnalyzer(ASMParser parser) {
 		this.parser = parser;
-		this.adapterIdentifications = new ArrayList<LinterError>();
-		this.classToPotentialTargets = new HashMap<String, Set<String>>();
-		this.classToMethods = new HashMap<String, Set<Method>>();
-		this.consideredClasses = new HashSet<String>();
+		this.adapterIdentifications = new ArrayList<>();
+		this.classToPotentialTargets = new HashMap<>();
+		this.classToMethods = new HashMap<>();
+		this.consideredClasses = new HashSet<>();
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class ObjectAdapterIdentifierAnalyzer extends DomainAnalyzer {
 								result += "Target: " + potentialTarget.replace('/', '.') + "\n";
 								result += "Adaptee: " + methodCall.getInvokedClass().replace('/', '.') + "\n";
 								result += "Adapter: " + className.replace('/', '.') + "\n";
-								this.adapterIdentifications.add(new LinterError(className, result, ErrType.PATTERN));
+								this.adapterIdentifications.add(new PatternLinterMessage(className, result));
 								continue targets;
 							}
 						}
@@ -93,8 +93,8 @@ public class ObjectAdapterIdentifierAnalyzer extends DomainAnalyzer {
 	}
 
 	@Override
-	public ReturnType composeReturnType() {
-		return new ReturnType("ObjectAdapterIdentifierAnalyzer", this.adapterIdentifications);
+	public AnalyzerReturn composeReturnType() {
+		return new AnalyzerReturn("ObjectAdapterIdentifierAnalyzer", this.adapterIdentifications);
 	}
 
 }

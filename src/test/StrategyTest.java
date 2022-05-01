@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import domain.ReturnType;
+import domain.AnalyzerReturn;
 import domain.analyzer.StrategyAnalyzer;
 
 public class StrategyTest extends AnalyzerFixture<StrategyAnalyzer>{
@@ -142,7 +142,7 @@ public class StrategyTest extends AnalyzerFixture<StrategyAnalyzer>{
 	@Test
 	public void testReturnType() {
 		analyzer.analyzeData();
-		ReturnType actual = analyzer.composeReturnType();
+		AnalyzerReturn actual = analyzer.composeReturnType();
 
 		assertEquals("Strategy Pattern Detection", actual.analyzerName);
 		assertEquals(19, actual.errorsCaught.size());

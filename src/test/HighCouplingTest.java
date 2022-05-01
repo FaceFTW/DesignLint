@@ -9,12 +9,12 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import domain.ErrType;
-import domain.LinterError;
-import domain.ReturnType;
+import domain.AnalyzerReturn;
 import domain.analyzer.HighCouplingAnalyzer;
+import domain.message.LinterMessage;
+import domain.message.WarningLinterMessage;
 
-public class HighCouplingTest extends AnalyzerFixture<HighCouplingAnalyzer>{
+public class HighCouplingTest extends AnalyzerFixture<HighCouplingAnalyzer> {
 
 	private final String[] exampleClasses = {
 			"example/coupling/ZeroCouplingDataStruct",
@@ -34,13 +34,14 @@ public class HighCouplingTest extends AnalyzerFixture<HighCouplingAnalyzer>{
 			"example/coupling/CouplingInterfaceExample",
 			"example/coupling/CoupledToInterfaceExample",
 	};
+
 	@Override
 	@BeforeEach
 	protected void initAnalyzerUUT() {
 		this.populateParserData(exampleClasses);
 		this.analyzer = new HighCouplingAnalyzer(parser);
 		analyzer.getRelevantData(exampleClasses);
-		
+
 	}
 
 	// =====================Compliant Classes===================== //
@@ -537,46 +538,38 @@ public class HighCouplingTest extends AnalyzerFixture<HighCouplingAnalyzer>{
 	public void testReturnType() {
 		analyzer.analyzeData();
 
-		ReturnType expectedReturnType = analyzer.composeReturnType();
-		List<String> linterErrorStrings = new ArrayList<>();
+		AnalyzerReturn expectedReturnType = analyzer.composeReturnType();
+		List<String> LinterMessageStrings = new ArrayList<>();
 
-		for (LinterError err : expectedReturnType.errorsCaught) {
-			linterErrorStrings.add(err.toString());
+		for (LinterMessage err : expectedReturnType.errorsCaught) {
+			LinterMessageStrings.add(err.toString());
 		}
 
 		assertEquals(expectedReturnType.analyzerName, "High Coupling Linter");
 		assertEquals(expectedReturnType.errorsCaught.size(), 7);
-		LinterError linterError0 = new LinterError("example.coupling.HighCouplingStaticClassProjectCount",
-				"Class has excessive coupling to project classes! (Total Coupling - 12, JRE Coupling - 3)",
-				ErrType.WARNING);
-		LinterError linterError1 = new LinterError("example.coupling.HighCouplingStaticClassTotalCount",
-				"Class has excessive coupling to classes overall! (Total Coupling - 20, JRE Coupling - 13)",
-				ErrType.WARNING);
-		LinterError linterError2 = new LinterError("example.coupling.HighCouplingObjectProjectCount",
-				"Class has excessive coupling to project classes! (Total Coupling - 9, JRE Coupling - 0)",
-				ErrType.WARNING);
-		LinterError linterError3 = new LinterError("example.coupling.HighCouplingObjectTotalCount",
-				"Class has excessive coupling to classes overall! (Total Coupling - 22, JRE Coupling - 15)",
-				ErrType.WARNING);
-		LinterError linterError4 = new LinterError("example.coupling.HighCouplingDataStructProjectCount",
-				"Class has excessive coupling to project classes! (Total Coupling - 9, JRE Coupling - 0)",
-				ErrType.WARNING);
-		LinterError linterError5 = new LinterError("example.coupling.HighCouplingDataStructTotalCount",
-				"Class has excessive coupling to classes overall! (Total Coupling - 20, JRE Coupling - 14)",
-				ErrType.WARNING);
-		LinterError linterError6 = new LinterError("example.coupling.HighCouplingNightmareClass",
-				"Class has excessive coupling to classes overall! (Total Coupling - 28, JRE Coupling - 21)",
-				ErrType.WARNING);
+		LinterMessage LinterMessage0 = new WarningLinterMessage("example.coupling.HighCouplingStaticClassProjectCount",
+				"Class has excessive coupling to project classes! (Total Coupling - 12, JRE Coupling - 3)");
+		LinterMessage LinterMessage1 = new WarningLinterMessage("example.coupling.HighCouplingStaticClassTotalCount",
+				"Class has excessive coupling to classes overall! (Total Coupling - 20, JRE Coupling - 13)");
+		LinterMessage LinterMessage2 = new WarningLinterMessage("example.coupling.HighCouplingObjectProjectCount",
+				"Class has excessive coupling to project classes! (Total Coupling - 9, JRE Coupling - 0)");
+		LinterMessage LinterMessage3 = new WarningLinterMessage("example.coupling.HighCouplingObjectTotalCount",
+				"Class has excessive coupling to classes overall! (Total Coupling - 22, JRE Coupling - 15)");
+		LinterMessage LinterMessage4 = new WarningLinterMessage("example.coupling.HighCouplingDataStructProjectCount",
+				"Class has excessive coupling to project classes! (Total Coupling - 9, JRE Coupling - 0)");
+		LinterMessage LinterMessage5 = new WarningLinterMessage("example.coupling.HighCouplingDataStructTotalCount",
+				"Class has excessive coupling to classes overall! (Total Coupling - 20, JRE Coupling - 14)");
+		LinterMessage LinterMessage6 = new WarningLinterMessage("example.coupling.HighCouplingNightmareClass",
+				"Class has excessive coupling to classes overall! (Total Coupling - 28, JRE Coupling - 21)");
 
-		assertTrue(linterErrorStrings.contains(linterError0.toString()));
-		assertTrue(linterErrorStrings.contains(linterError1.toString()));
-		assertTrue(linterErrorStrings.contains(linterError2.toString()));
-		assertTrue(linterErrorStrings.contains(linterError3.toString()));
-		assertTrue(linterErrorStrings.contains(linterError4.toString()));
-		assertTrue(linterErrorStrings.contains(linterError5.toString()));
-		assertTrue(linterErrorStrings.contains(linterError6.toString()));
+		assertTrue(LinterMessageStrings.contains(LinterMessage0.toString()));
+		assertTrue(LinterMessageStrings.contains(LinterMessage1.toString()));
+		assertTrue(LinterMessageStrings.contains(LinterMessage2.toString()));
+		assertTrue(LinterMessageStrings.contains(LinterMessage3.toString()));
+		assertTrue(LinterMessageStrings.contains(LinterMessage4.toString()));
+		assertTrue(LinterMessageStrings.contains(LinterMessage5.toString()));
+		assertTrue(LinterMessageStrings.contains(LinterMessage6.toString()));
 
 	}
-
 
 }

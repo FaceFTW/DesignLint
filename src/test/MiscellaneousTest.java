@@ -6,14 +6,14 @@ import org.junit.jupiter.api.Test;
 
 import datasource.Invoker;
 import datasource.MethodCall;
-import domain.ErrType;
-import domain.LinterError;
+import domain.message.InfoLinterMessage;
+import domain.message.LinterMessage;;
 
 public class MiscellaneousTest {
 
 	@Test
-	public void testLinterErrorToStringReturnsString() {
-		LinterError err = new LinterError("testClass", "testMethod", "testMessage", ErrType.INFO);
+	public void testLinterMessageToStringReturnsString() {
+		LinterMessage err = new InfoLinterMessage("testClass", "testMethod", "testMessage");
 		assertNotNull(err.toString());
 		assertNotEquals("", err.toString());
 	}

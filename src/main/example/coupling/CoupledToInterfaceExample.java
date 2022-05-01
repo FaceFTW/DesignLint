@@ -2,7 +2,7 @@ package example.coupling;
 
 import java.io.PrintStream;
 
-@SuppressWarnings({ "unused", "deprecation" })
+@SuppressWarnings({ "unused" })
 public class CoupledToInterfaceExample implements CouplingInterfaceExample {
 
 	@Override

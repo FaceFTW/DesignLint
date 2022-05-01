@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import datasource.ASMParser;
+import domain.AnalyzerReturn;
 import domain.DomainAnalyzer;
-import domain.ErrType;
-import domain.LinterError;
-import domain.ReturnType;
+import domain.message.ErrorLinterMessage;
+import domain.message.LinterMessage;
+import domain.message.PatternLinterMessage;
+import domain.message.WarningLinterMessage;
 
 public class StrategyAnalyzer extends DomainAnalyzer {
 
@@ -26,7 +28,7 @@ public class StrategyAnalyzer extends DomainAnalyzer {
 	private List<String> strategyTypeList;
 	private List<String> strategyList;
 	private List<String> nonStratclassList;
-	private List<LinterError> errorList;
+	private List<LinterMessage> errorList;
 
 	private Map<String, List<String>> strategyTypeStrategiesMap;
 	private Map<String, List<String>> classUsedStrategies;
@@ -53,23 +55,23 @@ public class StrategyAnalyzer extends DomainAnalyzer {
 	@Override
 	public void analyzeData() {
 		for (String stratType : this.strategyTypeList) {
-			errorList.add(new LinterError(stratType, String.format(IS_STRATEGY_TYPE, stratType), ErrType.PATTERN));
+			errorList.add(new PatternLinterMessage(stratType, String.format(IS_STRATEGY_TYPE, stratType)));
 			for (String strat : this.strategyTypeStrategiesMap.get(stratType)) {
-				errorList.add(new LinterError(strat, String.format(IS_STRATEGY, strat, stratType), ErrType.PATTERN));
+				errorList.add(new PatternLinterMessage(strat, String.format(IS_STRATEGY, strat, stratType)));
 			}
 		}
 
 		for (String usingClass : this.classUsedStrategies.keySet()) {
 			for (String usedStratType : this.classUsedStrategies.get(usingClass)) {
-				errorList.add(new LinterError(usingClass, String.format(USES_STRATEGY, usingClass, usedStratType),
-						ErrType.PATTERN));
+				errorList.add(
+						new PatternLinterMessage(usingClass, String.format(USES_STRATEGY, usingClass, usedStratType)));
 			}
 		}
 	}
 
 	@Override
-	public ReturnType composeReturnType() {
-		return new ReturnType("Strategy Pattern Detection", errorList);
+	public AnalyzerReturn composeReturnType() {
+		return new AnalyzerReturn("Strategy Pattern Detection", errorList);
 	}
 
 	public void sweepInterfaces(String[] classList) {
@@ -104,8 +106,8 @@ public class StrategyAnalyzer extends DomainAnalyzer {
 		for (String stratType : this.strategyTypeStrategiesMap.keySet()) {
 			if (this.strategyTypeStrategiesMap.get(stratType).size() == 0) {
 				typesToRemove.add(stratType);
-				this.errorList.add(new LinterError(stratType, String.format(NO_IMPLEMENTING_STRATEGIES, stratType),
-						ErrType.WARNING));
+				this.errorList
+						.add(new WarningLinterMessage(stratType, String.format(NO_IMPLEMENTING_STRATEGIES, stratType)));
 			}
 		}
 
@@ -121,8 +123,8 @@ public class StrategyAnalyzer extends DomainAnalyzer {
 			String[] interfaces = this.parser.getInterfaces(strat);
 
 			if (interfaces.length >= 2) {
-				this.errorList.add(
-						new LinterError(strat, String.format(IMPLEMENTS_TOO_MANY_INTERFACE_ERR, strat), ErrType.ERROR));
+				this.errorList
+						.add(new ErrorLinterMessage(strat, String.format(IMPLEMENTS_TOO_MANY_INTERFACE_ERR, strat)));
 
 				toRemove.add(strat);
 
@@ -163,8 +165,7 @@ public class StrategyAnalyzer extends DomainAnalyzer {
 				for (String field : classFields) {
 					String fixedField = field.replace("[", "");
 					if (this.strategyList.contains(fixedField)) {
-						errorList.add(
-								new LinterError(className, String.format(CONCRETE_FIELD, className), ErrType.ERROR));
+						errorList.add(new ErrorLinterMessage(className, String.format(CONCRETE_FIELD, className)));
 					} else if (this.strategyTypeList.contains(fixedField)) {
 						usedStrats.add(fixedField);
 					}
