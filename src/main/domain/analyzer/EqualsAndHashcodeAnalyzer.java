@@ -1,22 +1,22 @@
 package domain.analyzer;
 
-import datasource.ASMParser;
-import domain.DomainAnalyzer;
-import domain.ErrType;
-import domain.LinterError;
-import domain.ReturnType;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import datasource.ASMParser;
+import domain.AnalyzerReturn;
+import domain.DomainAnalyzer;
+import domain.message.InfoLinterMessage;
+import domain.message.LinterMessage;
+
 public class EqualsAndHashcodeAnalyzer extends DomainAnalyzer {
 
 	ASMParser parser;
 	public Map<String, String[]> classAndMethodNames;
-	List<LinterError> errorList = new ArrayList<>();
+	List<LinterMessage> errorList = new ArrayList<>();
 
 	public EqualsAndHashcodeAnalyzer(String[] classNames) {
 		try {
@@ -27,7 +27,7 @@ public class EqualsAndHashcodeAnalyzer extends DomainAnalyzer {
 		}
 	}
 
-	public EqualsAndHashcodeAnalyzer(ASMParser parser){
+	public EqualsAndHashcodeAnalyzer(ASMParser parser) {
 		this.parser = parser;
 		this.classAndMethodNames = new HashMap<>();
 	}
@@ -56,17 +56,15 @@ public class EqualsAndHashcodeAnalyzer extends DomainAnalyzer {
 			}
 			if (seenEquals) {
 				if (!seenHashcode) {
-					LinterError err = new LinterError(className,
-							"When overriding the equals method, you should also override the hashCode method ",
-							ErrType.INFO);
+					LinterMessage err = new InfoLinterMessage(className,
+							"When overriding the equals method, you should also override the hashCode method ");
 					this.errorList.add(err);
 				}
 			}
 			if (seenHashcode) {
 				if (!seenEquals) {
-					LinterError err = new LinterError(className,
-							"When overriding the hashCode method, you should also override the equals method ",
-							ErrType.INFO);
+					LinterMessage err = new InfoLinterMessage(className,
+							"When overriding the hashCode method, you should also override the equals method ");
 					this.errorList.add(err);
 				}
 			}
@@ -74,8 +72,8 @@ public class EqualsAndHashcodeAnalyzer extends DomainAnalyzer {
 	}
 
 	@Override
-	public ReturnType composeReturnType() {
-		ReturnType type = new ReturnType("Equals And Hashcode Override Check", this.errorList);
+	public AnalyzerReturn composeReturnType() {
+		AnalyzerReturn type = new AnalyzerReturn("Equals And Hashcode Override Check", this.errorList);
 		return type;
 	}
 }

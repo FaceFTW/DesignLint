@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import datasource.ASMParser;
 import domain.ErrType;
 import domain.LinterError;
-import domain.ReturnType;
+import domain.AnalyzerReturn;
 import domain.analyzer.TemplateMethodAnalyzer;
 
 public class TemplateMethodTest {
@@ -75,7 +75,7 @@ public class TemplateMethodTest {
 			System.exit(1);
 		}
 
-		ReturnType returned = this.analyzer.getFeedback(new String[0]);
+		AnalyzerReturn returned = this.analyzer.getFeedback(new String[0]);
 
 		// Analyzer entries are null
 		assertEquals(new HashMap<>(), this.analyzer.getExtendedClasses());
@@ -170,7 +170,7 @@ public class TemplateMethodTest {
 	@Test
 	public void testTemplateMethodFound1() {
 		setUpCorrectClasses();
-		ReturnType returned = this.analyzer.getFeedback(correctClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(correctClasses);
 
 		List<LinterError> patterns = returned.errorsCaught;
 
@@ -192,7 +192,7 @@ public class TemplateMethodTest {
 	@Test
 	public void testTemplateMethodFound2() {
 		setUpCorrectClasses();
-		ReturnType returned = this.analyzer.getFeedback(correctClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(correctClasses);
 
 		List<LinterError> patterns = returned.errorsCaught;
 
@@ -214,7 +214,7 @@ public class TemplateMethodTest {
 	@Test
 	public void testTemplateMethodFoundOfLength1() {
 		setUpSimpleCorrectClasses();
-		ReturnType returned = this.analyzer.getFeedback(simpleCorrectClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(simpleCorrectClasses);
 
 		for (String className : this.analyzer.getAbstractInsideConcreteMethods().keySet()) {
 			System.out.println(className + " " + this.analyzer.getAbstractInsideConcreteMethods().get(className));
@@ -246,7 +246,7 @@ public class TemplateMethodTest {
 		// Bout to meddle
 		this.analyzer.getAbstractMethods().get("example/template/CaffeineBeverage").remove(0);
 		this.analyzer.analyzeData();
-		ReturnType returned = this.analyzer.composeReturnType();
+		AnalyzerReturn returned = this.analyzer.composeReturnType();
 
 		List<LinterError> patterns = returned.errorsCaught;
 
@@ -265,7 +265,7 @@ public class TemplateMethodTest {
 	@Test
 	public void testTemplateMethodNotFound() {
 		setUpAllClasses();
-		ReturnType returned = this.analyzer.getFeedback(allClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(allClasses);
 
 		List<LinterError> patterns = returned.errorsCaught;
 
@@ -285,7 +285,7 @@ public class TemplateMethodTest {
 	@Test
 	public void testTemplateMethodNotFound2() {
 		setUpAllClasses();
-		ReturnType returned = this.analyzer.getFeedback(allClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(allClasses);
 
 		List<LinterError> patterns = returned.errorsCaught;
 
@@ -305,7 +305,7 @@ public class TemplateMethodTest {
 	@Test
 	public void testTemplateMethodNotFound3() {
 		setUpAllClasses();
-		ReturnType returned = this.analyzer.getFeedback(allClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(allClasses);
 
 		List<LinterError> patterns = returned.errorsCaught;
 

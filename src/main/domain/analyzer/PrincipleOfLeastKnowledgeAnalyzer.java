@@ -10,67 +10,70 @@ import java.util.Set;
 import datasource.ASMParser;
 import datasource.MethodCall;
 import domain.DomainAnalyzer;
-import domain.ErrType;
-import domain.LinterError;
 import domain.Method;
-import domain.ReturnType;
+import domain.message.LinterMessage;
+import domain.message.WarningLinterMessage;
+import domain.AnalyzerReturn;
 
 public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
-	
+
 	private Set<String> consideredClasses;
 	private Map<String, Set<Method>> classToMethods;
-	private List<LinterError> demeterViolations;
+	private List<LinterMessage> demeterViolations;
 	private ASMParser parser;
-	
+
 	public PrincipleOfLeastKnowledgeAnalyzer(ASMParser parser) {
 		this.consideredClasses = new HashSet<String>();
 		this.classToMethods = new HashMap<String, Set<Method>>();
-		this.demeterViolations = new ArrayList<LinterError>();
+		this.demeterViolations = new ArrayList<LinterMessage>();
 		this.parser = parser;
 	}
-	
+
 	@Override
 	public void getRelevantData(String[] classList) {
 		for (String className : classList) {
 			this.consideredClasses.add(className.replace('.', '/'));
 		}
-		
-		for(String className : this.consideredClasses) {
+
+		for (String className : this.consideredClasses) {
 			Set<Method> methods = new HashSet<Method>();
-			String [] methodArr = parser.getMethods(className);
-			for(int i = 0; i < methodArr.length; i++) {
+			String[] methodArr = parser.getMethods(className);
+			for (int i = 0; i < methodArr.length; i++) {
 				List<MethodCall> methodCalls = parser.getMethodCalls(className, methodArr[i]);
 				Method method = new Method(methodArr[i], methodCalls);
 				methods.add(method);
 			}
 			this.classToMethods.put(className, methods);
 		}
-		
+
 	}
 
 	@Override
 	public void analyzeData() {
-		for(String className : this.classToMethods.keySet()) {
-			for(Method method : this.classToMethods.get(className)) {
-				for(MethodCall methodCall : method.getMethodCalls()) {
-					String errorMessage = "Principle of Least Knowledge Violation in Class '" + className + "', Method '" + method.getName() + "'\n";
-					if(this.consideredClasses.contains(methodCall.getInvokedClass())
-					   && !methodCall.getCalledMethodName().equals("<init>")
-					   && !methodCall.getInvokerName().equals("this")) {
-						switch(methodCall.getInvoker()) {
+		for (String className : this.classToMethods.keySet()) {
+			for (Method method : this.classToMethods.get(className)) {
+				for (MethodCall methodCall : method.getMethodCalls()) {
+					String errorMessage = "Principle of Least Knowledge Violation in Class '" + className
+							+ "', Method '" + method.getName() + "'\n";
+					if (this.consideredClasses.contains(methodCall.getInvokedClass())
+							&& !methodCall.getCalledMethodName().equals("<init>")
+							&& !methodCall.getInvokerName().equals("this")) {
+						switch (methodCall.getInvoker()) {
 							case FIELD:
 								break;
-							
+
 							case PARAMETER:
 								break;
-								
+
 							case CONSTRUCTED:
 								break;
-							
+
 							case RETURNED:
-								if(!methodCall.getInvokedClass().equals(className)) {
-									errorMessage += "Reached method '" + methodCall.getCalledMethodName() + "' with an illegal access.";
-									this.demeterViolations.add(new LinterError(className, method.getName(), errorMessage, ErrType.WARNING));
+								if (!methodCall.getInvokedClass().equals(className)) {
+									errorMessage += "Reached method '" + methodCall.getCalledMethodName()
+											+ "' with an illegal access.";
+									this.demeterViolations
+											.add(new WarningLinterMessage(className, method.getName(), errorMessage));
 								}
 								break;
 						}
@@ -81,8 +84,8 @@ public class PrincipleOfLeastKnowledgeAnalyzer extends DomainAnalyzer {
 	}
 
 	@Override
-	public ReturnType composeReturnType() {
-		return new ReturnType("PrincipleOfLeastKnowledgeAnalyzer", this.demeterViolations);
+	public AnalyzerReturn composeReturnType() {
+		return new AnalyzerReturn("PrincipleOfLeastKnowledgeAnalyzer", this.demeterViolations);
 	}
-	
+
 }

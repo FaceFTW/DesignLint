@@ -9,9 +9,9 @@ import java.util.Set;
 
 import datasource.ASMParser;
 import domain.DomainAnalyzer;
-import domain.ErrType;
-import domain.LinterError;
-import domain.ReturnType;
+import domain.message.LinterMessage;
+import domain.message.WarningLinterMessage;
+import domain.AnalyzerReturn;
 
 public class HighCouplingAnalyzer extends DomainAnalyzer {
 
@@ -25,7 +25,7 @@ public class HighCouplingAnalyzer extends DomainAnalyzer {
 
 	private Map<String, String[]> classCouplingMap;
 
-	private List<LinterError> foundErrors;
+	private List<LinterMessage> foundErrors;
 
 	public HighCouplingAnalyzer(ASMParser parser) {
 		super();
@@ -57,14 +57,14 @@ public class HighCouplingAnalyzer extends DomainAnalyzer {
 			}
 
 			if (errString.length() > 0) {
-				foundErrors.add(new LinterError(className.replace("/", "."), errString, ErrType.WARNING));
+				foundErrors.add(new WarningLinterMessage(className.replace("/", "."), errString));
 			}
 		}
 	}
 
 	@Override
-	public ReturnType composeReturnType() {
-		return new ReturnType("High Coupling Linter", foundErrors);
+	public AnalyzerReturn composeReturnType() {
+		return new AnalyzerReturn("High Coupling Linter", foundErrors);
 	}
 
 	/**

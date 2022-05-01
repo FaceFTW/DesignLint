@@ -48,7 +48,7 @@ public class PresentationLayer {
 	public static final int ALL_ANALYZERS = 0xFFFF << 20;
 
 	private List<DomainAnalyzer> analyzers;
-	private List<ReturnType> linterReturns;
+	private List<AnalyzerReturn> linterReturns;
 	private String[] classList;
 	private int flags;
 
@@ -103,7 +103,7 @@ public class PresentationLayer {
 		// TODO Polymorphically implement the return type switches (that should have
 		// been the solution the whole time)
 
-		for (ReturnType returnType : linterReturns) {
+		for (AnalyzerReturn returnType : linterReturns) {
 			for (LinterError error : returnType.errorsCaught) {
 
 				String errType = "";

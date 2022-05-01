@@ -12,7 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import domain.ErrType;
 import domain.LinterError;
-import domain.ReturnType;
+import domain.AnalyzerReturn;
 import domain.analyzer.ExceptionThrownAnalyzer;
 import domain.analyzer.ExceptionThrownAnalyzer.ExceptionLinterIssue;
 
@@ -111,7 +111,7 @@ public class ExceptionLinterTest extends AnalyzerFixture<ExceptionThrownAnalyzer
 
 		analyzer.analyzeData();
 
-		ReturnType expectedReturnType = analyzer.composeReturnType();
+		AnalyzerReturn expectedReturnType = analyzer.composeReturnType();
 		List<String> linterErrorStrings = new ArrayList<>();
 
 		for (LinterError err : expectedReturnType.errorsCaught) {

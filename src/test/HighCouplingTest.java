@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import domain.ErrType;
 import domain.LinterError;
-import domain.ReturnType;
+import domain.AnalyzerReturn;
 import domain.analyzer.HighCouplingAnalyzer;
 
 public class HighCouplingTest extends AnalyzerFixture<HighCouplingAnalyzer>{
@@ -537,7 +537,7 @@ public class HighCouplingTest extends AnalyzerFixture<HighCouplingAnalyzer>{
 	public void testReturnType() {
 		analyzer.analyzeData();
 
-		ReturnType expectedReturnType = analyzer.composeReturnType();
+		AnalyzerReturn expectedReturnType = analyzer.composeReturnType();
 		List<String> linterErrorStrings = new ArrayList<>();
 
 		for (LinterError err : expectedReturnType.errorsCaught) {

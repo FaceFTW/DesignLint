@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import domain.ErrType;
 import domain.LinterError;
-import domain.ReturnType;
+import domain.AnalyzerReturn;
 import domain.analyzer.DryAnalyzer;
 
 public class DryTest {
@@ -14,7 +14,7 @@ public class DryTest {
 	public void oneClassNoDuplicationTest() {
 		String[] classList = { "example/dry/Kitten" };
 		this.analyzer = new DryAnalyzer(classList);
-		ReturnType returned = this.analyzer.getFeedback(classList);
+		AnalyzerReturn returned = this.analyzer.getFeedback(classList);
 
 		for (LinterError l : returned.errorsCaught) {
 			System.out.println(l);
@@ -28,7 +28,7 @@ public class DryTest {
 	public void twoClassNoDuplicationTest() {
 		String[] classList = { "example/dry/Puppy", "example/dry/Kitten" };
 		this.analyzer = new DryAnalyzer(classList);
-		ReturnType returned = this.analyzer.getFeedback(classList);
+		AnalyzerReturn returned = this.analyzer.getFeedback(classList);
 
 		for (LinterError l : returned.errorsCaught) {
 			System.out.println(l);
@@ -42,7 +42,7 @@ public class DryTest {
 	public void oneClassWithDuplicationTest() {
 		String[] classList = { "example/dry/Dog" };
 		this.analyzer = new DryAnalyzer(classList);
-		ReturnType returned = this.analyzer.getFeedback(classList);
+		AnalyzerReturn returned = this.analyzer.getFeedback(classList);
 
 		for (LinterError l : returned.errorsCaught) {
 			System.out.println(l);
@@ -60,7 +60,7 @@ public class DryTest {
 
 		String[] classList = { "example/dry/CatExtendsAnimal", "example/dry/DogExtendsAnimal" };
 		this.analyzer = new DryAnalyzer(classList);
-		ReturnType returned = this.analyzer.getFeedback(classList);
+		AnalyzerReturn returned = this.analyzer.getFeedback(classList);
 
 		for (LinterError l : returned.errorsCaught) {
 			System.out.println(l);
@@ -77,7 +77,7 @@ public class DryTest {
 	public void twoClassWithDuplicationTest() {
 		String[] classList = { "example/dry/Cat", "example/dry/Dog" };
 		this.analyzer = new DryAnalyzer(classList);
-		ReturnType returned = this.analyzer.getFeedback(classList);
+		AnalyzerReturn returned = this.analyzer.getFeedback(classList);
 
 		for (LinterError l : returned.errorsCaught) {
 			System.out.println(l);
@@ -98,7 +98,7 @@ public class DryTest {
 		String[] classList = { "example/dry/Cat", "example/dry/Dog", "example/dry/CatExtendsAnimal",
 				"example/dry/DogExtendsAnimal" };
 		this.analyzer = new DryAnalyzer(classList);
-		ReturnType returned = this.analyzer.getFeedback(classList);
+		AnalyzerReturn returned = this.analyzer.getFeedback(classList);
 
 		for (LinterError e : returned.errorsCaught) {
 			System.out.println(e.toString());

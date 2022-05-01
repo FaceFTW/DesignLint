@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import datasource.ASMParser;
 import domain.ErrType;
 import domain.LinterError;
-import domain.ReturnType;
+import domain.AnalyzerReturn;
 import domain.analyzer.VarNameAnalyzer;
 
 public class VarNameTest {
@@ -62,7 +62,7 @@ public class VarNameTest {
 			System.exit(1);
 		}
 
-		ReturnType returned = this.analyzer.getFeedback(new String[0]);
+		AnalyzerReturn returned = this.analyzer.getFeedback(new String[0]);
 
 		// Analyzer entries are null
 		assertEquals(new HashMap<>(), this.analyzer.getFieldNames());
@@ -122,7 +122,7 @@ public class VarNameTest {
 				"Global Variable bad_Global must only be capital letters, E"})
 	public void testReturnsVariable(String errorMessage, char errType) {
 		setUpSingleClass();
-		ReturnType returned = this.analyzer.getFeedback(singleClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(singleClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
 		List<LinterError> errors = returned.errorsCaught;
@@ -160,7 +160,7 @@ public class VarNameTest {
 							"Local Variable Z begins with capital letter"})
 	public void testReturnsLocalVariableError(String errorMessage) {
 		setUpSingleClass();
-		ReturnType returned = this.analyzer.getFeedback(singleClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(singleClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
 		List<LinterError> errors = returned.errorsCaught;
@@ -182,7 +182,7 @@ public class VarNameTest {
 	@Test
 	public void testReturnsLocalVariableTooLongError() {
 		setUpSingleClass();
-		ReturnType returned = this.analyzer.getFeedback(singleClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(singleClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
 		List<LinterError> errors = returned.errorsCaught;
@@ -219,7 +219,7 @@ public class VarNameTest {
 	@Test
 	public void testReturnErrorsFromClass1() {
 		setUpMultiClass();
-		ReturnType returned = this.analyzer.getFeedback(multipleClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(multipleClasses);
 		List<LinterError> errors = returned.errorsCaught;
 
 		boolean found = false;
@@ -240,7 +240,7 @@ public class VarNameTest {
 	@Test
 	public void testReturnErrorsFromClass2() {
 		setUpMultiClass();
-		ReturnType returned = this.analyzer.getFeedback(multipleClasses);
+		AnalyzerReturn returned = this.analyzer.getFeedback(multipleClasses);
 		List<LinterError> errors = returned.errorsCaught;
 
 		boolean found = false;
@@ -262,7 +262,7 @@ public class VarNameTest {
 							"Local Variable anotherThirtyCharacterVarName1 too long (>30 characters)"})
 	public void testThirtyCharacterFieldName(String errorMessage) {
 		setUpSingleClass();
-		ReturnType returned = this.analyzer.getFeedback(singleClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(singleClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
 		List<LinterError> errors = returned.errorsCaught;
@@ -285,7 +285,7 @@ public class VarNameTest {
 				"Local Variable anotherThirty1CharacterVarName1 too long (>30 characters), methodName"})
 	public void testThirtyONECharacterFieldName(String errorMessage, String methodName) {
 		setUpSingleClass();
-		ReturnType returned = this.analyzer.getFeedback(singleClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(singleClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
 		List<LinterError> errors = returned.errorsCaught;

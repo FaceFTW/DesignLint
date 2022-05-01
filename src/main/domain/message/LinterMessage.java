@@ -1,29 +1,29 @@
-package domain;
+package domain.message;
 
-public class LinterError {
+public abstract class LinterMessage {
 	public String className;
 	public String methodName;
 	public String message;
-	public ErrType type;
-	
-	public LinterError(String className, String methodName, String message, ErrType type) {
+
+	public LinterMessage(String className, String methodName, String message) {
 		this.className = className;
 		this.methodName = methodName;
 		this.message = message;
-		this.type = type;
 	}
-	
-	public LinterError(String className, String message, ErrType type) {
+
+	public LinterMessage(String className, String message) {
 		this.className = className;
 		this.methodName = null;
 		this.message = message;
-		this.type = type;
 	}
-	
+
+	public abstract String getMessageType();
+
 	public String toString() {
 		return "Class Name: " + this.className + "\n" +
 				"Method Name: " + this.methodName + "\n" +
-				"Message: " + this.message + "\n" +
-				"Error Type: " + this.type;
+				"Message: " + this.message + "\n";
 	}
+
 }
+

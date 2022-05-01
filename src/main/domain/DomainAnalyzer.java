@@ -3,7 +3,7 @@ package domain;
 //Abstract class that all analyzers should extend.
 public abstract class DomainAnalyzer {
 
-    public ReturnType getFeedback(String[] classList) {
+    public AnalyzerReturn getFeedback(String[] classList) {
         getRelevantData(classList);
         analyzeData();
         return composeReturnType();
@@ -13,5 +13,5 @@ public abstract class DomainAnalyzer {
 
     public abstract void analyzeData();
 
-    public abstract ReturnType composeReturnType();
+    public abstract AnalyzerReturn composeReturnType();
 }

@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import datasource.ASMParser;
 import domain.ErrType;
 import domain.LinterError;
-import domain.ReturnType;
+import domain.AnalyzerReturn;
 import domain.analyzer.CodeToInterfaceAnalyzer;
 
 public class CodeToInterfaceTest {
@@ -49,7 +49,7 @@ public class CodeToInterfaceTest {
 			System.exit(1);
 		}
 
-		ReturnType returned = this.analyzer.getFeedback(new String[0]);
+		AnalyzerReturn returned = this.analyzer.getFeedback(new String[0]);
 
 		// Analyzer entries are null
 		assertEquals(new HashMap<>(), this.analyzer.getFieldNames());
@@ -64,7 +64,7 @@ public class CodeToInterfaceTest {
 	@Test
 	public void testFieldsGivenClasses() {
 		setUpOurClass();
-		ReturnType returned = this.analyzer.getFeedback(ourClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(ourClass);
 
 		assertNotEquals(new HashMap<>(), this.analyzer.getFieldNames());
 		assertNotEquals(new HashMap<>(), this.analyzer.getFieldTypes());
@@ -81,7 +81,7 @@ public class CodeToInterfaceTest {
 					"Field fieldSetTest should be of type Set<>, not HashSet<>"})
 	public void testReturnedCollectionFields(String errorMessage) {
 		setUpOurClass();
-		ReturnType returned = this.analyzer.getFeedback(ourClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(ourClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
 		List<LinterError> errors = returned.errorsCaught;
@@ -111,7 +111,7 @@ public class CodeToInterfaceTest {
 							"Potential Interface for tri6: example/code2interface/Shape"})
 	public void testNonError(String errorMessage) {
 		setUpOurClass();
-		ReturnType returned = this.analyzer.getFeedback(ourClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(ourClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
 		List<LinterError> errors = returned.errorsCaught;
@@ -135,7 +135,7 @@ public class CodeToInterfaceTest {
 							"Potential Interface for tri3: example/code2interface/Shape"})
 	public void testMethodVarOfTypeWarnings(String errorMessage) {
 		setUpOurClass();
-		ReturnType returned = this.analyzer.getFeedback(ourClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(ourClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
 		List<LinterError> errors = returned.errorsCaught;
@@ -160,7 +160,7 @@ public class CodeToInterfaceTest {
 							"Local Variable setTest should be of type Set<>, not HashSet<>"})
 	public void testMethodVarCollections(String errorMessage) {
 		setUpOurClass();
-		ReturnType returned = this.analyzer.getFeedback(ourClass);
+		AnalyzerReturn returned = this.analyzer.getFeedback(ourClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
 		List<LinterError> errors = returned.errorsCaught;
