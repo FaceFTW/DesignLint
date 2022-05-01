@@ -21,6 +21,7 @@ import domain.analyzer.SingletonAnalyzer;
 import domain.analyzer.StrategyAnalyzer;
 import domain.analyzer.TemplateMethodAnalyzer;
 import domain.analyzer.VarNameAnalyzer;
+import domain.message.LinterMessage;
 
 public class PresentationLayer {
 	// The following represent flags that the wrapper can pass
@@ -100,36 +101,14 @@ public class PresentationLayer {
 		int warnNum = 0;
 		int patternNum = 0;
 
-		// TODO Polymorphically implement the return type switches (that should have
-		// been the solution the whole time)
-
 		for (AnalyzerReturn returnType : linterReturns) {
-			for (LinterError error : returnType.errorsCaught) {
+			returnNum += returnType.getInfoCount() + returnType.getUnknownCount();
+			errNum += returnType.getErrorCount();
+			warnNum += returnType.getWarningCount();
+			patternNum += returnType.getPatternCount();
 
+			for (LinterMessage error : returnType.errorsCaught) {
 				String errType = "";
-				switch (error.type) {
-					case ERROR:
-						errType = "Error";
-						errNum++;
-						returnNum++;
-						break;
-					case INFO:
-						errType = "Info";
-						returnNum++;
-						break;
-					case PATTERN:
-						errType = "Pattern";
-						patternNum++;
-						returnNum++;
-						break;
-					case WARNING:
-						errType = "Warning";
-						warnNum++;
-						returnNum++;
-						break;
-					default:
-						throw new IllegalArgumentException("Error, We somehow got an unexpected enum value!");
-				}
 				if ((flags & VERBOSE_FLAG) == VERBOSE_FLAG) {
 					stream.format("Linter Name - %s\n", returnType.analyzerName);
 					stream.println("======================================================================");
@@ -143,6 +122,9 @@ public class PresentationLayer {
 			}
 
 		}
+
+		returnNum = errNum + warnNum + patternNum;
+
 		stream.println("Summary:");
 		stream.println("======================================================================");
 		stream.println("Errors Found : " + errNum);

@@ -84,12 +84,12 @@ public class VarNameAnalyzer extends DomainAnalyzer {
 
 			if (var.length() > 30) {
 				this.foundErrors
-						.add(new ErrorLinterMessage(className, null, "Field " + var + " too long (>30 characters)"));
+						.add(new WarningLinterMessage(className, null, "Field " + var + " too long (>30 characters)"));
 			}
 
 			if (var.length() <= 2) {
 				this.foundErrors
-						.add(new ErrorLinterMessage(className, null, "Field " + var + " too short (<=2 characters)"));
+						.add(new WarningLinterMessage(className, null, "Field " + var + " too short (<=2 characters)"));
 			}
 		}
 
