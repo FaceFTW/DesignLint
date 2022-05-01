@@ -3,7 +3,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import domain.ErrType;
 import domain.AnalyzerReturn;
 import domain.analyzer.SingletonAnalyzer;
 
@@ -110,7 +109,7 @@ public class SingletonTest {
 		assertEquals(1, returned.errorsCaught.size());
 		assertEquals("example/singleton/PriConStaticFieldStaticMethod", returned.errorsCaught.get(0).className);
 		assertEquals("Singleton Pattern detected!", returned.errorsCaught.get(0).message);
-		assertEquals(ErrType.PATTERN, returned.errorsCaught.get(0).type);
+		assertEquals(AnalyzerFixture.PATTERN_MSG_TYPE, returned.errorsCaught.get(0).getMessageType());
 	}
 
 	@Test
@@ -127,7 +126,7 @@ public class SingletonTest {
 		assertEquals(1, returned.errorsCaught.size());
 		assertEquals("example/singleton/PriConStaticFieldStaticMethod", returned.errorsCaught.get(0).className);
 		assertEquals("Singleton Pattern detected!", returned.errorsCaught.get(0).message);
-		assertEquals(ErrType.PATTERN, returned.errorsCaught.get(0).type);
+		assertEquals(AnalyzerFixture.PATTERN_MSG_TYPE, returned.errorsCaught.get(0).getMessageType());
 	}
 
 }

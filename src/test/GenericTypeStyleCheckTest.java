@@ -2,32 +2,29 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import datasource.ASMParser;
-import domain.ErrType;
-import domain.LinterError;
 import domain.AnalyzerReturn;
 import domain.analyzer.GenericTypeNameAnalyzer;
+import domain.message.LinterMessage;
 
 public class GenericTypeStyleCheckTest extends AnalyzerFixture<GenericTypeNameAnalyzer> {
 
 	private final String[] exampleClasses = { "example.typename.OneTypeCorrectClass",
-	"example.typename.OneTypeIncorrectCapitalNonNumericClass",
-	"example.typename.MultipleTypesAllCorrectClass",
-	"example.typename.OneTypeIncorrectNoTClass",
-	"example.typename.MultipleTypesSomeIncorrectClass",
-	"example.typename.OneTypeIncorrectLowercaseClass",
-	"example.typename.NoTypeClass",
-	"example.typename.OneTypeCorrectTClass",
-	"example.typename.InterfaceCorrect",
-	"example.typename.InterfaceIncorrect",
-	"example.typename.AbstractCorrect"};
+			"example.typename.OneTypeIncorrectCapitalNonNumericClass",
+			"example.typename.MultipleTypesAllCorrectClass",
+			"example.typename.OneTypeIncorrectNoTClass",
+			"example.typename.MultipleTypesSomeIncorrectClass",
+			"example.typename.OneTypeIncorrectLowercaseClass",
+			"example.typename.NoTypeClass",
+			"example.typename.OneTypeCorrectTClass",
+			"example.typename.InterfaceCorrect",
+			"example.typename.InterfaceIncorrect",
+			"example.typename.AbstractCorrect" };
 
 	@Override
 	@BeforeEach
@@ -62,7 +59,7 @@ public class GenericTypeStyleCheckTest extends AnalyzerFixture<GenericTypeNameAn
 		String[] classes = { "example.typename.OneTypeIncorrectLowercaseClass" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 1);
-		assertTrue(results.errorsCaught.get(0).type.equals(ErrType.WARNING));
+		assertEquals(AnalyzerFixture.WARNING_MSG_TYPE, results.errorsCaught.get(0).getMessageType());
 		assertEquals(results.errorsCaught.get(0).message,
 				"Generic Type: 'incorrect' should be capitalized.");
 	}
@@ -72,7 +69,7 @@ public class GenericTypeStyleCheckTest extends AnalyzerFixture<GenericTypeNameAn
 		String[] classes = { "example.typename.OneTypeIncorrectCapitalNonNumericClass" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 1);
-		assertTrue(results.errorsCaught.get(0).type.equals(ErrType.WARNING));
+		assertEquals(AnalyzerFixture.WARNING_MSG_TYPE, results.errorsCaught.get(0).getMessageType());
 		assertEquals(results.errorsCaught.get(0).message,
 				"Generic Type: 'GG' is of length 2 and starts with a capital character - second character should be a single numeric.");
 	}
@@ -82,7 +79,7 @@ public class GenericTypeStyleCheckTest extends AnalyzerFixture<GenericTypeNameAn
 		String[] classes = { "example.typename.OneTypeIncorrectNoTClass" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 1);
-		assertTrue(results.errorsCaught.get(0).type.equals(ErrType.WARNING));
+		assertEquals(AnalyzerFixture.WARNING_MSG_TYPE, results.errorsCaught.get(0).getMessageType());
 		assertEquals(results.errorsCaught.get(0).message,
 				"Generic Type: 'Incorrect' is of the class name form - should end in a capital 'T'");
 	}
@@ -122,8 +119,8 @@ public class GenericTypeStyleCheckTest extends AnalyzerFixture<GenericTypeNameAn
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
 		assertTrue(results.errorsCaught.size() == 4);
 		List<String> errorMessages = new ArrayList<String>();
-		for (LinterError linterError : results.errorsCaught) {
-			errorMessages.add(linterError.message);
+		for (LinterMessage LinterMessage : results.errorsCaught) {
+			errorMessages.add(LinterMessage.message);
 		}
 		assertTrue(errorMessages.contains("Generic Type: 'GG' is of length 2 and starts with a capital character - "
 				+ "second character should be a single numeric."));

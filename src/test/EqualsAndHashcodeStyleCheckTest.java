@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import domain.LinterError;
+import domain.message.LinterMessage;
 import domain.AnalyzerReturn;
 import domain.analyzer.EqualsAndHashcodeAnalyzer;
 
@@ -19,7 +19,7 @@ public class EqualsAndHashcodeStyleCheckTest {
 		String[] classList = { "example/equalhashstyle/WithNeitherTestClass" };
 		this.analyzer = new EqualsAndHashcodeAnalyzer(classList);
 		AnalyzerReturn returnVal = this.analyzer.getFeedback(classList);
-		List<LinterError> errors = returnVal.errorsCaught;
+		List<LinterMessage> errors = returnVal.errorsCaught;
 		assertTrue(errors.size() == 0);
 		assertTrue(returnVal.analyzerName == "Equals And Hashcode Override Check");
 	}
@@ -29,7 +29,7 @@ public class EqualsAndHashcodeStyleCheckTest {
 		String[] classList = { "example/equalhashstyle/WithEqualsOnlyTestClass" };
 		this.analyzer = new EqualsAndHashcodeAnalyzer(classList);
 		AnalyzerReturn returnVal = this.analyzer.getFeedback(classList);
-		List<LinterError> errors = returnVal.errorsCaught;
+		List<LinterMessage> errors = returnVal.errorsCaught;
 		assertTrue(errors.size() == 1);
 		assertEquals("When overriding the equals method, you should also override the hashCode method ",
 				errors.get(0).message);
@@ -42,7 +42,7 @@ public class EqualsAndHashcodeStyleCheckTest {
 		String[] classList = { "example/equalhashstyle/WithHashCodeOnlyTestClass" };
 		this.analyzer = new EqualsAndHashcodeAnalyzer(classList);
 		AnalyzerReturn returnVal = this.analyzer.getFeedback(classList);
-		List<LinterError> errors = returnVal.errorsCaught;
+		List<LinterMessage> errors = returnVal.errorsCaught;
 		assertTrue(errors.size() == 1);
 		assertEquals("When overriding the hashCode method, you should also override the equals method ",
 				errors.get(0).message);
@@ -55,7 +55,7 @@ public class EqualsAndHashcodeStyleCheckTest {
 		String[] classList = { "example/equalhashstyle/WithBothTestClass" };
 		this.analyzer = new EqualsAndHashcodeAnalyzer(classList);
 		AnalyzerReturn returnVal = this.analyzer.getFeedback(classList);
-		List<LinterError> errors = returnVal.errorsCaught;
+		List<LinterMessage> errors = returnVal.errorsCaught;
 		assertTrue(errors.size() == 0);
 		assertTrue(returnVal.analyzerName == "Equals And Hashcode Override Check");
 	}

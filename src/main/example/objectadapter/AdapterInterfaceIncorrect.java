@@ -1,5 +1,6 @@
 package example.objectadapter;
 
+@SuppressWarnings("unused")
 public class AdapterInterfaceIncorrect implements TargetInterface {
 	
 	// Never calls the Adaptee - Supports no functionality

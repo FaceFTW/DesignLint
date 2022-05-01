@@ -15,8 +15,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import datasource.ASMParser;
-import domain.ErrType;
-import domain.LinterError;
+import domain.message.LinterMessage;
 import domain.AnalyzerReturn;
 import domain.analyzer.VarNameAnalyzer;
 
@@ -107,29 +106,26 @@ public class VarNameTest {
 		assertTrue(this.analyzer.getMethodNames().get(singleClass[0]).get("methodName").contains("Z"));
 	}
 
-	
-	
-	
 	@ParameterizedTest
-	@CsvSource({"_underscoreField begins with _, E", 
-				"$dollarField begins with $, E", 
-				"Field BadVariable begins with capital letter, E", 
-				"Field reallyLongFieldForTestingPurposes too long (>30 characters), W", 
-				"Field fV too short (<=2 characters), W", 
-				"_UNDERSCORE_GLOBAL begins with _, E", 
-				"$DOLLAR_GLOBAL begins with $, E", 
-				"Global Variable BG too short (<=2 characters), W",
-				"Global Variable bad_Global must only be capital letters, E"})
+	@CsvSource({ "_underscoreField begins with _, E",
+			"$dollarField begins with $, E",
+			"Field BadVariable begins with capital letter, E",
+			"Field reallyLongFieldForTestingPurposes too long (>30 characters), W",
+			"Field fV too short (<=2 characters), W",
+			"_UNDERSCORE_GLOBAL begins with _, E",
+			"$DOLLAR_GLOBAL begins with $, E",
+			"Global Variable BG too short (<=2 characters), W",
+			"Global Variable bad_Global must only be capital letters, E" })
 	public void testReturnsVariable(String errorMessage, char errType) {
 		setUpSingleClass();
 		AnalyzerReturn returned = this.analyzer.getFeedback(singleClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
-		List<LinterError> errors = returned.errorsCaught;
+		List<LinterMessage> errors = returned.errorsCaught;
 
 		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : errors) {
+		LinterMessage foundErr = null;
+		for (LinterMessage err : errors) {
 			if (err.message.compareTo(errorMessage) == 0) {
 				found = true;
 				foundErr = err;
@@ -138,8 +134,8 @@ public class VarNameTest {
 		assertTrue(found);
 		assertEquals(singleClass[0], foundErr.className);
 		assertNull(foundErr.methodName);
-		ErrType expectedErrorType = errType == 'E' ? ErrType.ERROR: ErrType.WARNING;
-		assertEquals(expectedErrorType, foundErr.type);
+		String expectedErrorType = errType == 'E' ? AnalyzerFixture.ERROR_MSG_TYPE : AnalyzerFixture.WARNING_MSG_TYPE;
+		assertEquals(expectedErrorType, foundErr.getMessageType());
 	}
 
 	@Test
@@ -155,19 +151,19 @@ public class VarNameTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"_x begins with _",
-							"$y begins with $",
-							"Local Variable Z begins with capital letter"})
+	@ValueSource(strings = { "_x begins with _",
+			"$y begins with $",
+			"Local Variable Z begins with capital letter" })
 	public void testReturnsLocalVariableError(String errorMessage) {
 		setUpSingleClass();
 		AnalyzerReturn returned = this.analyzer.getFeedback(singleClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
-		List<LinterError> errors = returned.errorsCaught;
+		List<LinterMessage> errors = returned.errorsCaught;
 
 		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : errors) {
+		LinterMessage foundErr = null;
+		for (LinterMessage err : errors) {
 			if (err.message.compareTo(errorMessage) == 0) {
 				found = true;
 				foundErr = err;
@@ -176,7 +172,7 @@ public class VarNameTest {
 		assertTrue(found);
 		assertEquals(singleClass[0], foundErr.className);
 		assertEquals("methodName", foundErr.methodName);
-		assertEquals(ErrType.ERROR, foundErr.type);
+		assertEquals(AnalyzerFixture.ERROR_MSG_TYPE, foundErr.getMessageType());
 	}
 
 	@Test
@@ -185,11 +181,11 @@ public class VarNameTest {
 		AnalyzerReturn returned = this.analyzer.getFeedback(singleClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
-		List<LinterError> errors = returned.errorsCaught;
+		List<LinterMessage> errors = returned.errorsCaught;
 
 		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : errors) {
+		LinterMessage foundErr = null;
+		for (LinterMessage err : errors) {
 			if (err.message
 					.compareTo("Local Variable superLongUnnecessaryVariableName too long (>30 characters)") == 0) {
 				found = true;
@@ -199,7 +195,7 @@ public class VarNameTest {
 		assertTrue(found);
 		assertEquals(singleClass[0], foundErr.className);
 		assertEquals("<init>", foundErr.methodName);
-		assertEquals(ErrType.WARNING, foundErr.type);
+		assertEquals(AnalyzerFixture.WARNING_MSG_TYPE, foundErr.getMessageType());
 	}
 
 	@Test
@@ -220,11 +216,11 @@ public class VarNameTest {
 	public void testReturnErrorsFromClass1() {
 		setUpMultiClass();
 		AnalyzerReturn returned = this.analyzer.getFeedback(multipleClasses);
-		List<LinterError> errors = returned.errorsCaught;
+		List<LinterMessage> errors = returned.errorsCaught;
 
 		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : errors) {
+		LinterMessage foundErr = null;
+		for (LinterMessage err : errors) {
 			if (err.message
 					.compareTo("Local Variable superLongUnnecessaryVariableName too long (>30 characters)") == 0) {
 				found = true;
@@ -234,18 +230,18 @@ public class VarNameTest {
 		assertTrue(found);
 		assertEquals(multipleClasses[0], foundErr.className);
 		assertEquals("<init>", foundErr.methodName);
-		assertEquals(ErrType.WARNING, foundErr.type);
+		assertEquals(AnalyzerFixture.WARNING_MSG_TYPE, foundErr.getMessageType());
 	}
 
 	@Test
 	public void testReturnErrorsFromClass2() {
 		setUpMultiClass();
 		AnalyzerReturn returned = this.analyzer.getFeedback(multipleClasses);
-		List<LinterError> errors = returned.errorsCaught;
+		List<LinterMessage> errors = returned.errorsCaught;
 
 		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : errors) {
+		LinterMessage foundErr = null;
+		for (LinterMessage err : errors) {
 			if (err.message.compareTo("$BadVariable begins with $") == 0) {
 				found = true;
 				foundErr = err;
@@ -254,26 +250,26 @@ public class VarNameTest {
 		assertTrue(found);
 		assertEquals(multipleClasses[1], foundErr.className);
 		assertNull(foundErr.methodName);
-		assertEquals(ErrType.ERROR, foundErr.type);
+		assertEquals(AnalyzerFixture.ERROR_MSG_TYPE, foundErr.getMessageType());
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"Field thirtyCharacterVariNameForTest too long (>30 characters)", 
-							"Local Variable anotherThirtyCharacterVarName1 too long (>30 characters)"})
+	@ValueSource(strings = { "Field thirtyCharacterVariNameForTest too long (>30 characters)",
+			"Local Variable anotherThirtyCharacterVarName1 too long (>30 characters)" })
 	public void testThirtyCharacterFieldName(String errorMessage) {
 		setUpSingleClass();
 		AnalyzerReturn returned = this.analyzer.getFeedback(singleClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
-		List<LinterError> errors = returned.errorsCaught;
+		List<LinterMessage> errors = returned.errorsCaught;
 
 		boolean found = false;
-		for (LinterError err : errors) {
+		for (LinterMessage err : errors) {
 			if (err.message.compareTo(errorMessage) == 0) {
 				found = true;
 			}
 		}
-		for (LinterError err : errors) {
+		for (LinterMessage err : errors) {
 			System.out.println(err);
 		}
 
@@ -281,18 +277,18 @@ public class VarNameTest {
 	}
 
 	@ParameterizedTest
-	@CsvSource({"Field thirtyOneCharacterVarNameToTest too long (>30 characters), ",
-				"Local Variable anotherThirty1CharacterVarName1 too long (>30 characters), methodName"})
+	@CsvSource({ "Field thirtyOneCharacterVarNameToTest too long (>30 characters), ",
+			"Local Variable anotherThirty1CharacterVarName1 too long (>30 characters), methodName" })
 	public void testThirtyONECharacterFieldName(String errorMessage, String methodName) {
 		setUpSingleClass();
 		AnalyzerReturn returned = this.analyzer.getFeedback(singleClass);
 
 		assertTrue(returned.errorsCaught.size() > 0);
-		List<LinterError> errors = returned.errorsCaught;
+		List<LinterMessage> errors = returned.errorsCaught;
 
 		boolean found = false;
-		LinterError foundErr = null;
-		for (LinterError err : errors) {
+		LinterMessage foundErr = null;
+		for (LinterMessage err : errors) {
 			if (err.message.compareTo(errorMessage) == 0) {
 				found = true;
 				foundErr = err;
@@ -301,6 +297,6 @@ public class VarNameTest {
 		assertTrue(found);
 		assertEquals(multipleClasses[0], foundErr.className);
 		assertEquals(methodName, foundErr.methodName);
-		assertEquals(ErrType.WARNING, foundErr.type);
+		assertEquals(AnalyzerFixture.WARNING_MSG_TYPE, foundErr.getMessageType());
 	}
 }

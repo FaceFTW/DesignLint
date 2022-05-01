@@ -1,17 +1,14 @@
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
-
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import datasource.ASMParser;
-import domain.LinterError;
 import domain.AnalyzerReturn;
 import domain.analyzer.PrincipleOfLeastKnowledgeAnalyzer;
+import domain.message.LinterMessage;
 
-public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<PrincipleOfLeastKnowledgeAnalyzer>{
+public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<PrincipleOfLeastKnowledgeAnalyzer> {
 
 	private final String[] exampleClasses = {
 			"example.demeter.A",
@@ -32,7 +29,7 @@ public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<Principl
 	public void testNoMethodCalls() {
 		String[] classes = { "example.demeter.A" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
-		for (LinterError error : results.errorsCaught) {
+		for (LinterMessage error : results.errorsCaught) {
 			assertTrue(!error.methodName.equals("doAThing"));
 		}
 	}
@@ -41,7 +38,7 @@ public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<Principl
 	public void testUseMethodOfField() {
 		String[] classes = { "example.demeter.A" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
-		for (LinterError error : results.errorsCaught) {
+		for (LinterMessage error : results.errorsCaught) {
 			assertTrue(!error.methodName.equals("doThingWithB"));
 		}
 	}
@@ -50,7 +47,7 @@ public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<Principl
 	public void testCommunicateThroughFriend() {
 		String[] classes = { "example.demeter.A" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
-		for (LinterError error : results.errorsCaught) {
+		for (LinterMessage error : results.errorsCaught) {
 			assertTrue(!error.methodName.equals("doThingWithCRight"));
 		}
 	}
@@ -59,7 +56,7 @@ public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<Principl
 	public void testCommunicateWithStrangerUsingFriend() {
 		String[] classes = { "example.demeter.A" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
-		for (LinterError error : results.errorsCaught) {
+		for (LinterMessage error : results.errorsCaught) {
 			if (error.methodName.equals("doThingWithCWrong")) {
 				assertTrue(true);
 				return;
@@ -72,7 +69,7 @@ public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<Principl
 	public void testCommunicateWithStrangerUsingFriendVariable() {
 		String[] classes = { "example.demeter.A" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
-		for (LinterError error : results.errorsCaught) {
+		for (LinterMessage error : results.errorsCaught) {
 			if (error.methodName.equals("doThingWithCWrongVar")) {
 				assertTrue(true);
 				return;
@@ -85,7 +82,7 @@ public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<Principl
 	public void testCommunicateWithSingleMethodParameter() {
 		String[] classes = { "example.demeter.A" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
-		for (LinterError error : results.errorsCaught) {
+		for (LinterMessage error : results.errorsCaught) {
 			assertTrue(!error.methodName.equals("doThingWithCRight"));
 		}
 	}
@@ -94,7 +91,7 @@ public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<Principl
 	public void testCommunicateWithMultipleMethodParameters() {
 		String[] classes = { "example.demeter.A" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
-		for (LinterError error : results.errorsCaught) {
+		for (LinterMessage error : results.errorsCaught) {
 			assertTrue(!error.methodName.equals("doThingWithCParamMultipleParams"));
 		}
 	}
@@ -103,7 +100,7 @@ public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<Principl
 	public void testCommunicateWithStrangerThroughFriendParameter() {
 		String[] classes = { "example.demeter.A" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
-		for (LinterError error : results.errorsCaught) {
+		for (LinterMessage error : results.errorsCaught) {
 			assertTrue(!error.methodName.equals("doThingWithBParamRight"));
 		}
 	}
@@ -112,7 +109,7 @@ public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<Principl
 	public void testCommunicateWithStrangerUsingFriendParameter() {
 		String[] classes = { "example.demeter.A" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
-		for (LinterError error : results.errorsCaught) {
+		for (LinterMessage error : results.errorsCaught) {
 			if (error.methodName.equals("doThingWithBParamWrong")) {
 				assertTrue(true);
 				return;
@@ -125,7 +122,7 @@ public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<Principl
 	public void testCommunicateWithNewObject() {
 		String[] classes = { "example.demeter.A" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
-		for (LinterError error : results.errorsCaught) {
+		for (LinterMessage error : results.errorsCaught) {
 			assertTrue(!error.methodName.equals("doThingWithNewC"));
 		}
 	}
@@ -134,7 +131,7 @@ public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<Principl
 	public void testCreateNewButCommunicateWithStranger() {
 		String[] classes = { "example.demeter.A" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
-		for (LinterError error : results.errorsCaught) {
+		for (LinterMessage error : results.errorsCaught) {
 			if (error.methodName.equals("doThingWithNewCWrong")) {
 				assertTrue(true);
 				return;
@@ -147,7 +144,7 @@ public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<Principl
 	public void testCommunicateWithNewObjectGiveParameter() {
 		String[] classes = { "example.demeter.C" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
-		for (LinterError error : results.errorsCaught) {
+		for (LinterMessage error : results.errorsCaught) {
 			assertTrue(!error.methodName.equals("letADoThingWithC"));
 		}
 	}
@@ -156,7 +153,7 @@ public class PrincipleOfLeastKnowledgeCheckTest extends AnalyzerFixture<Principl
 	public void testCommunicateWithSuper() {
 		String[] classes = { "example.demeter.D" };
 		AnalyzerReturn results = this.analyzer.getFeedback(classes);
-		for (LinterError error : results.errorsCaught) {
+		for (LinterMessage error : results.errorsCaught) {
 			assertTrue(!error.methodName.equals("doDThing"));
 		}
 	}

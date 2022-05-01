@@ -2,10 +2,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import domain.ErrType;
-import domain.LinterError;
 import domain.AnalyzerReturn;
 import domain.analyzer.DryAnalyzer;
+import domain.message.LinterMessage;
 
 public class DryTest {
 	private DryAnalyzer analyzer;
@@ -16,10 +15,10 @@ public class DryTest {
 		this.analyzer = new DryAnalyzer(classList);
 		AnalyzerReturn returned = this.analyzer.getFeedback(classList);
 
-		for (LinterError l : returned.errorsCaught) {
+		for (LinterMessage l : returned.errorsCaught) {
 			System.out.println(l);
 		}
-		
+
 		assertEquals("DryAnalyzer", returned.analyzerName);
 		assertEquals(0, returned.errorsCaught.size());
 	}
@@ -30,7 +29,7 @@ public class DryTest {
 		this.analyzer = new DryAnalyzer(classList);
 		AnalyzerReturn returned = this.analyzer.getFeedback(classList);
 
-		for (LinterError l : returned.errorsCaught) {
+		for (LinterMessage l : returned.errorsCaught) {
 			System.out.println(l);
 		}
 
@@ -44,7 +43,7 @@ public class DryTest {
 		this.analyzer = new DryAnalyzer(classList);
 		AnalyzerReturn returned = this.analyzer.getFeedback(classList);
 
-		for (LinterError l : returned.errorsCaught) {
+		for (LinterMessage l : returned.errorsCaught) {
 			System.out.println(l);
 		}
 
@@ -52,7 +51,8 @@ public class DryTest {
 		assertEquals(2, returned.errorsCaught.size());
 		assertEquals("example/dry/Dog", returned.errorsCaught.get(0).className);
 		assertEquals("example/dry/Dog", returned.errorsCaught.get(1).className);
-		for(LinterError e: returned.errorsCaught) assertEquals(ErrType.WARNING, e.type);
+		for (LinterMessage e : returned.errorsCaught)
+			assertEquals(AnalyzerFixture.WARNING_MSG_TYPE, e.getMessageType());
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class DryTest {
 		this.analyzer = new DryAnalyzer(classList);
 		AnalyzerReturn returned = this.analyzer.getFeedback(classList);
 
-		for (LinterError l : returned.errorsCaught) {
+		for (LinterMessage l : returned.errorsCaught) {
 			System.out.println(l);
 		}
 
@@ -70,7 +70,8 @@ public class DryTest {
 		assertEquals(2, returned.errorsCaught.size());
 		assertEquals("example/dry/DogExtendsAnimal", returned.errorsCaught.get(0).className);
 		assertEquals("example/dry/CatExtendsAnimal", returned.errorsCaught.get(1).className);
-		for(LinterError e: returned.errorsCaught) assertEquals(ErrType.WARNING, e.type);
+		for (LinterMessage e : returned.errorsCaught)
+			assertEquals(AnalyzerFixture.WARNING_MSG_TYPE, e.getMessageType());
 	}
 
 	@Test
@@ -79,7 +80,7 @@ public class DryTest {
 		this.analyzer = new DryAnalyzer(classList);
 		AnalyzerReturn returned = this.analyzer.getFeedback(classList);
 
-		for (LinterError l : returned.errorsCaught) {
+		for (LinterMessage l : returned.errorsCaught) {
 			System.out.println(l);
 		}
 
@@ -89,8 +90,8 @@ public class DryTest {
 		assertEquals("example/dry/Cat", returned.errorsCaught.get(1).className);
 		assertEquals("example/dry/Dog", returned.errorsCaught.get(2).className);
 		assertEquals("example/dry/Dog", returned.errorsCaught.get(3).className);
-		for(LinterError e: returned.errorsCaught) assertEquals(ErrType.WARNING, e.type);
-
+		for (LinterMessage e : returned.errorsCaught)
+			assertEquals(AnalyzerFixture.WARNING_MSG_TYPE, e.getMessageType());
 	}
 
 	@Test
@@ -100,10 +101,10 @@ public class DryTest {
 		this.analyzer = new DryAnalyzer(classList);
 		AnalyzerReturn returned = this.analyzer.getFeedback(classList);
 
-		for (LinterError e : returned.errorsCaught) {
+		for (LinterMessage e : returned.errorsCaught) {
 			System.out.println(e.toString());
 		}
-		
+
 		assertEquals("DryAnalyzer", returned.analyzerName);
 		assertEquals(6, returned.errorsCaught.size());
 		assertEquals("example/dry/DogExtendsAnimal", returned.errorsCaught.get(0).className);
@@ -112,6 +113,7 @@ public class DryTest {
 		assertEquals("example/dry/Dog", returned.errorsCaught.get(3).className);
 		assertEquals("example/dry/Dog", returned.errorsCaught.get(4).className);
 		assertEquals("example/dry/CatExtendsAnimal", returned.errorsCaught.get(5).className);
-		for(LinterError e: returned.errorsCaught) assertEquals(ErrType.WARNING, e.type);
+		for (LinterMessage e : returned.errorsCaught)
+			assertEquals(AnalyzerFixture.WARNING_MSG_TYPE, e.getMessageType());
 	}
 }
