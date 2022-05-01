@@ -85,7 +85,14 @@ public class LinterMain {
 		switch (switchStr.charAt(1)) {
 			case 'v':
 				// case 'V':
-				return inFlags | PresentationLayer.VERBOSE_FLAG;
+				int flags = inFlags | PresentationLayer.VERBOSE_FLAG;
+				if (switchStr.length() >= 3 && switchStr.charAt(2) == 'v') {
+					flags = flags | PresentationLayer.SUPER_VERBOSE_FLAG;
+					if (switchStr.length() >= 4 && switchStr.charAt(3) == 'v') {
+						flags = flags | PresentationLayer.ULTRA_VERBOSE_FLAG;
+					}
+				}
+				return flags;
 			case 'h':
 				// case 'H':
 				return inFlags | PresentationLayer.HELP_FLAG;

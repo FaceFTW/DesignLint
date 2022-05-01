@@ -40,6 +40,10 @@ public class AnalyzerReturn {
 		return infoCount;
 	}
 
+	public int getTotalCount() {
+		return this.errorCount + this.infoCount + this.patternCount + this.unknownCount + this.warningCount;
+	}
+
 	private void countMessageTypes() {
 		for (LinterMessage message : errorsCaught) {
 			if (message.getMessageType().equals("INFO")) {

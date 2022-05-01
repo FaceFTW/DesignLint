@@ -28,7 +28,9 @@ public class PresentationLayer {
 	// to the presentation layer to do various things.
 	// We have a max of 32 different options, but shouldn't be a problem
 	public static final int HELP_FLAG = 0x01; // Placeholder flag for Wrapper to use for help
-	public static final int VERBOSE_FLAG = 0x02; // Increases Verbosity of Output (Specific details)
+	public static final int VERBOSE_FLAG = 0x01 << 1; // Shows Analyzer-specifc summary
+	public static final int SUPER_VERBOSE_FLAG = 0x01 << 2; // Will Cause Errors to be displayed
+	public static final int ULTRA_VERBOSE_FLAG = 0x01 << 3; // Shows All analyzer output
 
 	// Use the upper bits for analyzer toggles;
 	public static final int GENERIC_NAME_ANALYZER_FLAG = 0x01 << 20; // Enables the Generic Type Name Analyzer
@@ -107,11 +109,20 @@ public class PresentationLayer {
 			warnNum += returnType.getWarningCount();
 			patternNum += returnType.getPatternCount();
 
-			for (LinterMessage error : returnType.errorsCaught) {
-				if ((flags & VERBOSE_FLAG) == VERBOSE_FLAG) {
-					stream.format("Linter Name - %s\n", returnType.analyzerName);
-					stream.println("======================================================================");
+			if ((flags & VERBOSE_FLAG) == VERBOSE_FLAG) {
+				stream.format("Linter Name - %s\n", returnType.analyzerName);
+				stream.println("======================================================================");
+				stream.println("Errors Found : " + returnType.getErrorCount());
+				stream.println("Warnings Found: " + returnType.getWarningCount());
+				stream.println("Total Patterns Found : " + returnType.getPatternCount());
+				stream.println("Total Linter Findings : " + returnType.getTotalCount());
+				stream.println();
+			}
 
+			for (LinterMessage error : returnType.errorsCaught) {
+				if (((flags & SUPER_VERBOSE_FLAG) == SUPER_VERBOSE_FLAG
+						&& error.getMessageType().equals("ERROR"))
+						|| (flags & ULTRA_VERBOSE_FLAG) == ULTRA_VERBOSE_FLAG) {
 					stream.format("Type - %s\n", error.getMessageType());
 					stream.format("Class Name - %s\n", error.className);
 					stream.format("Method Name - %s\n", error.methodName);
