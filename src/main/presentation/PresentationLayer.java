@@ -108,13 +108,13 @@ public class PresentationLayer {
 			patternNum += returnType.getPatternCount();
 
 			for (LinterMessage error : returnType.errorsCaught) {
-				String errType = "";
 				if ((flags & VERBOSE_FLAG) == VERBOSE_FLAG) {
 					stream.format("Linter Name - %s\n", returnType.analyzerName);
 					stream.println("======================================================================");
+
+					stream.format("Type - %s\n", error.getMessageType());
 					stream.format("Class Name - %s\n", error.className);
 					stream.format("Method Name - %s\n", error.methodName);
-					stream.format("Type - %s\n", errType);
 					stream.format("Message - %s\n", error.message);
 					stream.println();
 				}
