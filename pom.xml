@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>Insert-Linter-Name</groupId>
 	<artifactId>Insert-Linter-Name</artifactId>
-	<version>0.0.1-ALPHA-1-PRERELASE-1</version>
+	<version>0.9-beta</version>
 	<repositories>
 		<repository>
 			<id>central</id>
