@@ -197,5 +197,8 @@ public class LinterMain {
 		System.out.println("\t ST - Strategy Pattern Detector");
 		System.out.println("\t TM - Template Method Pattern Detector");
 		System.out.println();
+		System.out.println();
+		System.out.println("This program uses OW2 ASM for Java bytecode analysis.");
+		System.out.println("For a copy of the license used by ASM, please go to https://asm.ow2.io/license.html");
 	}
 }
