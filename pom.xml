@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>Insert-Linter-Name</groupId>
-	<artifactId>Insert-Linter-Name</artifactId>
-	<version>0.9-beta</version>
+	<groupId>DesignLint</groupId>
+	<artifactId>DesignLint</artifactId>
+	<version>1.0-rc3</version>
 	<repositories>
 		<repository>
 			<id>central</id>
@@ -56,6 +56,20 @@
 						<param>test*</param>
 						<param>*Test</param>
 					</targetTests>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.4.0</version>
+				<configuration>
+					<detectLinks>true</detectLinks>
+					<links>
+						<link>https://asm.ow2.io/javadoc/</link>
+					</links>
+					<source>8</source>
+					<sourcepath>${basedir}/src/main</sourcepath>
+					<excludePackageNames>example.*</excludePackageNames>
 				</configuration>
 			</plugin>
 		</plugins>

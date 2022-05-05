@@ -81,7 +81,7 @@ public class ASMParser {
 	/**
 	 * This method is for the presentation layer's functionality.
 	 * 
-	 * @return String[] classNames
+	 * @return <code>String[]</code> classNames
 	 */
 	public String[] getParsedClassNames() {
 		String[] classNames = new String[this.classMap.size()];
@@ -189,7 +189,7 @@ public class ASMParser {
 	 * facing, static access.
 	 * 
 	 * @param className the class to be searched for static methods
-	 * @return List<String> of methods in the class with the static access modifier
+	 * @return list of methods in the class with the static access modifier
 	 */
 	public String[] getStaticMethods(String className) {
 		if (!this.classMap.containsKey(className)) {
@@ -210,7 +210,7 @@ public class ASMParser {
 	 * Determines if this class has a public facing constructor
 	 * 
 	 * @param className
-	 * @return boolean. if the classes constructor is private - true. Otherwise
+	 * @return if the classes constructor is private - true. Otherwise
 	 *         false
 	 */
 	public boolean isClassConstructorPrivate(String className) {
@@ -230,7 +230,7 @@ public class ASMParser {
 	 * searches the given class for fields that have private static access modifiers
 	 * 
 	 * @param className
-	 * @return List<String> of fieldNames that are private static
+	 * @return list of fieldNames that are private static
 	 */
 	public String[] getClassStaticPrivateFieldNames(String className) {
 		this.currentClassNode = this.classMap.get(className);
