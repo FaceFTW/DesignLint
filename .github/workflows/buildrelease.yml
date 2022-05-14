@@ -24,10 +24,12 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+      - name: Isolate Desired Executable
+        run: mv $(find . -name '*jar-with-dependencies.jar') DesignLint.jar
       - name: Add Github Release
         uses: "marvinpinto/action-automatic-releases@v1.2.1"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "v${{ github.event.inputs.versionTag }}" 
-          files: target/*.jar
+          files: target/DesignLint.jar
 

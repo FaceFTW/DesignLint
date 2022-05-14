@@ -1,4 +1,4 @@
-package example;
+package example.misc;
 
 import java.io.IOException;
 import java.util.ArrayList;
